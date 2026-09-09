@@ -1,0 +1,3854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Prospect Ledger</title>
+<style>
+  :root{
+    --ink:#1B2A4A;
+    --ink-soft:#425073;
+    --paper:#F7F5EF;
+    --paper-raised:#FFFFFF;
+    --line:#DCD6C6;
+    --gold:#B4893C;
+    --red:#A44A38;
+    --yellow:#A9750E;
+    --green:#2F6B4F;
+    --newgreen:#5C8C6E;
+    --unsorted:#F2B705;
+    --blue:#3E6B8A;
+    --shadow: 0 1px 2px rgba(27,42,74,0.08), 0 4px 14px rgba(27,42,74,0.06);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    background-image: linear-gradient(var(--line) 1px, transparent 1px);
+    background-size: 100% 42px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color:var(--ink);
+    min-height:100vh;
+    padding-bottom:40px;
+  }
+  .wrap{max-width:680px;margin:0 auto;padding:0 16px;}
+
+  .agent-header{
+    background: linear-gradient(135deg, #1B2A4A, #33477A);
+    color:#F3EFE3;
+    border-radius:14px;
+    padding:16px 18px 14px 18px;
+    margin:14px 0 14px 0;
+    box-shadow: 0 4px 18px rgba(27,42,74,0.28);
+  }
+  .agent-header-top{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
+  .agent-label{font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:#B9C4DE;}
+  .agent-id-row{display:flex; align-items:center; gap:10px;}
+  .avatar-circle{
+    width:44px; height:44px; border-radius:50%; background:rgba(255,255,255,0.15);
+    background-size:cover; background-position:center; display:flex; align-items:center;
+    justify-content:center; font-size:19px; border:2px solid rgba(255,255,255,0.35); flex-shrink:0;
+  }
+  .agent-name{font-family:Georgia, serif; font-weight:700; font-size:20px; color:#EFCB7A; line-height:1.25;}
+  .agent-meta{font-size:12px; color:#D3DAEA; margin-top:6px; line-height:1.7;}
+  .agent-meta-grid{display:grid; grid-template-columns:auto 1fr; column-gap:12px; row-gap:5px; margin-top:8px;}
+  .agent-meta-grid .ml{font-size:11px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:#8FA0C7;}
+  .agent-meta-grid .mv{font-size:13px; font-weight:600; color:#F3EFE3;}
+  .agent-date{font-size:11px; color:#9AA8C7; margin-top:6px;}
+  .header-actions{display:flex; gap:5px; flex-wrap:wrap; justify-content:flex-end;}
+  .icon-btn{
+    width:30px; height:30px; border-radius:7px; border:1px solid rgba(255,255,255,0.25);
+    background:rgba(255,255,255,0.08); font-size:14px; cursor:pointer; display:flex;
+    align-items:center; justify-content:center; color:#F3EFE3;
+  }
+  .icon-btn svg{width:16px; height:16px;}
+
+  .segmented{display:flex; background:var(--paper-raised); border:1px solid var(--line); border-radius:8px; padding:3px; margin-bottom:10px; box-shadow:var(--shadow); flex-wrap:wrap;}
+  .segmented button{
+    flex:1 1 auto; border:none; background:transparent; padding:8px 6px; font-size:13px; font-weight:600;
+    color:var(--ink-soft); border-radius:6px; cursor:pointer;
+  }
+  .segmented button.active{background:var(--ink); color:#fff;}
+  .segmented.lead-type button.active{background:var(--gold);}
+
+  .tally{
+    background:var(--paper-raised); border:1px solid var(--line); border-radius:10px;
+    box-shadow:var(--shadow); padding:16px 18px; margin-bottom:14px;
+  }
+  .tally-top{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:10px;}
+  .tally-top .label{font-size:12px; text-transform:uppercase; letter-spacing:0.08em; color:var(--ink-soft);}
+  .tally-num{font-family:Georgia, serif; font-size:30px; line-height:1;}
+  .tally-chips{display:flex; gap:8px; flex-wrap:wrap;}
+  .chip{font-size:12px; padding:4px 10px; border-radius:999px; font-weight:600; border:1px solid transparent;}
+  .chip.New{background:var(--newgreen); color:#fff; border-color:var(--newgreen);}
+  .chip.Promising{background:var(--yellow); color:#fff; border-color:var(--yellow);}
+  .chip.Difficult{background:var(--red); color:#fff; border-color:var(--red);}
+  .chip.Closed{background:var(--green); color:#fff; border-color:var(--green);}
+  .chip.Unsorted{background:var(--unsorted); color:#3D2E00; border-color:var(--unsorted);}
+  .cat-filter-row{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px;}
+  .cat-filter-chip{
+    font-size:12px; padding:5px 11px; border-radius:999px; font-weight:700; border:1.5px solid var(--line);
+    background:var(--paper-raised); color:var(--ink-soft); cursor:pointer; display:inline-flex; align-items:center; gap:5px;
+  }
+  .cat-filter-chip .n{font-weight:700;}
+  .cat-filter-chip.active{color:#fff; border-color:transparent;}
+  .cat-filter-chip.active.All{background:var(--ink); color:#fff;}
+  .cat-filter-chip.active.Unsorted{background:var(--unsorted); color:#5C4700;}
+  .cat-filter-chip.active.New{background:var(--newgreen); color:#fff;}
+  .cat-filter-chip.active.Promising{background:var(--yellow); color:#fff;}
+  .cat-filter-chip.active.Difficult{background:var(--red); color:#fff;}
+  .cat-filter-chip.active.Closed{background:var(--green); color:#fff;}
+  .cat-filter-chip.All{color:var(--ink);}
+  .cat-filter-chip.Unsorted{color:#8A6D00; border-color:#EBD98A;}
+  .cat-filter-chip.New{color:var(--newgreen); border-color:#cfe0d6;}
+  .cat-filter-chip.Promising{color:var(--yellow); border-color:#ecdcb8;}
+  .cat-filter-chip.Difficult{color:var(--red); border-color:#e6cfc8;}
+  .cat-filter-chip.Closed{color:var(--green); border-color:#c3ddd0;}
+
+  .more-menu-section{font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--ink-soft); margin:16px 0 6px 0;}
+  .more-menu-section:first-of-type{margin-top:0;}
+  .more-menu-item{
+    display:flex; align-items:center; gap:12px; padding:11px 10px; border-radius:9px;
+    border-left:4px solid transparent; cursor:pointer; font-size:14.5px; font-weight:700; color:var(--ink);
+    background:var(--paper-raised); border-top:1px solid var(--line); border-right:1px solid var(--line);
+    border-bottom:1px solid var(--line); margin-bottom:6px;
+  }
+  .more-menu-item:active{opacity:0.75;}
+  .more-menu-icon{
+    width:36px; height:36px; border-radius:9px; display:flex; align-items:center; justify-content:center;
+    font-size:17px; flex-shrink:0;
+  }
+  .more-menu-item.data{border-left-color:var(--gold);}
+  .more-menu-item.data .more-menu-icon{background:#F0E6D2; color:#8A6A1F;}
+  .more-menu-item.outreach{border-left-color:#2E8B8B;}
+  .more-menu-item.outreach .more-menu-icon{background:#DCEEEE; color:#256E6E;}
+  .more-menu-item.admin{border-left-color:var(--ink-soft);}
+  .more-menu-item.admin .more-menu-icon{background:#E7EAF2; color:var(--ink-soft);}
+  .more-menu-item .desc{font-size:11.5px; font-weight:500; color:var(--ink-soft); margin-top:1px;}
+
+  .searchbar{position:sticky; top:0; z-index:5; background:var(--paper); padding:8px 0 6px 0; display:flex; flex-direction:column; gap:8px;}
+  .search-row{display:flex;}
+  .sort-row{display:flex; gap:8px;}
+  .searchbar input{
+    width:100%; padding:15px 16px; border-radius:9px; border:1px solid var(--line);
+    font-size:17px; background:var(--paper-raised); box-shadow:var(--shadow);
+  }
+  .searchbar input:focus{outline:2px solid var(--ink); outline-offset:1px;}
+  .sort-row select{
+    flex:1; min-width:0;
+    padding:0 8px; border-radius:8px; border:1px solid var(--line); background:var(--paper-raised);
+    font-size:13px; box-shadow:var(--shadow); color:var(--ink);
+  }
+  .sort-dir-btn{
+    width:38px; flex-shrink:0; padding:0; display:flex; align-items:center; justify-content:center;
+    border-radius:8px; border:1px solid var(--line); background:var(--paper-raised); box-shadow:var(--shadow);
+    font-size:15px; cursor:pointer; color:var(--ink);
+  }
+  .filter-badge{
+    display:none; align-items:center; gap:6px; background:var(--paper-raised); border:1px solid var(--line);
+    border-radius:999px; padding:5px 10px; font-size:12px; color:var(--ink); margin-bottom:10px; width:fit-content;
+  }
+  .filter-badge button{background:none; border:none; color:var(--red); font-weight:700; cursor:pointer; font-size:13px;}
+
+  .btn{border:none; border-radius:8px; padding:11px 16px; font-size:14px; font-weight:600; cursor:pointer;}
+  .btn-primary{background:var(--ink); color:#fff;}
+  .btn-primary:active{opacity:0.85;}
+  .btn-ghost{background:transparent; border:1px solid var(--line); color:var(--ink);}
+  .btn-danger{background:transparent; border:1px solid #e0bdb5; color:var(--red);}
+
+  .list{margin-top:2px;}
+  .row{
+    background:var(--paper-raised); border:1px solid var(--line); border-left:4px solid var(--ink-soft);
+    border-radius:8px; padding:12px 14px; margin-bottom:8px; box-shadow:var(--shadow);
+  }
+  .row.New{border-left-color:var(--newgreen);}
+  .row.Promising{border-left-color:var(--yellow);}
+  .row.Difficult{border-left-color:var(--red);}
+  .row.Closed{border-left-color:var(--green);}
+  .row.Unsorted{border-left-color:var(--unsorted);}
+  .row-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px; cursor:pointer;}
+  .row-main{min-width:0;}
+  .row-name{font-weight:700; font-size:15.5px;}
+  .mini-donut{width:15px; height:15px; margin-left:6px; vertical-align:middle;}
+  .row-type{font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--blue); margin-bottom:1px;}
+  .row-sub{font-size:12.5px; color:var(--ink-soft); margin-top:2px;}
+  .row-stage{font-size:11.5px; color:var(--ink); margin-top:4px; font-weight:600;}
+  .row-tags{font-size:11.5px; color:var(--ink-soft); margin-top:4px; display:flex; gap:6px; flex-wrap:wrap;}
+  .row-tags span{background:var(--paper); border:1px solid var(--line); border-radius:5px; padding:1px 6px;}
+  .row-right{text-align:right; flex-shrink:0;}
+  .status-dot{
+    display:inline-block; width:11px; height:11px; border-radius:50%; margin-right:5px; vertical-align:middle;
+    border:1px solid rgba(0,0,0,0.12);
+  }
+  .status-dot.New{ background: repeating-linear-gradient(45deg, var(--newgreen), var(--newgreen) 2px, #C9CFC7 2px, #C9CFC7 4px); }
+  .status-dot.Promising{ background: var(--yellow); }
+  .status-dot.Difficult{ background: var(--red); }
+  .status-dot.Closed{ background: var(--green); }
+  .status-dot.Unsorted{ background: var(--unsorted); }
+  .row-cat{font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; display:inline-flex; align-items:center;}
+  .row-cat.New{color:var(--newgreen);}
+  .row-cat.Promising{color:var(--yellow);}
+  .row-cat.Difficult{color:var(--red);}
+  .row-cat.Closed{color:var(--green);}
+  .row-cat.Unsorted{color:#8A6D00;}
+  .row-date{font-size:11px; color:var(--ink-soft); margin-top:3px;}
+  .row-actions{display:flex; gap:6px; margin-top:10px; flex-wrap:wrap;}
+  .mini-action{
+    flex:1 1 70px; min-width:70px; text-align:center; padding:8px 6px; border-radius:7px; font-size:12.5px; font-weight:700;
+    text-decoration:none; border:1px solid var(--line); color:var(--ink);
+    background:var(--paper-raised); font-family:inherit; cursor:pointer;
+  }
+  .mini-action.call{color:var(--blue); border-color:#cfdde5;}
+  .mini-action.wa{color:var(--green); border-color:#c6ddce;}
+  .mini-action.email{color:var(--gold); border-color:#e2d3ae;}
+  .mini-action.edit{color:var(--ink-soft);}
+  .mini-action.delete{color:var(--red); border-color:#e6cfc8;}
+
+  .empty{text-align:center; padding:40px 20px; color:var(--ink-soft); font-size:14px;}
+
+  .fab{
+    position:fixed; right:18px; bottom:22px; z-index:6; width:56px; height:56px; border-radius:50%;
+    background:var(--ink); color:#fff; font-size:28px; border:none;
+    box-shadow:0 6px 18px rgba(27,42,74,0.35); display:flex; align-items:center; justify-content:center; cursor:pointer;
+  }
+
+  .overlay{position:fixed; inset:0; background:rgba(27,42,74,0.4); display:flex; align-items:flex-end; justify-content:center; z-index:10;}
+  .sheet{
+    background:var(--paper); width:100%; max-width:680px; border-radius:16px 16px 0 0; padding:18px 18px 26px 18px;
+    max-height:90vh; overflow-y:auto; overflow-x:hidden; box-shadow: 0 -8px 30px rgba(0,0,0,0.2);
+  }
+  .sheet-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;}
+  .sheet-head h2{font-family:Georgia, serif; font-size:20px; margin:0;}
+  .close-x{background:none; border:none; font-size:22px; color:var(--ink-soft); cursor:pointer; padding:4px 8px;}
+
+  label{display:block; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-soft); margin:14px 0 6px 0;}
+  label:first-of-type{margin-top:0;}
+  input[type=text], input[type=tel], input[type=number], input[type=email], input[type=date], input[type=month], textarea, select{
+    width:100%; padding:11px 12px; border-radius:8px; border:1px solid var(--line);
+    font-size:15px; background:var(--paper-raised); font-family:inherit;
+  }
+  textarea{min-height:80px; resize:vertical;}
+  input:focus, textarea:focus, select:focus{outline:2px solid var(--ink); outline-offset:1px;}
+  input.invalid, select.invalid{border-color:var(--red); outline:1px solid var(--red);}
+  .field-err{font-size:11.5px; color:var(--red); margin-top:4px; min-height:14px;}
+
+  /* Light field-grouping tints, used consistently across every form in the app */
+  .tint-identity{background:#EAF2FA !important;}
+  .tint-contact{background:#EAF6EF !important;}
+  .tint-location{background:#FDF3E3 !important;}
+  .tint-financial{background:#F1ECFA !important;}
+  .tint-referral{background:#FBEAF0 !important;}
+  .tint-reminder{background:#FDF8E3 !important;}
+  .field-legend{display:flex; flex-wrap:wrap; gap:8px 14px; font-size:11px; color:var(--ink-soft); margin:2px 0 12px 0;}
+  .field-legend span{display:inline-flex; align-items:center; gap:4px;}
+  .field-legend i{width:9px; height:9px; border-radius:2px; display:inline-block;}
+  .two-col{display:flex; gap:8px;}
+  .two-col > div{flex:1;}
+
+  .ss-wrap{position:relative;}
+  .ss-list{
+    position:absolute; left:0; right:0; top:100%; background:var(--paper-raised); border:1px solid var(--line);
+    border-radius:8px; max-height:210px; overflow-y:auto; z-index:15; box-shadow:var(--shadow); margin-top:4px;
+  }
+  .ss-option{padding:9px 12px; font-size:14px; cursor:pointer; border-bottom:1px solid var(--paper);}
+  .ss-option:last-child{border-bottom:none;}
+  .ss-option:hover, .ss-option.hl{background:var(--paper);}
+  .ss-empty{padding:9px 12px; font-size:13px; color:var(--ink-soft);}
+
+  .cat-select{display:flex; gap:6px; flex-wrap:wrap;}
+  .cat-btn{flex:1 1 70px; padding:10px 4px; border-radius:8px; border:1.5px solid var(--line); background:var(--paper-raised); font-size:12.5px; font-weight:700; cursor:pointer; color:var(--ink-soft);}
+  .cat-btn.active.New{border-color:var(--newgreen); background:var(--newgreen); color:#fff;}
+  .cat-btn.active.Promising{border-color:var(--yellow); background:var(--yellow); color:#fff;}
+  .cat-btn.active.Difficult{border-color:var(--red); background:var(--red); color:#fff;}
+  .cat-btn.active.Closed{border-color:var(--green); background:var(--green); color:#fff;}
+  .cat-btn.active.Unsorted{border-color:var(--unsorted); background:var(--unsorted); color:#3D2E00;}
+  .cat-btn.active.lead{border-color:var(--gold); background:var(--gold); color:#fff;}
+
+  .voice-row{display:flex; gap:8px; align-items:flex-start;}
+  .voice-row textarea{flex:1;}
+  .mic-btn{width:44px; height:44px; border-radius:50%; border:1.5px solid var(--line); background:var(--paper-raised); font-size:18px; cursor:pointer; flex-shrink:0;}
+  .mic-btn.recording{background:var(--red); border-color:var(--red); color:#fff;}
+  .mic-btn:disabled{opacity:0.35; cursor:not-allowed;}
+  .mic-note{font-size:11px; color:var(--ink-soft); margin-top:4px;}
+
+  .sheet-actions{margin-top:18px; display:flex; gap:8px;}
+  .sheet-actions .btn{flex:1;}
+
+  .contact-actions{display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;}
+  .contact-actions a, .contact-actions button{flex:1 1 70px; text-align:center; padding:11px 6px; border-radius:8px; font-size:13.5px; font-weight:700; text-decoration:none;}
+  .call-link{background:#E8EEF2; color:var(--blue); border:1px solid #cfdde5;}
+  .wa-link{background:#E4EEE8; color:var(--green); border:1px solid #c3ddd0;}
+  .send-link{background:#F0E9DA; color:var(--gold); border:1px solid #e2d3ae;}
+
+  .detail-facts{margin-top:12px; font-size:13.5px; line-height:1.9; color:var(--ink);}
+  .detail-facts .fk{color:var(--ink-soft); display:inline-block; width:120px;}
+
+  .history{margin-top:16px;}
+  .history-item{border-left:2px solid var(--line); padding:2px 0 12px 14px; margin-left:4px; position:relative;}
+  .history-item::before{content:''; position:absolute; left:-5px; top:5px; width:8px; height:8px; border-radius:50%; background:var(--ink-soft);}
+  .history-date{font-size:11px; color:var(--ink-soft); font-weight:700; margin-bottom:2px;}
+  .history-note{font-size:14px; line-height:1.4;}
+
+  .toast{position:fixed; bottom:90px; left:50%; transform:translateX(-50%); background:var(--ink); color:#fff; padding:9px 16px; border-radius:999px; font-size:13px; z-index:20; opacity:0; pointer-events:none; transition:opacity 0.25s;}
+  .toast.show{opacity:1;}
+  .status{font-size:12px; color:var(--ink-soft); text-align:center; padding:8px 0;}
+  .field-note{font-size:11px; color:var(--ink-soft); margin-top:6px;}
+  .app-footer{text-align:center; font-size:11px; color:var(--ink-soft); padding:24px 10px 10px 10px; line-height:1.6;}
+
+  .report-donut{display:flex; align-items:center; gap:18px; margin:10px 0; flex-wrap:wrap;}
+  .report-donut svg{width:90px; height:90px; max-width:30%; flex-shrink:0;}
+  .report-donut .pie-chart-svg{width:100px; height:100px; max-width:38%;}
+  .report-donut .report-stats{flex:1; min-width:160px;}
+  .donut-text{font-family:Georgia, serif; font-size:8px; text-anchor:middle;}
+  .report-stats{font-size:13.5px; line-height:1.7;}
+  .report-stats b{font-size:20px; font-family:Georgia, serif; display:block;}
+  .bar-row{display:flex; align-items:center; gap:8px; margin-bottom:8px; font-size:12.5px;}
+  .bar-label{width:70px; flex-shrink:0; color:var(--ink-soft);}
+  .bar-track{flex:1; background:#EDE9DC; border-radius:5px; height:12px; overflow:hidden;}
+  .bar-fill{height:100%; border-radius:5px;}
+  .bar-count{width:26px; text-align:right; flex-shrink:0; font-weight:700;}
+  .kpi-row{display:flex; gap:10px; margin:12px 0;}
+  .kpi-card{flex:1; background:var(--paper-raised); border:1px solid var(--line); border-radius:10px; padding:12px; text-align:center;}
+  .kpi-card .kpi-num{font-family:Georgia, serif; font-size:19px; font-weight:700;}
+  .kpi-card .kpi-label{font-size:10.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-soft); margin-top:2px;}
+
+  .trend-chart{width:100%; height:auto; background:var(--paper-raised); border:1px solid var(--line); border-radius:10px;}
+  .chart-legend{display:flex; gap:14px; font-size:12px; color:var(--ink-soft); margin:8px 0;}
+  .chart-legend span{display:inline-flex; align-items:center; gap:5px;}
+  .chart-legend i{width:10px; height:10px; border-radius:2px; display:inline-block;}
+
+  .export-col-row{display:flex; align-items:center; gap:10px; padding:7px 0; border-bottom:1px solid var(--line);}
+  .export-col-row input[type=checkbox]{width:auto; flex-shrink:0;}
+  .export-col-row label{margin:0; font-size:13.5px; text-transform:none; font-weight:500; color:var(--ink); flex:1;}
+
+  .avatar-upload-row{display:flex; align-items:center; gap:14px; margin-bottom:6px;}
+  .avatar-preview{
+    width:64px; height:64px; border-radius:50%; background:#EDE9DC; background-size:cover; background-position:center;
+    display:flex; align-items:center; justify-content:center; font-size:26px; border:1px solid var(--line); flex-shrink:0;
+  }
+
+  .help-step{display:flex; gap:10px; margin-bottom:14px;}
+  .help-num{
+    width:24px; height:24px; border-radius:50%; background:var(--ink); color:#fff; font-size:12px; font-weight:700;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .help-step div:last-child{font-size:13.5px; line-height:1.5;}
+  .help-step b{display:block; margin-bottom:2px;}
+
+  /* ---------- Desktop / large-screen layout ---------- */
+  @media (min-width: 860px){
+    body{ background-size: 100% 46px; }
+    .wrap{ max-width:1080px; padding:0 32px; }
+    .agent-header{ padding:22px 30px 20px 30px; }
+    .agent-name{ font-size:24px; }
+    .searchbar{ flex-direction:row; align-items:center; }
+    .search-row{ flex:1; }
+    .sort-row{ flex:0 0 auto; width:320px; }
+    .list{
+      display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:12px; align-items:start;
+    }
+    .row{ margin-bottom:0; }
+    .empty{ grid-column:1 / -1; }
+    .status{ grid-column:1 / -1; }
+    .overlay{ align-items:center; padding:24px; }
+    .sheet{
+      max-width:600px; border-radius:16px; max-height:88vh;
+      box-shadow:0 20px 60px rgba(27,42,74,0.35);
+    }
+    .fab{ right:28px; bottom:28px; }
+    .kpi-row{ max-width:520px; }
+    .report-donut{ max-width:520px; }
+  }
+  @media (min-width: 1300px){
+    .wrap{ max-width:1280px; }
+    .list{ grid-template-columns:repeat(3, minmax(0,1fr)); }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="agent-header">
+    <div class="agent-header-top">
+      <div class="agent-label">Prospect Ledger</div>
+      <div class="header-actions">
+        <button class="icon-btn" id="dateFilterBtn" title="Filters">🔍</button>
+        <button class="icon-btn" id="remindersBtn" title="Reminders" style="position:relative;">🔔<span id="reminderBadge" style="display:none; position:absolute; top:-4px; right:-4px; background:var(--red); color:#fff; font-size:9px; font-weight:700; border-radius:999px; min-width:15px; height:15px; line-height:15px; text-align:center; padding:0 3px;"></span></button>
+        <button class="icon-btn" id="moreBtn" title="More">⋯</button>
+        <button class="icon-btn" id="helpBtn" title="Help" style="display:none;">❓</button>
+        <button class="icon-btn" id="reportsBtn" title="Reports" style="display:none;">📊</button>
+        <button class="icon-btn" id="exportBtn" title="Export" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13"/><path d="M6 11l6 6 6-6"/><path d="M5 21h14"/></svg>
+        </button>
+        <button class="icon-btn" id="phonebookBtn" title="Phone book" style="display:none;">📇</button>
+        <button class="icon-btn" id="broadcastBtn" title="Broadcast" style="display:none;">📣</button>
+        <button class="icon-btn" id="settingsBtn" title="Settings" style="display:none;">⚙</button>
+      </div>
+    </div>
+    <div class="agent-id-row">
+      <div class="avatar-circle" id="agentAvatar">👤</div>
+      <div>
+        <div class="agent-name" id="agentNameDisplay">Set up your agent profile</div>
+      </div>
+    </div>
+    <div class="agent-meta" id="agentMeta"></div>
+    <div class="agent-date" id="todayLabel"></div>
+  </header>
+
+  <div class="segmented lead-type" id="leadTypeFilter">
+    <button data-t="Individual" class="active">Individual</button>
+    <button data-t="Corporate">Corporate</button>
+  </div>
+
+  <div class="tally">
+    <div class="tally-top">
+      <div>
+        <div class="label">Contacted today</div>
+        <div class="tally-num" id="tallyNum">0</div>
+      </div>
+    </div>
+    <div class="tally-chips" id="tallyChips"></div>
+  </div>
+
+  <div class="segmented" id="statusFilter">
+    <button data-f="All" class="active">All</button>
+    <button data-f="Open">Open</button>
+    <button data-f="Closed">Closed</button>
+  </div>
+
+  <div class="cat-filter-row" id="categoryFilterRow"></div>
+
+  <div class="searchbar">
+    <div class="search-row">
+      <input type="text" id="searchInput" placeholder="Search name, contact, phone, or email" autocomplete="off">
+    </div>
+    <div class="sort-row">
+      <select id="sortSelect">
+        <option value="lastUpdated">Last updated</option>
+        <option value="name">Name</option>
+        <option value="captured">Date captured</option>
+        <option value="closed">Date closed</option>
+        <option value="premium">Premium amount</option>
+        <option value="completeness">Data quality %</option>
+        <option value="county">County</option>
+        <option value="stage">Pipeline stage</option>
+      </select>
+      <button class="sort-dir-btn" id="sortDirBtn" title="Toggle ascending/descending">▼</button>
+    </div>
+  </div>
+  <div class="filter-badge" id="filterBadge"><span id="filterBadgeText"></span><button id="clearFilterBtn">✕</button></div>
+
+  <div class="status" id="status">Loading from this device's storage…</div>
+  <div class="list" id="list"></div>
+
+  <div class="app-footer">
+    © <span id="footerYear"></span> Walter Jungah. All rights reserved.<br>
+    Developed by Walter Jungah · 0798 511 366 · walterjungah9@outlook.com
+  </div>
+</div>
+
+<button class="fab" id="addFab" title="Log new prospect">+</button>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  const LEAD_TYPES = ["Individual","Corporate"];
+  const CATEGORIES = ["Unsorted","New","Promising","Difficult","Closed"];
+  const FREQUENCIES = ["Monthly","Quarterly","Semiannually","Annually","Single Premium"];
+  const FREQ_MULTIPLIER = {Monthly:12, Quarterly:4, Semiannually:2, Annually:1, "Single Premium":1};
+  const GENDERS = ["Female","Male","Other","Prefer not to say"];
+  const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const DISCLAIMER = "Data protection notice: This report contains personal client data protected under the Kenya Data Protection Act, 2019. As the agent handling it, you are personally responsible for storing, sharing, and disposing of this information securely, and using it only for the legitimate insurance purpose for which it was collected.";
+
+  // Full Kenyan economy sector taxonomy: major sector -> subsectors.
+  // Kept as structured data (not just a flat list) so reports can roll granular
+  // subsector picks back up to their parent major sector for clean aggregation,
+  // while data entry stays as specific as the agent needs.
+  const SECTOR_TAXONOMY = {
+    "Agriculture, Forestry & Fishing": ["Agro-processing","Coffee & Tea Farming","Crop Farming (Cereals & Horticulture)","Fisheries & Aquaculture","Forestry & Logging","Livestock & Dairy Farming","Poultry Farming"],
+    "Automotive": ["Motor Vehicle Repair & Garages","Spare Parts Trade","Vehicle Sales & Dealership"],
+    "Aviation": ["Airport Operations","Aviation Support Services","Commercial Airlines"],
+    "Construction": ["Civil Engineering (Roads, Bridges)","Commercial & Industrial Construction","Real Estate Development","Residential Construction"],
+    "Cooperatives / SACCOs": ["Agricultural Cooperatives","Housing Cooperatives","Savings & Credit Cooperatives (SACCOs)"],
+    "Diplomatic / International Organizations": ["Embassies & Consulates","International Development Banks","UN Agencies"],
+    "Education": ["Early Childhood Education","Primary & Secondary Education","Private Tutoring / Coaching","Technical & Vocational Training (TVET)","University & Tertiary Education"],
+    "Energy & Utilities": ["Electricity Generation & Distribution","Petroleum & Gas Distribution","Renewable Energy (Solar, Wind, Geothermal)","Waste Management","Water Supply & Sanitation"],
+    "Financial & Insurance Services": ["Commercial Banking","Investment & Capital Markets","Life & General Insurance","Microfinance","Mobile Money","SACCOs & Cooperatives"],
+    "Health & Social Work": ["Hospitals & Clinics","Pharmaceutical Retail","Public Health Programs","Social Work & Community Services","Veterinary Services"],
+    "Hospitality & Tourism": ["Event Management","Hotels & Accommodation","Restaurants & Catering","Tour Operators & Travel Agencies","Wildlife & National Parks"],
+    "Information & Communication Technology (ICT)": ["Data Centres & Cloud Services","Fintech / Digital Payments","Gaming & Animation","IT Services & Consulting","Software Development"],
+    "Judiciary & Legal Sector": ["Courts & Judiciary","Law Enforcement / Prosecution"],
+    "Manufacturing": ["Cement & Building Materials","Chemicals & Pharmaceuticals Manufacturing","Food & Beverage Processing","Leather & Footwear","Metal & Engineering Products","Motor Vehicle Assembly","Paper & Printing","Plastics & Rubber","Textile & Apparel","Wood & Furniture"],
+    "Maritime & Fisheries": ["Lake & Freshwater Fisheries","Marine Fisheries","Shipping & Port Operations"],
+    "Media & Creative Arts": ["Broadcasting (TV & Radio)","Fashion & Design","Film & Music Production","Print & Digital Journalism"],
+    "Mining & Quarrying": ["Metallic Minerals (Gold, Titanium)","Non-Metallic Minerals (Soda Ash, Limestone)","Oil & Gas Exploration","Quarrying & Sand Harvesting"],
+    "NGO / Development & Humanitarian": ["Faith-Based Development Organizations","International NGOs","Local Community-Based Organizations"],
+    "Other": [],
+    "Professional, Scientific & Legal Services": ["Accounting & Audit","Advertising & Marketing","Architecture & Engineering","Legal Services","Management Consulting","Research & Development"],
+    "Public Administration – County Government": ["County Assembly","County Executive","County Public Services"],
+    "Public Administration – National Government": ["Ministries & State Departments","National Security Agencies","Parastatals & State Corporations"],
+    "Real Estate": ["Property Development","Property Management","Real Estate Brokerage"],
+    "Religious Organizations": ["Christian Ministries & Churches","Islamic Organizations","Other Faith Institutions"],
+    "Security Services": ["Military / Defence","Police & National Security","Private Security Firms"],
+    "Self-Employed / Business Owner": ["Freelancing / Gig Economy","Independent Consulting","Small & Micro Enterprise (Jua Kali)"],
+    "Sports & Recreation": ["Fitness & Gyms","Professional Sports & Clubs","Sports Betting & Gaming"],
+    "Student": [],
+    "Telecommunications": ["Broadcasting Infrastructure","Internet Service Providers","Mobile Network Operators"],
+    "Transport & Logistics": ["Air Transport","Boda Boda / Motorcycle Transport","Maritime & Shipping","Rail Transport","Road Transport (Matatu, Trucking)","Warehousing & Logistics"],
+    "Unemployed / Not Currently Working": [],
+    "Wholesale & Retail Trade": ["E-commerce","Informal Trade / Jua Kali","Supermarkets & Retail Chains","Wholesale Trade"]
+  };
+  const SECTORS = Object.keys(SECTOR_TAXONOMY).flatMap(major=>{
+    const subs = SECTOR_TAXONOMY[major];
+    const entries = [major];
+    subs.forEach(sub=>entries.push(major+' – '+sub));
+    return entries;
+  });
+  function sectorMajorOf(label){
+    if(!label) return '';
+    if(SECTOR_TAXONOMY[label]) return label; // already a major-level entry
+    const sep = label.indexOf(' – ');
+    return sep>-1 ? label.slice(0, sep) : label;
+  }
+
+  const COUNTIES = [
+    "Mombasa","Kwale","Kilifi","Tana River","Lamu","Taita-Taveta","Garissa","Wajir","Mandera","Marsabit",
+    "Isiolo","Meru","Tharaka-Nithi","Embu","Kitui","Machakos","Makueni","Nyandarua","Nyeri","Kirinyaga",
+    "Murang'a","Kiambu","Turkana","West Pokot","Samburu","Trans Nzoia","Uasin Gishu","Elgeyo-Marakwet",
+    "Nandi","Baringo","Laikipia","Nakuru","Narok","Kajiado","Kericho","Bomet","Kakamega","Vihiga",
+    "Bungoma","Busia","Siaya","Kisumu","Homa Bay","Migori","Kisii","Nyamira","Nairobi","Diaspora"
+  ];
+
+  const PRODUCTS_BY_TYPE = {
+    Individual: ["Smart Scholar","Smart Save","Faida Elimu","Faida Maisha","Faida Elite","Fanaka Plan Layer 1"],
+    Corporate: ["Group Life","Group Medical / WIBA","Group Pension","Group Personal Accident"]
+  };
+
+  const STAGES_BY_TYPE = {
+    Individual: ["Prospecting","Qualifying","Needs Analysis","Presentation","Objection Handling","Application Submitted","Underwriting","Policy Issued","After-Sale Service","Lost / Not Proceeding"],
+    Corporate: ["Prospecting","Qualifying","Needs Analysis","Proposal Sent","Tender / Procurement","Committee Decision","Objection Handling","Application Submitted","Underwriting","Policy Issued","After-Sale Service","Lost / Not Proceeding"]
+  };
+
+  const EXPORT_COLUMNS = [
+    {id:'leadType', label:'Lead Type'},
+    {id:'name', label:'Name'},
+    {id:'contactPerson', label:'Contact Person'},
+    {id:'email', label:'Email'},
+    {id:'phone', label:'Phone'},
+    {id:'gender', label:'Gender'},
+    {id:'sector', label:'Sector'},
+    {id:'county', label:'County'},
+    {id:'referredBy', label:'Referred By'},
+    {id:'nextFollowUp', label:'Next Follow-up'},
+    {id:'dateOfBirth', label:'Date of Birth'},
+    {id:'category', label:'Category'},
+    {id:'stage', label:'Stage'},
+    {id:'product', label:'Product'},
+    {id:'premiumAmount', label:'Premium Amount'},
+    {id:'premiumFrequency', label:'Premium Frequency'},
+    {id:'location', label:'Met At'},
+    {id:'numberOfLives', label:'Lives Covered'},
+    {id:'createdAtDate', label:'Date Captured'},
+    {id:'createdAtTime', label:'Time Captured'},
+    {id:'closedAtDate', label:'Date Closed'},
+    {id:'closedAtTime', label:'Time Closed'},
+    {id:'lastContactDate', label:'Date Last Contacted'},
+    {id:'lastContactTime', label:'Time Last Contacted'},
+    {id:'latestNote', label:'Latest Note'}
+  ];
+  const PDF_ESSENTIAL_COLUMNS = ['name','phone','category','stage','product','premiumAmount','closedAtDate'];
+
+  let prospects = [];
+  let settings = { countryCode: "254", sheetSyncUrl: "", aiApiKey: "", aiModel: "claude-sonnet-5", agent: {name:'',gender:'',email:'',phone:'',agentCode:'',dateCoded:'',photo:''} };
+  let statusFilter = "All";
+  let leadTypeFilter = "Individual";
+  let sortBy = "lastUpdated";
+  let sortDir = "desc";
+  let dateFilter = null;
+  let extraFilters = { gender:'', county:'', sector:'', stage:'', category:'' };
+  let saveTimer = null;
+  let audioCtx = null;
+
+  const $ = (sel) => document.querySelector(sel);
+  const listEl = $('#list');
+  const statusEl = $('#status');
+  const searchInput = $('#searchInput');
+
+  function todayLabel(){
+    const d = new Date();
+    return d.toLocaleDateString(undefined, { weekday:'short', month:'short', day:'numeric', year:'numeric' });
+  }
+  $('#todayLabel').textContent = todayLabel();
+  const footerYearEl = document.getElementById('footerYear');
+  if(footerYearEl) footerYearEl.textContent = new Date().getFullYear();
+
+  function isSameDay(iso, ref){
+    const a = new Date(iso), b = ref || new Date();
+    return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
+  }
+  function fmtDate(iso){
+    if(!iso) return '—';
+    const d = new Date(iso);
+    return d.toLocaleDateString(undefined,{month:'short', day:'numeric'}) + ' · ' + d.toLocaleTimeString(undefined,{hour:'numeric', minute:'2-digit'});
+  }
+  function fmtShort(iso){ return new Date(iso).toLocaleDateString(undefined,{month:'short', day:'numeric'}); }
+  function dateOnly(iso){ return iso ? new Date(iso).toLocaleDateString(undefined,{year:'numeric',month:'2-digit',day:'2-digit'}) : ''; }
+  function timeOnly(iso){ return iso ? new Date(iso).toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'}) : ''; }
+  function digitsOnly(s){ return (s||'').replace(/\D/g,''); }
+  function uid(){ return 'p_'+Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+  function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function fmtMoney(n){ if(n===undefined||n===null||n==='') return ''; return Number(n).toLocaleString(); }
+
+  const COMPLETENESS_FIELDS = ['name','phone','email','location','sector','county','product','premiumAmount','premiumFrequency','stage','category'];
+  function completenessPct(p){
+    const filled = COMPLETENESS_FIELDS.filter(f=>{
+      const v = p[f];
+      return v!==undefined && v!==null && String(v).trim()!=='';
+    }).length;
+    return Math.round((filled/COMPLETENESS_FIELDS.length)*100);
+  }
+  function miniDonutSvg(pct){
+    const color = pct>=80 ? '#2F6B4F' : pct>=50 ? '#C9932E' : '#A44A38';
+    return `<svg class="mini-donut" viewBox="0 0 36 36" title="${pct}% of key details captured">
+      <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#EDE9DC" stroke-width="4"/>
+      <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="${color}" stroke-width="4" stroke-dasharray="${pct}, 100" stroke-linecap="round"/>
+    </svg>`;
+  }
+
+  function normalizeForLink(phone){
+    let d = digitsOnly(phone);
+    if(!d) return '';
+    if(d.startsWith('0')) d = settings.countryCode + d.slice(1);
+    else if(!d.startsWith(settings.countryCode) && d.length <= 10) d = settings.countryCode + d;
+    return d;
+  }
+
+  function showToast(msg){
+    const t = $('#toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'), 1600);
+  }
+
+  function playTick(){
+    try{
+      if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = 'sine'; o.frequency.value = 900;
+      g.gain.setValueAtTime(0.06, audioCtx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+0.045);
+      o.connect(g); g.connect(audioCtx.destination);
+      o.start(); o.stop(audioCtx.currentTime+0.05);
+    }catch(e){}
+  }
+
+  // ---------- Agent header ----------
+  function tenureLabel(dateCodedIso){
+    if(!dateCodedIso) return '';
+    const start = new Date(dateCodedIso+'T00:00:00');
+    const now = new Date();
+    let years = now.getFullYear()-start.getFullYear();
+    let months = now.getMonth()-start.getMonth();
+    if(now.getDate() < start.getDate()) months--;
+    if(months<0){ years--; months+=12; }
+    if(years<0) return '';
+    if(years===0 && months===0) return 'New this month';
+    if(years===0) return months+(months===1?' month old':' months old');
+    if(months===0) return years+(years===1?' year old':' years old');
+    return years+(years===1?' year, ':' years, ')+months+(months===1?' month old':' months old');
+  }
+
+  function renderAgentHeader(){
+    const a = settings.agent || {};
+    $('#agentNameDisplay').textContent = a.name ? a.name : 'Set up your agent profile';
+    const fields = [];
+    if(a.gender) fields.push(['Gender', a.gender]);
+    if(a.email) fields.push(['Email', a.email]);
+    if(a.phone) fields.push(['Phone', a.phone]);
+    if(a.agentCode) fields.push(['Code', a.agentCode]);
+    const tenure = tenureLabel(a.dateCoded);
+    if(tenure) fields.push(['Active', tenure]);
+    const metaEl = $('#agentMeta');
+    metaEl.innerHTML = fields.length===0
+      ? 'Tap ⚙ Settings to add your name, contact details, and start date.'
+      : '<div class="agent-meta-grid">' + fields.map(([l,v])=>'<span class="ml">'+l+'</span><span class="mv">'+escapeHtml(v)+'</span>').join('') + '</div>';
+    const avatarEl = $('#agentAvatar');
+    if(a.photo){ avatarEl.style.backgroundImage = 'url('+a.photo+')'; avatarEl.textContent = ''; }
+    else { avatarEl.style.backgroundImage = ''; avatarEl.textContent = '👤'; }
+  }
+
+  // ---------- Validation ----------
+  function isValidPhone(raw){
+    const v = (raw||'').replace(/\s+/g,'');
+    if(!v) return true;
+    if(settings.countryCode === '254'){
+      return /^0[17]\d{8}$/.test(v) || /^\+254[17]\d{8}$/.test(v);
+    }
+    return /^\+?\d{7,15}$/.test(v);
+  }
+  function findDuplicatePhone(phone, excludeId){
+    const d = digitsOnly(phone);
+    if(!d) return null;
+    return prospects.find(p => p.id!==excludeId && digitsOnly(p.phone)===d) || null;
+  }
+  function bindPhoneValidation(input, errEl, excludeId){
+    if(!input) return;
+    const check = ()=>{
+      const v = input.value.trim();
+      let msg = '';
+      if(!v){
+        msg = 'Phone number is required — it is this ledger\'s unique ID for each prospect';
+      }else if(!isValidPhone(v)){
+        msg = settings.countryCode==='254' ? 'Use 07XXXXXXXX/01XXXXXXXX or +254 7XXXXXXXX' : 'Enter a valid phone number';
+      }else{
+        const dup = findDuplicatePhone(v, excludeId);
+        if(dup) msg = 'Already used by "'+dup.name+'" — phone numbers must be unique';
+      }
+      input.classList.toggle('invalid', !!msg);
+      if(errEl) errEl.textContent = msg;
+      return !msg;
+    };
+    input.addEventListener('blur', check);
+    input.addEventListener('input', ()=>{ if(input.classList.contains('invalid')) check(); });
+    input._validatePhone = check;
+  }
+  function isValidEmail(raw){
+    const v = (raw||'').trim();
+    if(!v) return true;
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+  }
+  function isValidPositiveNumber(raw){
+    if(raw === '' || raw === undefined || raw === null) return true;
+    const n = Number(raw);
+    return !isNaN(n) && n > 0;
+  }
+  function isValidWholeNumber(raw){
+    if(raw === '' || raw === undefined || raw === null) return true;
+    const n = Number(raw);
+    return !isNaN(n) && n > 0 && Number.isInteger(n);
+  }
+
+  // ---------- Searchable select (Sector / County) ----------
+  function searchableSelectHtml(id, label, placeholder, value, required, errId, tintClass){
+    return `
+      <label>${label}${required ? ' *' : ''}</label>
+      <div class="ss-wrap">
+        <input type="text" id="${id}_input" class="${tintClass||''}" placeholder="${placeholder}" autocomplete="off" value="${escapeHtml(value||'')}">
+        <input type="hidden" id="${id}_value" value="${escapeHtml(value||'')}">
+        <div class="ss-list" id="${id}_list" style="display:none;"></div>
+      </div>
+      <div class="field-err" id="${errId}"></div>
+    `;
+  }
+
+  function setupSearchableSelect(container, id, options, required){
+    const input = container.querySelector('#'+id+'_input');
+    const hidden = container.querySelector('#'+id+'_value');
+    const list = container.querySelector('#'+id+'_list');
+    if(!input) return;
+
+    function renderOptions(filterText){
+      const q = (filterText||'').toLowerCase();
+      const filtered = options.filter(o=>o.toLowerCase().includes(q));
+      list.innerHTML = filtered.length
+        ? filtered.map(o=>'<div class="ss-option" data-v="'+escapeHtml(o)+'">'+escapeHtml(o)+'</div>').join('')
+        : '<div class="ss-empty">No matches</div>';
+      list.style.display = 'block';
+    }
+    function validateRequired(){
+      if(!required) return true;
+      const ok = hidden.value.trim().length > 0;
+      input.classList.toggle('invalid', !ok);
+      return ok;
+    }
+    input.addEventListener('focus', ()=>renderOptions(input.value));
+    input.addEventListener('input', ()=>{ hidden.value=''; renderOptions(input.value); });
+    input.addEventListener('blur', ()=>{ setTimeout(()=>{ list.style.display='none'; validateRequired(); }, 150); });
+    list.addEventListener('mousedown', (e)=>{
+      const opt = e.target.closest('.ss-option');
+      if(!opt) return;
+      input.value = opt.dataset.v;
+      hidden.value = opt.dataset.v;
+      list.style.display = 'none';
+      validateRequired();
+    });
+    let lastTick = 0;
+    list.addEventListener('scroll', ()=>{
+      const now = Date.now();
+      if(now - lastTick > 90){ playTick(); lastTick = now; }
+    });
+    input._validateRequired = validateRequired;
+  }
+
+  function referralPickerHtml(referredBy){
+    const current = referredBy ? prospects.find(x=>x.id===referredBy) : null;
+    return `
+      <label>Referred by (optional)</label>
+      <div class="ss-wrap">
+        <input type="text" id="f_referredBy_input" class="tint-referral" placeholder="Search name or phone of an existing prospect…" autocomplete="off" value="${escapeHtml(current?current.name:'')}">
+        <input type="hidden" id="f_referredBy_value" value="${escapeHtml(referredBy||'')}">
+        <div class="ss-list" id="f_referredBy_list" style="display:none;"></div>
+      </div>
+      <div class="field-note">Link this prospect to whoever referred them, to build a traceable referral chain.</div>
+    `;
+  }
+  function setupReferralPicker(container, excludeId){
+    const input = container.querySelector('#f_referredBy_input');
+    const hidden = container.querySelector('#f_referredBy_value');
+    const list = container.querySelector('#f_referredBy_list');
+    if(!input) return;
+    function renderOptions(filterText){
+      const q = (filterText||'').toLowerCase();
+      const qDigits = digitsOnly(filterText);
+      const matches = prospects.filter(p=>{
+        if(p.id===excludeId) return false;
+        if(!q) return true;
+        const nameMatch = p.name.toLowerCase().includes(q);
+        const phoneMatch = qDigits.length>0 && digitsOnly(p.phone).includes(qDigits);
+        return nameMatch || phoneMatch;
+      }).slice(0,30);
+      list.innerHTML = matches.length
+        ? matches.map(p=>'<div class="ss-option" data-v="'+p.id+'">'+escapeHtml(p.name)+' <span style="color:var(--ink-soft);font-size:12px;">('+escapeHtml(p.phone||'no phone')+')</span></div>').join('')
+        : '<div class="ss-empty">No matches</div>';
+      list.style.display = 'block';
+    }
+    input.addEventListener('focus', ()=>renderOptions(input.value));
+    input.addEventListener('input', ()=>{ hidden.value=''; renderOptions(input.value); });
+    input.addEventListener('blur', ()=>{ setTimeout(()=>{ list.style.display='none'; }, 150); });
+    list.addEventListener('mousedown', (e)=>{
+      const opt = e.target.closest('.ss-option');
+      if(!opt) return;
+      hidden.value = opt.dataset.v;
+      const p = prospects.find(x=>x.id===opt.dataset.v);
+      input.value = p ? p.name : '';
+      list.style.display = 'none';
+    });
+    let lastTick = 0;
+    list.addEventListener('scroll', ()=>{
+      const now = Date.now();
+      if(now - lastTick > 90){ playTick(); lastTick = now; }
+    });
+  }
+
+  function attachFieldValidation(container, leadType, excludeId){
+    const nameInput = container.querySelector('#f_name');
+    const phoneInput = container.querySelector('#f_phone');
+    const phoneErrEl = container.querySelector('#phoneErr');
+    const emailInput = container.querySelector('#f_email');
+    const premiumInput = container.querySelector('#f_premiumAmount');
+    const livesInput = container.querySelector('#f_numberOfLives');
+
+    function bind(input, validator, errId, msg){
+      if(!input) return;
+      const errEl = container.querySelector('#'+errId);
+      const check = ()=>{
+        const ok = validator(input.value);
+        input.classList.toggle('invalid', !ok);
+        if(errEl) errEl.textContent = ok ? '' : msg;
+        return ok;
+      };
+      input.addEventListener('blur', check);
+      input.addEventListener('input', ()=>{ if(input.classList.contains('invalid')) check(); });
+    }
+    bind(nameInput, (v)=>v.trim().length>0, 'nameErr', leadType==='Corporate' ? 'Company name is required' : 'Name is required');
+    bindPhoneValidation(phoneInput, phoneErrEl, excludeId);
+    bind(emailInput, isValidEmail, 'emailErr', 'Enter a valid email address');
+    bind(premiumInput, isValidPositiveNumber, 'premiumErr', 'Must be a positive number');
+    bind(livesInput, isValidWholeNumber, 'livesErr', 'Must be a whole number greater than 0');
+
+    setupSearchableSelect(container, 'f_sector', SECTORS, true);
+    setupSearchableSelect(container, 'f_county', COUNTIES, true);
+    wireSectorOther(container);
+    setupReferralPicker(container, excludeId);
+  }
+
+  function wireSectorOther(container){
+    const sectorInput = container.querySelector('#f_sector_input');
+    const sectorHidden = container.querySelector('#f_sector_value');
+    const otherWrap = container.querySelector('#sectorOtherWrap');
+    const otherInput = container.querySelector('#f_sectorOther');
+    if(!sectorInput || !otherWrap) return;
+    function sync(){
+      const isOther = sectorHidden.value === 'Other';
+      otherWrap.style.display = isOther ? 'block' : 'none';
+      if(!isOther){ otherInput.classList.remove('invalid'); container.querySelector('#sectorOtherErr').textContent = ''; }
+    }
+    sync();
+    sectorInput.addEventListener('input', sync);
+    const list = container.querySelector('#f_sector_list');
+    if(list) list.addEventListener('mousedown', ()=>{ setTimeout(sync, 0); });
+  }
+
+  function validateAllFields(container, leadType){
+    const nameInput = container.querySelector('#f_name');
+    const phoneInput = container.querySelector('#f_phone');
+    const emailInput = container.querySelector('#f_email');
+    const premiumInput = container.querySelector('#f_premiumAmount');
+    const livesInput = container.querySelector('#f_numberOfLives');
+    const countyInput = container.querySelector('#f_county_input');
+    let ok = true;
+    let firstBad = null;
+
+    function check(input, validator){
+      if(!input) return true;
+      const good = validator(input.value);
+      input.classList.toggle('invalid', !good);
+      if(!good && !firstBad) firstBad = input;
+      return good;
+    }
+    ok = check(nameInput, (v)=>v.trim().length>0) && ok;
+    if(phoneInput && phoneInput._validatePhone){
+      const phoneOk = phoneInput._validatePhone();
+      if(!phoneOk && !firstBad) firstBad = phoneInput;
+      ok = phoneOk && ok;
+    }
+    ok = check(emailInput, isValidEmail) && ok;
+    ok = check(premiumInput, isValidPositiveNumber) && ok;
+    ok = check(livesInput, isValidWholeNumber) && ok;
+
+    const sectorHidden = container.querySelector('#f_sector_value');
+    const sectorOtherInput = container.querySelector('#f_sectorOther');
+    if(sectorHidden && sectorHidden.value === 'Other' && sectorOtherInput){
+      const good = sectorOtherInput.value.trim().length > 0;
+      sectorOtherInput.classList.toggle('invalid', !good);
+      container.querySelector('#sectorOtherErr').textContent = good ? '' : 'Please specify the sector';
+      if(!good && !firstBad) firstBad = sectorOtherInput;
+      ok = good && ok;
+    }
+
+    const sectorInput = container.querySelector('#f_sector_input');
+    if(sectorInput && sectorInput._validateRequired){
+      const sectorOk = sectorInput._validateRequired();
+      if(!sectorOk && !firstBad) firstBad = sectorInput;
+      ok = sectorOk && ok;
+    }
+    if(countyInput && countyInput._validateRequired){
+      const countyOk = countyInput._validateRequired();
+      if(!countyOk && !firstBad) firstBad = countyInput;
+      ok = countyOk && ok;
+    }
+
+    if(!ok){
+      showToast('Please fix the highlighted fields');
+      if(firstBad) firstBad.focus();
+    }
+    return ok;
+  }
+
+  // ---------- Storage: IndexedDB (device-local, works fully offline) ----------
+  const DB_NAME = 'prospect_ledger_db';
+  const DB_VERSION = 1;
+  let dbInstance = null;
+
+  function openDB(){
+    return new Promise((resolve, reject)=>{
+      if(dbInstance){ resolve(dbInstance); return; }
+      const req = indexedDB.open(DB_NAME, DB_VERSION);
+      req.onupgradeneeded = (e)=>{
+        const db = e.target.result;
+        if(!db.objectStoreNames.contains('prospects')) db.createObjectStore('prospects', { keyPath:'id' });
+        if(!db.objectStoreNames.contains('settings')) db.createObjectStore('settings', { keyPath:'key' });
+      };
+      req.onsuccess = (e)=>{ dbInstance = e.target.result; resolve(dbInstance); };
+      req.onerror = (e)=>reject(e);
+    });
+  }
+  async function dbGetAllProspects(){
+    const db = await openDB();
+    return new Promise((resolve, reject)=>{
+      const tx = db.transaction('prospects','readonly');
+      const req = tx.objectStore('prospects').getAll();
+      req.onsuccess = ()=>resolve(req.result || []);
+      req.onerror = (e)=>reject(e);
+    });
+  }
+  async function dbReplaceAllProspects(list){
+    const db = await openDB();
+    return new Promise((resolve, reject)=>{
+      const tx = db.transaction('prospects','readwrite');
+      const store = tx.objectStore('prospects');
+      store.clear();
+      list.forEach(p=>store.put(p));
+      tx.oncomplete = ()=>resolve();
+      tx.onerror = (e)=>reject(e);
+    });
+  }
+  async function dbGetSettings(){
+    const db = await openDB();
+    return new Promise((resolve, reject)=>{
+      const tx = db.transaction('settings','readonly');
+      const req = tx.objectStore('settings').get('app-settings');
+      req.onsuccess = ()=>resolve(req.result ? req.result.value : null);
+      req.onerror = (e)=>reject(e);
+    });
+  }
+  async function dbPutSettings(obj){
+    const db = await openDB();
+    return new Promise((resolve, reject)=>{
+      const tx = db.transaction('settings','readwrite');
+      tx.objectStore('settings').put({ key:'app-settings', value: obj });
+      tx.oncomplete = ()=>resolve();
+      tx.onerror = (e)=>reject(e);
+    });
+  }
+
+  function mergeSettings(base, incoming){
+    const merged = Object.assign({}, base, incoming||{});
+    merged.agent = Object.assign({}, base.agent, (incoming && incoming.agent) || {});
+    return merged;
+  }
+
+  async function loadAll(){
+    try{
+      prospects = await dbGetAllProspects();
+      const s = await dbGetSettings();
+      if(s) settings = mergeSettings(settings, s);
+    }catch(e){
+      statusEl.textContent = 'This browser does not support offline storage.';
+      return;
+    }
+
+    if(prospects.length===0 && typeof window.storage !== 'undefined'){
+      try{
+        const res = await window.storage.get('prospects-v2', false);
+        if(res && res.value){
+          prospects = JSON.parse(res.value).map(migrateRecord);
+          await dbReplaceAllProspects(prospects);
+        }
+        const s2 = await window.storage.get('settings-v1', false);
+        if(s2 && s2.value){
+          settings = mergeSettings(settings, JSON.parse(s2.value));
+          await dbPutSettings(settings);
+        }
+      }catch(e){}
+    } else {
+      prospects = prospects.map(migrateRecord);
+    }
+
+    renderAgentHeader();
+    statusEl.style.display = 'none';
+    render();
+    maybeNotifyReminders();
+  }
+
+  function migrateRecord(p){
+    if(!p.leadType) p.leadType = 'Individual';
+    if(!p.stage) p.stage = STAGES_BY_TYPE[p.leadType][0];
+    if(p.closedAt === undefined) p.closedAt = (p.category==='Closed') ? p.createdAt : null;
+    if(p.email === undefined) p.email = '';
+    if(p.sector === undefined) p.sector = '';
+    if(p.sectorOther === undefined) p.sectorOther = '';
+    if(p.county === undefined) p.county = '';
+    if(p.referredBy === undefined) p.referredBy = null;
+    if(p.gender === undefined) p.gender = '';
+    if(p.nextFollowUp === undefined) p.nextFollowUp = null;
+    if(p.dateOfBirth === undefined) p.dateOfBirth = null;
+    return p;
+  }
+
+  // ---------- Referral chain helpers ----------
+  function wouldCreateCycle(currentId, candidateReferrerId){
+    if(!candidateReferrerId) return false;
+    let cur = candidateReferrerId;
+    const seen = new Set();
+    while(cur){
+      if(cur === currentId) return true;
+      if(seen.has(cur)) break;
+      seen.add(cur);
+      const node = prospects.find(x=>x.id===cur);
+      cur = node ? node.referredBy : null;
+    }
+    return false;
+  }
+  function findChainRoot(p){
+    let cur = p;
+    const seen = new Set();
+    while(cur.referredBy){
+      if(seen.has(cur.id)) break;
+      seen.add(cur.id);
+      const parent = prospects.find(x=>x.id===cur.referredBy);
+      if(!parent) break;
+      cur = parent;
+    }
+    return cur;
+  }
+  function collectDescendants(rootId){
+    const result = [];
+    const queue = [rootId];
+    const visited = new Set([rootId]);
+    while(queue.length){
+      const id = queue.shift();
+      prospects.filter(p=>p.referredBy===id).forEach(c=>{
+        if(!visited.has(c.id)){ visited.add(c.id); result.push(c); queue.push(c.id); }
+      });
+    }
+    return result;
+  }
+  function buildChainTreeHtml(parentId, depth){
+    const children = prospects.filter(p=>p.referredBy===parentId);
+    if(children.length===0) return '';
+    return '<ul style="margin:2px 0 0 '+(depth?10:0)+'px; padding-left:12px; list-style:none;'+(depth?' border-left:1px dashed var(--line);':'')+'">' +
+      children.map(c=>
+        '<li style="margin:6px 0;">'
+        +'<a href="#" class="chain-link" data-id="'+c.id+'" style="color:var(--ink); font-weight:600; text-decoration:none;">'+escapeHtml(c.name)+'</a> '
+        +'<span class="status-dot '+c.category+'"></span><span style="font-size:11px;color:var(--ink-soft);">'+c.category+'</span>'
+        +buildChainTreeHtml(c.id, depth+1)
+        +'</li>'
+      ).join('') + '</ul>';
+  }
+
+  function sectorDisplay(p){
+    return (p.sector==='Other' && p.sectorOther) ? p.sectorOther : (p.sector||'');
+  }
+
+  async function persist(){
+    try{ await dbReplaceAllProspects(prospects); }
+    catch(e){ showToast('Could not save to device storage'); }
+  }
+  function scheduleSave(){ clearTimeout(saveTimer); saveTimer = setTimeout(persist, 250); }
+  async function persistSettings(){
+    try{ await dbPutSettings(settings); }
+    catch(e){ showToast('Could not save settings'); }
+  }
+
+  function logActivity(p, message){
+    p.history.push({ id: uid(), date: new Date().toISOString(), note: message });
+  }
+
+  function logCommunication(p, channel){
+    const msg = channel==='call' ? '📞 Called via app' : channel==='email' ? '✉️ Emailed via app' : '💬 Opened WhatsApp via app';
+    logActivity(p, msg);
+    scheduleSave();
+    syncUpsert(p);
+    renderTally();
+  }
+
+  function logFieldChanges(p, before, after){
+    const messages = [];
+    const beforeAmt = before.premiumAmount || '';
+    const afterAmt = after.premiumAmount || '';
+    const beforeFreq = before.premiumFrequency || '';
+    const afterFreq = after.premiumFrequency || '';
+    if(beforeAmt !== afterAmt || beforeFreq !== afterFreq){
+      if(!beforeAmt && afterAmt){
+        messages.push('Premium added: '+fmtMoney(afterAmt)+' ('+afterFreq+')');
+      } else if(beforeAmt && !afterAmt){
+        messages.push('Premium removed (was '+fmtMoney(beforeAmt)+' '+beforeFreq+')');
+      } else {
+        messages.push('Premium changed: '+fmtMoney(beforeAmt)+' ('+beforeFreq+') → '+fmtMoney(afterAmt)+' ('+afterFreq+')');
+      }
+    }
+
+    const beforeRef = before.referredBy || null;
+    const afterRef = after.referredBy || null;
+    if(beforeRef !== afterRef){
+      const beforeName = beforeRef ? ((prospects.find(x=>x.id===beforeRef)||{}).name || 'someone removed') : null;
+      const afterName = afterRef ? ((prospects.find(x=>x.id===afterRef)||{}).name || 'someone') : null;
+      if(!beforeRef && afterRef) messages.push('Referred by set: '+afterName);
+      else if(beforeRef && !afterRef) messages.push('Referred-by link removed (was '+beforeName+')');
+      else messages.push('Referred by changed: '+beforeName+' → '+afterName);
+    }
+
+    const OTHER_FIELDS = [
+      ['name','Name'],['contactPerson','Contact person'],['phone','Phone'],['gender','Gender'],['email','Email'],
+      ['location','Met at'],['sector','Sector'],['sectorOther','Sector detail'],['county','County'],
+      ['product','Product'],['numberOfLives','Lives covered'],['nextFollowUp','Next follow-up date'],['dateOfBirth','Date of birth']
+    ];
+    const changed = [];
+    OTHER_FIELDS.forEach(([key,label])=>{
+      const bv = (before[key]===undefined||before[key]===null) ? '' : String(before[key]);
+      const av = (after[key]===undefined||after[key]===null) ? '' : String(after[key]);
+      if(bv !== av) changed.push(label);
+    });
+    if(changed.length) messages.push('Updated: '+changed.join(', '));
+    messages.forEach(m=>logActivity(p, m));
+  }
+
+  function setCategory(p, newCat){
+    const oldCat = p.category;
+    if(newCat === 'Closed' && p.category !== 'Closed') p.closedAt = new Date().toISOString();
+    if(newCat !== 'Closed') p.closedAt = null;
+    p.category = newCat;
+    if(oldCat !== newCat) logActivity(p, 'Status changed: '+oldCat+' → '+newCat);
+  }
+
+  // ---------- Backup / transfer between devices ----------
+  function exportJSONBackup(){
+    const settingsForBackup = Object.assign({}, settings, { aiApiKey: '' });
+    const payload = JSON.stringify({ prospects, settings: settingsForBackup, exportedAt: new Date().toISOString() }, null, 2);
+    const blob = new Blob([payload], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'prospect-ledger-backup-'+new Date().toISOString().slice(0,10)+'.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+  async function importJSONBackup(file){
+    try{
+      const text = await file.text();
+      const data = JSON.parse(text);
+      if(!Array.isArray(data.prospects)) throw new Error('bad file');
+      const byId = new Map(prospects.map(p=>[p.id,p]));
+      data.prospects.map(migrateRecord).forEach(p=>byId.set(p.id, p));
+      prospects = Array.from(byId.values());
+      scheduleSave();
+
+      let profileRestored = false;
+      if(data.settings){
+        settings = mergeSettings(settings, data.settings);
+        await persistSettings();
+        renderAgentHeader();
+        profileRestored = true;
+      }
+
+      render();
+      showToast('Backup restored: '+data.prospects.length+' records'+(profileRestored ? ' + agent profile' : ''));
+    }catch(e){
+      showToast('Could not read that backup file');
+    }
+  }
+
+  // ---------- Google Sheet sync ----------
+  async function syncUpsert(p){
+    if(!settings.sheetSyncUrl) return;
+    const last = p.history[p.history.length-1];
+    const payload = {
+      id: p.id, leadType: p.leadType, name: p.name, contactPerson: p.contactPerson||'',
+      gender: p.gender||'', email: p.email||'', phone: p.phone, sector: sectorDisplay(p), county: p.county||'',
+      category: p.category, stage: p.stage, product: p.product,
+      premiumAmount: p.premiumAmount, premiumFrequency: p.premiumFrequency,
+      location: p.location, numberOfLives: p.numberOfLives||'',
+      referredBy: p.referredBy ? ((prospects.find(x=>x.id===p.referredBy)||{}).name || '') : '',
+      createdAt: p.createdAt, closedAt: p.closedAt||'', lastContact: last.date, latestNote: last.note
+    };
+    try{
+      await fetch(settings.sheetSyncUrl, {
+        method:'POST', mode:'no-cors',
+        headers:{'Content-Type':'text/plain;charset=utf-8'},
+        body: JSON.stringify(payload)
+      });
+    }catch(e){ showToast('Sheet sync failed — saved locally'); }
+  }
+  async function syncDelete(id){
+    if(!settings.sheetSyncUrl) return;
+    try{
+      await fetch(settings.sheetSyncUrl, {
+        method:'POST', mode:'no-cors',
+        headers:{'Content-Type':'text/plain;charset=utf-8'},
+        body: JSON.stringify({action:'delete', id})
+      });
+    }catch(e){ showToast('Sheet sync failed — saved locally'); }
+  }
+  async function syncAll(){
+    if(!settings.sheetSyncUrl){ showToast('Add an Apps Script URL first'); return; }
+    if(prospects.length===0){ showToast('Nothing to sync yet'); return; }
+    const records = prospects.map(p=>{
+      const last = p.history[p.history.length-1];
+      return { id:p.id, leadType:p.leadType, name:p.name, contactPerson:p.contactPerson||'',
+        gender:p.gender||'', email:p.email||'', phone:p.phone, sector:sectorDisplay(p), county:p.county||'',
+        category:p.category, stage:p.stage, product:p.product,
+        premiumAmount:p.premiumAmount, premiumFrequency:p.premiumFrequency, location:p.location,
+        numberOfLives:p.numberOfLives||'', referredBy: p.referredBy ? ((prospects.find(x=>x.id===p.referredBy)||{}).name || '') : '',
+        createdAt:p.createdAt, closedAt:p.closedAt||'',
+        lastContact:last.date, latestNote:last.note };
+    });
+    try{
+      await fetch(settings.sheetSyncUrl, {
+        method:'POST', mode:'no-cors',
+        headers:{'Content-Type':'text/plain;charset=utf-8'},
+        body: JSON.stringify({records})
+      });
+      showToast('Full sync sent');
+    }catch(e){ showToast('Sync failed — check the URL'); }
+  }
+
+  async function syncProfile(){
+    if(!settings.sheetSyncUrl) return;
+    const a = settings.agent || {};
+    try{
+      await fetch(settings.sheetSyncUrl, {
+        method:'POST', mode:'no-cors',
+        headers:{'Content-Type':'text/plain;charset=utf-8'},
+        body: JSON.stringify({
+          profile: {
+            name: a.name||'', gender: a.gender||'', email: a.email||'', phone: a.phone||'',
+            agentCode: a.agentCode||'', dateCoded: a.dateCoded||'', activePeriod: tenureLabel(a.dateCoded),
+            countryCode: settings.countryCode||'', updatedAt: new Date().toISOString()
+          }
+        })
+      });
+    }catch(e){ /* best-effort, no toast — profile sync is silent alongside record sync */ }
+  }
+
+  // ---------- Filters: date, gender, county, sector, stage ----------
+  function inDateFilter(iso){
+    if(!dateFilter) return true;
+    const d = new Date(iso);
+    if(dateFilter.type==='date'){
+      const target = new Date(dateFilter.date+'T00:00:00');
+      return d.getFullYear()===target.getFullYear() && d.getMonth()===target.getMonth() && d.getDate()===target.getDate();
+    }
+    if(dateFilter.type==='month'){
+      const [y,m] = dateFilter.month.split('-').map(Number);
+      return d.getFullYear()===y && (d.getMonth()+1)===m;
+    }
+    if(dateFilter.type==='range'){
+      const from = new Date(dateFilter.from+'T00:00:00');
+      const to = new Date(dateFilter.to+'T23:59:59');
+      return d >= from && d <= to;
+    }
+    return true;
+  }
+  function countActiveFilters(){
+    let n = dateFilter ? 1 : 0;
+    Object.values(extraFilters).forEach(v=>{ if(v) n++; });
+    return n;
+  }
+  function updateFilterBadge(){
+    const badge = $('#filterBadge');
+    const n = countActiveFilters();
+    if(n===0){ badge.style.display = 'none'; return; }
+    const parts = [];
+    if(dateFilter){
+      if(dateFilter.type==='date') parts.push('Date: '+new Date(dateFilter.date+'T00:00:00').toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}));
+      if(dateFilter.type==='month'){ const [y,m]=dateFilter.month.split('-').map(Number); parts.push('Month: '+new Date(y,m-1,1).toLocaleDateString(undefined,{month:'long',year:'numeric'})); }
+      if(dateFilter.type==='range') parts.push('Range: '+dateFilter.from+' to '+dateFilter.to);
+    }
+    if(extraFilters.gender) parts.push('Gender: '+extraFilters.gender);
+    if(extraFilters.county) parts.push('County: '+extraFilters.county);
+    if(extraFilters.sector) parts.push('Sector: '+extraFilters.sector);
+    if(extraFilters.stage) parts.push('Stage: '+extraFilters.stage);
+    if(extraFilters.category) parts.push('Category: '+extraFilters.category);
+    $('#filterBadgeText').textContent = parts.join(' · ');
+    badge.style.display = 'inline-flex';
+  }
+  $('#clearFilterBtn').addEventListener('click', ()=>{
+    dateFilter = null;
+    extraFilters = { gender:'', county:'', sector:'', stage:'', category:'' };
+    updateFilterBadge(); render();
+  });
+
+  $('#dateFilterBtn').addEventListener('click', ()=>{
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    const stageOptions = STAGES_BY_TYPE[leadTypeFilter];
+    overlay.innerHTML = `
+      <div class="sheet">
+        <div class="sheet-head"><h2>Filters</h2><button class="close-x">&times;</button></div>
+
+        <label>Gender</label>
+        <select id="fltGender">
+          <option value="">All</option>
+          ${optionsHtml(GENDERS, extraFilters.gender)}
+        </select>
+        <label>County</label>
+        <select id="fltCounty">
+          <option value="">All</option>
+          ${optionsHtml(COUNTIES, extraFilters.county)}
+        </select>
+        <label>Sector</label>
+        <select id="fltSector">
+          <option value="">All</option>
+          ${optionsHtml(SECTORS, extraFilters.sector)}
+        </select>
+        <label>Stage (${leadTypeFilter})</label>
+        <select id="fltStage">
+          <option value="">All</option>
+          ${optionsHtml(stageOptions, extraFilters.stage)}
+        </select>
+
+        <label>Date captured</label>
+        <div class="segmented" id="dfMode">
+          <button data-m="date" class="${(!dateFilter||dateFilter.type==='date')?'active':''}">Single date</button>
+          <button data-m="month" class="${dateFilter&&dateFilter.type==='month'?'active':''}">Month</button>
+          <button data-m="range" class="${dateFilter&&dateFilter.type==='range'?'active':''}">Custom range</button>
+        </div>
+        <div id="dfFields"></div>
+
+        <div class="sheet-actions">
+          <button class="btn btn-ghost" id="dfClear">Clear all filters</button>
+          <button class="btn btn-primary" id="dfApply">Apply</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    let mode = dateFilter ? dateFilter.type : 'date';
+    function renderFields(){
+      const el = overlay.querySelector('#dfFields');
+      if(mode==='date'){
+        el.innerHTML = `<input type="date" id="dfDate" value="${dateFilter&&dateFilter.type==='date'?dateFilter.date:''}">`;
+      }else if(mode==='month'){
+        el.innerHTML = `<input type="month" id="dfMonth" value="${dateFilter&&dateFilter.type==='month'?dateFilter.month:''}">`;
+      }else{
+        el.innerHTML = `<div class="two-col"><div><label>From</label><input type="date" id="dfFrom" value="${dateFilter&&dateFilter.type==='range'?dateFilter.from:''}"></div><div><label>To</label><input type="date" id="dfTo" value="${dateFilter&&dateFilter.type==='range'?dateFilter.to:''}"></div></div>`;
+      }
+    }
+    renderFields();
+    overlay.querySelector('#dfMode').addEventListener('click', (e)=>{
+      const b = e.target.closest('button'); if(!b) return;
+      mode = b.dataset.m;
+      overlay.querySelectorAll('#dfMode button').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      renderFields();
+    });
+    function close(){ overlay.remove(); }
+    overlay.querySelector('.close-x').addEventListener('click', close);
+    overlay.addEventListener('click', (e)=>{ if(e.target===overlay) close(); });
+    overlay.querySelector('#dfClear').addEventListener('click', ()=>{
+      dateFilter = null;
+      extraFilters = { gender:'', county:'', sector:'', stage:'', category:'' };
+      updateFilterBadge(); render(); close();
+    });
+    overlay.querySelector('#dfApply').addEventListener('click', ()=>{
+      const dateVal = mode==='date' ? overlay.querySelector('#dfDate').value
+        : mode==='month' ? overlay.querySelector('#dfMonth').value
+        : null;
+      if(mode==='date' && dateVal) dateFilter = {type:'date', date:dateVal};
+      else if(mode==='month' && dateVal) dateFilter = {type:'month', month:dateVal};
+      else if(mode==='range'){
+        const from = overlay.querySelector('#dfFrom').value;
+        const to = overlay.querySelector('#dfTo').value;
+        dateFilter = (from && to) ? {type:'range', from, to} : null;
+      } else {
+        dateFilter = null;
+      }
+      extraFilters = {
+        gender: overlay.querySelector('#fltGender').value,
+        county: overlay.querySelector('#fltCounty').value,
+        sector: overlay.querySelector('#fltSector').value,
+        stage: overlay.querySelector('#fltStage').value
+      };
+      updateFilterBadge();
+      render();
+      close();
+    });
+  });
+
+  // ---------- Rendering ----------
+  function render(){
+    renderTally();
+    renderList(searchInput.value.trim());
+    renderReminderBadge();
+    renderCategoryFilterRow();
+  }
+
+  function renderCategoryFilterRow(){
+    const base = getVisibleItems(true); // everything except the category facet itself
+    const allCount = base.length;
+    const counts = {};
+    CATEGORIES.forEach(c=>{ counts[c] = base.filter(p=>p.category===c).length; });
+    const rowEl = $('#categoryFilterRow');
+    const chips = [`<button type="button" class="cat-filter-chip All${extraFilters.category===''?' active':''}" data-c="">All <span class="n">${allCount}</span></button>`];
+    CATEGORIES.forEach(c=>{
+      chips.push(`<button type="button" class="cat-filter-chip ${c}${extraFilters.category===c?' active':''}" data-c="${c}">${c} <span class="n">${counts[c]}</span></button>`);
+    });
+    rowEl.innerHTML = chips.join('');
+    rowEl.querySelectorAll('.cat-filter-chip').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        extraFilters.category = btn.dataset.c;
+        if(btn.dataset.c){ statusFilter = 'All'; $('#statusFilter').querySelectorAll('button').forEach(x=>x.classList.toggle('active', x.dataset.f==='All')); }
+        render();
+      });
+    });
+  }
+
+  function renderTally(){
+    const now = new Date();
+    let contactedToday = new Set();
+    let catCounts = {Unsorted:0, New:0, Promising:0, Difficult:0, Closed:0};
+    prospects.filter(p=>p.leadType===leadTypeFilter).forEach(p=>{
+      if(p.history.some(h=>isSameDay(h.date, now))){
+        contactedToday.add(p.id);
+        catCounts[p.category] = (catCounts[p.category]||0)+1;
+      }
+    });
+    $('#tallyNum').textContent = contactedToday.size;
+    const chipsEl = $('#tallyChips');
+    chipsEl.innerHTML = '';
+    let any = false;
+    CATEGORIES.forEach(c=>{
+      if(catCounts[c]>0){
+        any = true;
+        const s = document.createElement('span');
+        s.className = 'chip '+c;
+        s.textContent = c+': '+catCounts[c];
+        chipsEl.appendChild(s);
+      }
+    });
+    if(!any) chipsEl.innerHTML = '<span style="font-size:12px;color:var(--ink-soft);">Nothing logged yet today</span>';
+  }
+
+  const SORT_COMPARATORS = {
+    name: (a,b)=>a.name.localeCompare(b.name),
+    captured: (a,b)=>new Date(a.createdAt) - new Date(b.createdAt),
+    closed: (a,b)=>{
+      if(a.closedAt && b.closedAt) return new Date(a.closedAt) - new Date(b.closedAt);
+      if(a.closedAt) return 1;
+      if(b.closedAt) return -1;
+      return new Date(a.createdAt) - new Date(b.createdAt);
+    },
+    lastUpdated: (a,b)=>{
+      const la = a.history[a.history.length-1].date;
+      const lb = b.history[b.history.length-1].date;
+      return new Date(la) - new Date(lb);
+    },
+    premium: (a,b)=>(Number(a.premiumAmount)||0) - (Number(b.premiumAmount)||0),
+    completeness: (a,b)=>completenessPct(a) - completenessPct(b),
+    county: (a,b)=>(a.county||'').localeCompare(b.county||''),
+    stage: (a,b)=>{
+      const listA = STAGES_BY_TYPE[a.leadType]||[];
+      const listB = STAGES_BY_TYPE[b.leadType]||[];
+      return listA.indexOf(a.stage) - listB.indexOf(b.stage);
+    }
+  };
+
+  function sortItems(items){
+    const arr = items.slice();
+    const cmp = SORT_COMPARATORS[sortBy] || SORT_COMPARATORS.lastUpdated;
+    const dir = sortDir === 'asc' ? 1 : -1;
+    arr.sort((a,b)=>cmp(a,b)*dir);
+    return arr;
+  }
+
+  $('#sortDirBtn').addEventListener('click', ()=>{
+    sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+    $('#sortDirBtn').textContent = sortDir === 'asc' ? '▲' : '▼';
+    renderList(searchInput.value.trim());
+  });
+
+  function getVisibleItems(skipCategoryFilter){
+    const query = searchInput.value.trim();
+    let items = prospects.filter(p=>p.leadType===leadTypeFilter);
+    if(statusFilter === 'Open') items = items.filter(p=>p.category !== 'Closed');
+    if(statusFilter === 'Closed') items = items.filter(p=>p.category === 'Closed');
+    items = items.filter(p=>inDateFilter(p.createdAt));
+    if(extraFilters.gender) items = items.filter(p=>p.gender===extraFilters.gender);
+    if(extraFilters.county) items = items.filter(p=>p.county===extraFilters.county);
+    if(extraFilters.sector) items = items.filter(p=>sectorDisplay(p)===extraFilters.sector || p.sector===extraFilters.sector);
+    if(extraFilters.stage) items = items.filter(p=>p.stage===extraFilters.stage);
+    if(!skipCategoryFilter && extraFilters.category) items = items.filter(p=>p.category===extraFilters.category);
+    if(query){
+      const qDigits = digitsOnly(query);
+      const qLower = query.toLowerCase();
+      items = items.filter(p=>{
+        const nameMatch = p.name.toLowerCase().includes(qLower);
+        const contactMatch = (p.contactPerson||'').toLowerCase().includes(qLower);
+        const emailMatch = (p.email||'').toLowerCase().includes(qLower);
+        const phoneMatch = qDigits.length>0 && digitsOnly(p.phone).includes(qDigits);
+        return nameMatch || contactMatch || emailMatch || phoneMatch;
+      });
+    }
+    return sortItems(items);
+  }
+
+  function renderList(query){
+    listEl.innerHTML = '';
+    const items = getVisibleItems();
+
+    if(items.length===0){
+      listEl.innerHTML = '<div class="empty">'+(query ? 'No matches for "'+escapeHtml(query)+'"' : 'No '+leadTypeFilter.toLowerCase()+' prospects in this view yet.')+'</div>';
+      return;
+    }
+
+    items.forEach(p=>{
+      const last = p.history[p.history.length-1];
+      const row = document.createElement('div');
+      row.className = 'row '+p.category;
+      const tags = [];
+      if(p.product) tags.push('<span>'+escapeHtml(p.product)+'</span>');
+      if(p.premiumAmount) tags.push('<span>'+fmtMoney(p.premiumAmount)+' / '+escapeHtml(p.premiumFrequency||'')+'</span>');
+      if(p.location) tags.push('<span>📍 '+escapeHtml(p.location)+'</span>');
+      if(p.county) tags.push('<span>'+escapeHtml(p.county)+'</span>');
+      if(p.leadType==='Corporate' && p.numberOfLives) tags.push('<span>👥 '+escapeHtml(String(p.numberOfLives))+'</span>');
+
+      const waLink = p.phone ? 'https://wa.me/'+normalizeForLink(p.phone) : null;
+      const callLink = p.phone ? 'tel:+'+normalizeForLink(p.phone) : null;
+      const emailLink = p.email ? 'mailto:'+p.email : null;
+      const subLine = p.leadType==='Corporate'
+        ? (p.contactPerson ? 'Contact: '+escapeHtml(p.contactPerson)+(p.phone?' · '+escapeHtml(p.phone):'') : escapeHtml(p.phone||'No contact on file'))
+        : escapeHtml(p.phone || 'No number');
+
+      row.innerHTML = `
+        <div class="row-top">
+          <div class="row-main">
+            ${p.leadType==='Corporate' ? '<div class="row-type">Corporate</div>' : ''}
+            <div class="row-name">${escapeHtml(p.name)}${miniDonutSvg(completenessPct(p))}</div>
+            <div class="row-sub">${subLine}</div>
+            <div class="row-stage">${escapeHtml(p.stage)}</div>
+            ${tags.length ? '<div class="row-tags">'+tags.join('')+'</div>' : ''}
+          </div>
+          <div class="row-right">
+            <div class="row-cat ${p.category}"><span class="status-dot ${p.category}"></span>${p.category}</div>
+            <div class="row-date">${fmtShort(last.date)}</div>
+          </div>
+        </div>
+        <div class="row-actions">
+          ${p.phone ? `<a class="mini-action call" href="${callLink}">📞 Call</a>
+          <a class="mini-action wa" href="${waLink}" target="_blank" rel="noopener">💬 WhatsApp</a>` : ''}
+          ${p.email ? `<a class="mini-action email" href="${emailLink}">✉️ Email</a>` : ''}
+          <button type="button" class="mini-action edit">✏️ Edit</button>
+          <button type="button" class="mini-action delete">🗑 Delete</button>
+        </div>
+      `;
+      row.querySelector('.row-top').addEventListener('click', ()=>openDetail(p.id));
+      const callBtn = row.querySelector('.call');
+      if(callBtn) callBtn.addEventListener('click', (e)=>{ e.stopPropagation(); logCommunication(p, 'call'); });
+      const waBtn = row.querySelector('.wa');
+      if(waBtn) waBtn.addEventListener('click', (e)=>{ e.stopPropagation(); logCommunication(p, 'whatsapp'); });
+      const emailBtn = row.querySelector('.email');
+      if(emailBtn) emailBtn.addEventListener('click', (e)=>{ e.stopPropagation(); logCommunication(p, 'email'); });
+      row.querySelector('.edit').addEventListener('click', (e)=>{ e.stopPropagation(); openEditSheet(p.id); });
+      row.querySelector('.delete').addEventListener('click', (e)=>{ e.stopPropagation(); deleteProspect(p.id); });
+      listEl.appendChild(row);
+    });
+  }
+
+  searchInput.addEventListener('input', ()=>renderList(searchInput.value.trim()));
+  $('#sortSelect').addEventListener('change', (e)=>{ sortBy = e.target.value; renderList(searchInput.value.trim()); });
+
+  $('#statusFilter').addEventListener('click', (e)=>{
+    const b = e.target.closest('button');
+    if(!b) return;
+    statusFilter = b.dataset.f;
+    $('#statusFilter').querySelectorAll('button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    render();
+  });
+
+  $('#leadTypeFilter').addEventListener('click', (e)=>{
+    const b = e.target.closest('button');
+    if(!b) return;
+    leadTypeFilter = b.dataset.t;
+    $('#leadTypeFilter').querySelectorAll('button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    render();
+  });
+
+  // ---------- Voice input ----------
+  const SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition;
+  function attachVoice(micBtn, textarea){
+    if(!SpeechRecognitionCtor){
+      micBtn.disabled = true;
+      micBtn.title = 'Voice input not supported in this browser';
+      return;
+    }
+    let recognizing = false, recognition;
+    micBtn.addEventListener('click', ()=>{
+      if(recognizing){ recognition.stop(); return; }
+      recognition = new SpeechRecognitionCtor();
+      recognition.lang = 'en-US';
+      recognition.interimResults = false;
+      recognition.continuous = false;
+      recognition.onstart = ()=>{ recognizing = true; micBtn.classList.add('recording'); micBtn.textContent = '●'; };
+      recognition.onend = ()=>{ recognizing = false; micBtn.classList.remove('recording'); micBtn.textContent = '🎤'; };
+      recognition.onerror = ()=>{ recognizing = false; micBtn.classList.remove('recording'); micBtn.textContent = '🎤'; showToast('Voice input failed — try typing'); };
+      recognition.onresult = (e)=>{
+        const text = e.results[0][0].transcript;
+        textarea.value = (textarea.value ? textarea.value.trim()+' ' : '') + text;
+      };
+      recognition.start();
+    });
+  }
+
+  function buildCatSelect(container, options, chosenGetter, chosenSetter, extraClass){
+    container.innerHTML = '';
+    options.forEach(c=>{
+      const b = document.createElement('button');
+      b.type='button';
+      const cls = extraClass || c;
+      b.className = 'cat-btn'+(c===chosenGetter()?' active '+cls:'');
+      b.textContent = c;
+      b.addEventListener('click', ()=>{
+        chosenSetter(c);
+        buildCatSelect(container, options, chosenGetter, chosenSetter, extraClass);
+      });
+      container.appendChild(b);
+    });
+  }
+
+  function optionsHtml(list, selected){
+    return list.map(o=>`<option value="${escapeHtml(o)}" ${o===selected?'selected':''}>${escapeHtml(o)}</option>`).join('');
+  }
+
+  function fieldsHtml(leadType, v){
+    v = v || {};
+    const legend = `<div class="field-legend">
+      <span><i style="background:#B7D3EE;"></i>Identity</span>
+      <span><i style="background:#B7E0C6;"></i>Contact</span>
+      <span><i style="background:#F2D9A8;"></i>Location</span>
+      <span><i style="background:#D3C3EE;"></i>Financial</span>
+      <span><i style="background:#F2C0D6;"></i>Referral</span>
+      <span><i style="background:#F0E4A8;"></i>Reminder</span>
+    </div>`;
+    const sectorCounty = searchableSelectHtml('f_sector','Sector of work','Type to search sector…', v.sector, true, 'sectorErr', 'tint-location')
+      + `<div id="sectorOtherWrap" style="display:none;">
+           <label>Specify sector *</label>
+           <input type="text" id="f_sectorOther" class="tint-location" placeholder="Type the sector name" value="${escapeHtml(v.sectorOther||'')}">
+           <div class="field-err" id="sectorOtherErr"></div>
+         </div>`
+      + searchableSelectHtml('f_county','County','Type to search county… (or "Diaspora" if abroad)', v.county, true, 'countyErr', 'tint-location')
+      + referralPickerHtml(v.referredBy);
+    if(leadType === 'Corporate'){
+      return `
+        ${legend}
+        <label>Company name</label>
+        <input type="text" id="f_name" class="tint-identity" placeholder="Company name" value="${escapeHtml(v.name||'')}">
+        <div class="field-err" id="nameErr"></div>
+        <label>Contact person</label>
+        <input type="text" id="f_contactPerson" class="tint-identity" placeholder="e.g. HR Manager name" value="${escapeHtml(v.contactPerson||'')}">
+        <label>Contact person gender</label>
+        <select id="f_gender" class="tint-identity">
+          <option value="">—</option>
+          ${optionsHtml(GENDERS, v.gender)}
+        </select>
+        <label>Contact person date of birth (optional)</label>
+        <input type="date" id="f_dateOfBirth" class="tint-identity" value="${escapeHtml(v.dateOfBirth||'')}">
+        <div class="field-note">Enables an automatic reminder the day before their birthday.</div>
+        <label>Contact phone *</label>
+        <input type="tel" id="f_phone" class="tint-contact" placeholder="e.g. 0712 345 678" value="${escapeHtml(v.phone||'')}">
+        <div class="field-err" id="phoneErr"></div>
+        <label>Email address</label>
+        <input type="email" id="f_email" class="tint-contact" placeholder="name@company.com" value="${escapeHtml(v.email||'')}">
+        <div class="field-err" id="emailErr"></div>
+        <label>Where you met / site</label>
+        <input type="text" id="f_location" class="tint-location" placeholder="e.g. Company office, Westlands" value="${escapeHtml(v.location||'')}">
+        ${sectorCounty}
+        <label>Number of employees / lives</label>
+        <input type="number" id="f_numberOfLives" class="tint-financial" placeholder="e.g. 45" value="${escapeHtml(v.numberOfLives||'')}">
+        <div class="field-err" id="livesErr"></div>
+        <div class="two-col">
+          <div><label>Product</label><select id="f_product" class="tint-financial">${optionsHtml(PRODUCTS_BY_TYPE.Corporate, v.product)}</select></div>
+        </div>
+        <div class="two-col">
+          <div><label>Premium amount</label><input type="number" id="f_premiumAmount" class="tint-financial" placeholder="0" value="${escapeHtml(v.premiumAmount||'')}"></div>
+          <div><label>Frequency</label><select id="f_premiumFrequency" class="tint-financial">${optionsHtml(FREQUENCIES, v.premiumFrequency||'Annually')}</select></div>
+        </div>
+        <div class="field-err" id="premiumErr"></div>
+        <label>Next follow-up (optional)</label>
+        <input type="date" id="f_nextFollowUp" class="tint-reminder" value="${escapeHtml(v.nextFollowUp||'')}">
+        <div class="field-note">Sets a reminder — shows up under 🔔 Reminders when it's due.</div>
+      `;
+    }
+    return `
+      ${legend}
+      <label>Name</label>
+      <input type="text" id="f_name" class="tint-identity" placeholder="Full name" value="${escapeHtml(v.name||'')}">
+      <div class="field-err" id="nameErr"></div>
+      <label>Phone number *</label>
+      <input type="tel" id="f_phone" class="tint-contact" placeholder="e.g. 0712 345 678" value="${escapeHtml(v.phone||'')}">
+      <div class="field-err" id="phoneErr"></div>
+      <label>Gender</label>
+      <select id="f_gender" class="tint-identity">
+        <option value="">—</option>
+        ${optionsHtml(GENDERS, v.gender)}
+      </select>
+      <label>Date of birth (optional)</label>
+      <input type="date" id="f_dateOfBirth" class="tint-identity" value="${escapeHtml(v.dateOfBirth||'')}">
+      <div class="field-note">Enables an automatic reminder the day before their birthday.</div>
+      <label>Email address</label>
+      <input type="email" id="f_email" class="tint-contact" placeholder="name@example.com" value="${escapeHtml(v.email||'')}">
+      <div class="field-err" id="emailErr"></div>
+      <label>Where you met</label>
+      <input type="text" id="f_location" class="tint-location" placeholder="e.g. Church, referred by a friend, office visit…" value="${escapeHtml(v.location||'')}">
+      ${sectorCounty}
+      <div class="two-col">
+        <div><label>Product</label><select id="f_product" class="tint-financial">${optionsHtml(PRODUCTS_BY_TYPE.Individual, v.product)}</select></div>
+      </div>
+      <div class="two-col">
+        <div><label>Premium amount</label><input type="number" id="f_premiumAmount" class="tint-financial" placeholder="0" value="${escapeHtml(v.premiumAmount||'')}"></div>
+        <div><label>Frequency</label><select id="f_premiumFrequency" class="tint-financial">${optionsHtml(FREQUENCIES, v.premiumFrequency||'Monthly')}</select></div>
+      </div>
+      <div class="field-err" id="premiumErr"></div>
+      <label>Next follow-up (optional)</label>
+      <input type="date" id="f_nextFollowUp" class="tint-reminder" value="${escapeHtml(v.nextFollowUp||'')}">
+      <div class="field-note">Sets a reminder — shows up under 🔔 Reminders when it's due.</div>
+    `;
+  }
+
+  function readFields(container, leadType){
+    const q = (id)=>container.querySelector('#'+id);
+    return {
+      name: q('f_name').value.trim(),
+      contactPerson: leadType==='Corporate' ? q('f_contactPerson').value.trim() : undefined,
+      phone: q('f_phone').value.trim(),
+      gender: q('f_gender').value,
+      email: q('f_email').value.trim(),
+      location: q('f_location').value.trim(),
+      sector: q('f_sector_value').value,
+      sectorOther: q('f_sector_value').value === 'Other' ? q('f_sectorOther').value.trim() : '',
+      county: q('f_county_value').value,
+      referredBy: q('f_referredBy_value').value || null,
+      numberOfLives: leadType==='Corporate' ? q('f_numberOfLives').value : undefined,
+      product: q('f_product').value,
+      premiumAmount: q('f_premiumAmount').value,
+      premiumFrequency: q('f_premiumFrequency').value,
+      nextFollowUp: q('f_nextFollowUp').value || null,
+      dateOfBirth: q('f_dateOfBirth').value || null
+    };
+  }
+
+  // ---------- Add sheet ----------
+  $('#addFab').addEventListener('click', openAddSheet);
+
+  function openAddSheet(){
+    let leadType = leadTypeFilter;
+    let chosenCat = 'New';
+    let chosenStage = STAGES_BY_TYPE[leadType][0];
+
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    overlay.innerHTML = `
+      <div class="sheet">
+        <div class="sheet-head"><h2>Log new prospect</h2><button class="close-x">&times;</button></div>
+        <label>Lead type</label>
+        <div class="cat-select" id="typeSelect"></div>
+        <div id="fieldsContainer">${fieldsHtml(leadType)}</div>
+        <label>Stage</label>
+        <div class="cat-select" id="stageSelect"></div>
+        <label>Category</label>
+        <div class="cat-select" id="newCatSelect"></div>
+        <label>What happened / feedback</label>
+        <div class="voice-row">
+          <textarea id="newNote" placeholder="What did you discuss? Any objections or interest?"></textarea>
+          <button type="button" class="mic-btn" id="newMic">🎤</button>
+        </div>
+        <div class="field-note">Today's date and time are recorded automatically.</div>
+        <div class="sheet-actions">
+          <button class="btn btn-ghost" id="cancelAdd">Cancel</button>
+          <button class="btn btn-primary" id="saveAdd">Save entry</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    const fieldsContainer = overlay.querySelector('#fieldsContainer');
+    attachFieldValidation(fieldsContainer, leadType, null);
+    buildCatSelect(overlay.querySelector('#typeSelect'), LEAD_TYPES, ()=>leadType, (t)=>{
+      leadType = t;
+      fieldsContainer.innerHTML = fieldsHtml(leadType);
+      attachFieldValidation(fieldsContainer, leadType, null);
+      chosenStage = STAGES_BY_TYPE[leadType][0];
+      buildCatSelect(overlay.querySelector('#stageSelect'), STAGES_BY_TYPE[leadType], ()=>chosenStage, (s)=>{chosenStage=s;}, 'lead');
+    }, 'lead');
+    buildCatSelect(overlay.querySelector('#stageSelect'), STAGES_BY_TYPE[leadType], ()=>chosenStage, (s)=>{chosenStage=s;}, 'lead');
+    buildCatSelect(overlay.querySelector('#newCatSelect'), CATEGORIES, ()=>chosenCat, (c)=>{chosenCat=c;});
+    attachVoice(overlay.querySelector('#newMic'), overlay.querySelector('#newNote'));
+
+    function close(){ overlay.remove(); }
+    overlay.querySelector('.close-x').addEventListener('click', close);
+    overlay.querySelector('#cancelAdd').addEventListener('click', close);
+    overlay.addEventListener('click', (e)=>{ if(e.target===overlay) close(); });
+
+    overlay.querySelector('#saveAdd').addEventListener('click', ()=>{
+      if(!validateAllFields(fieldsContainer, leadType)) return;
+      const f = readFields(fieldsContainer, leadType);
+
+      const now = new Date().toISOString();
+      const p = Object.assign({
+        id: uid(),
+        leadType,
+        category: chosenCat,
+        closedAt: chosenCat==='Closed' ? now : null,
+        stage: chosenStage,
+        createdAt: now,
+        history: [{ id: uid(), date: now, note: overlay.querySelector('#newNote').value.trim() || '(No notes entered)' }]
+      }, f);
+      prospects.push(p);
+      scheduleSave();
+      syncUpsert(p);
+      render();
+      close();
+      showToast('Prospect logged');
+    });
+  }
+
+  // ---------- Shared: edit & delete ----------
+  function deleteProspect(id){
+    const p = prospects.find(x=>x.id===id);
+    if(!p) return;
+    if(!confirm('Delete '+p.name+'? This cannot be undone.')) return;
+    prospects = prospects.filter(x=>x.id!==id);
+    scheduleSave();
+    syncDelete(id);
+    render();
+    showToast('Prospect deleted');
+  }
+
+  function openEditSheet(id){
+    const p = prospects.find(x=>x.id===id);
+    if(!p) return;
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    overlay.innerHTML = `
+      <div class="sheet">
+        <div class="sheet-head"><h2>Edit ${escapeHtml(p.name)}</h2><button class="close-x">&times;</button></div>
+        <div id="fieldsContainer">${fieldsHtml(p.leadType, p)}</div>
+        <label>Stage</label>
+        <div class="cat-select" id="stageSelect"></div>
+        <label>Category</label>
+        <div class="cat-select" id="editCatSelect"></div>
+        <div class="sheet-actions">
+          <button class="btn btn-ghost" id="cancelEdit2">Cancel</button>
+          <button class="btn btn-primary" id="saveEdit2">Save changes</button>
+        </div>
+        <button class="btn btn-danger" id="deleteBtn2" style="width:100%;margin-top:10px;">Delete this prospect</button>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    const fieldsContainer = overlay.querySelector('#fieldsContainer');
+    attachFieldValidation(fieldsContainer, p.leadType, p.id);
+    buildCatSelect(overlay.querySelector('#stageSelect'), STAGES_BY_TYPE[p.leadType], ()=>p.stage, (s)=>{
+      if(p.stage !== s){ logActivity(p, 'Stage changed: '+p.stage+' → '+s); p.stage = s; scheduleSave(); syncUpsert(p); }
+    }, 'lead');
+    buildCatSelect(overlay.querySelector('#editCatSelect'), CATEGORIES, ()=>p.category, (c)=>{ setCategory(p, c); scheduleSave(); syncUpsert(p); });
+
+    function close(){ overlay.remove(); }
+    overlay.querySelector('.close-x').addEventListener('click', close);
+    overlay.querySelector('#cancelEdit2').addEventListener('click', close);
+    overlay.addEventListener('click', (e)=>{ if(e.target===overlay) close(); });
+
+    overlay.querySelector('#saveEdit2').addEventListener('click', ()=>{
+      if(!validateAllFields(fieldsContainer, p.leadType)) return;
+      const f = readFields(fieldsContainer, p.leadType);
+      if(f.referredBy === p.id){ showToast('A prospect can\'t refer themselves'); return; }
+      if(wouldCreateCycle(p.id, f.referredBy)){ showToast('That would create a circular referral chain — pick a different referrer'); return; }
+      const before = Object.assign({}, p);
+      Object.assign(p, f);
+      logFieldChanges(p, before, f);
+      scheduleSave();
+      syncUpsert(p);
+      render();
+      close();
+      showToast('Details updated');
+    });
+
+    overlay.querySelector('#deleteBtn2').addEventListener('click', ()=>{
+      close();
+      deleteProspect(id);
+    });
+  }
+
+  // ---------- Send (share a single record) ----------
+  // ---------- AI Message Assistant ----------
+  async function callClaudeAI(userPrompt){
+    if(!settings.aiApiKey){
+      throw new Error('No API key set — add one under ⚙ Settings first.');
+    }
+    const model = settings.aiModel || 'claude-sonnet-5';
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': settings.aiApiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: model,
+        max_tokens: 400,
+        system: 'You are a life insurance agent\'s writing assistant for a Kenyan insurance practice. Write short, warm, professional messages. Never invent policy numbers, prices, or promises not given to you. Do not add a subject line unless asked. Do not add placeholder brackets like [Your Name] — use the agent name provided.',
+        messages: [{ role: 'user', content: userPrompt }]
+      })
+    });
+    if(!res.ok){
+      const text = await res.text().catch(()=> '');
+      throw new Error('API error '+res.status+(text ? ': '+text.slice(0,200) : ''));
+    }
+    const data = await res.json();
+    return (data.content||[]).map(b=>b.text||'').join('').trim();
+  }
+
+  function buildAIContext(p){
+    const a = settings.agent || {};
+    const last = p.history[p.history.length-1];
+    const lines = [
+      'Client name: '+p.name,
+      p.leadType==='Corporate' && p.contactPerson ? 'Contact person: '+p.contactPerson : null,
+      p.product ? 'Product of interest: '+p.product : null,
+      p.premiumAmount ? 'Premium: '+fmtMoney(p.premiumAmount)+' ('+(p.premiumFrequency||'')+')' : null,
+      'Pipeline stage: '+p.stage,
+      'Status: '+p.category,
+      'Most recent note: '+last.note,
+      'Agent name: '+(a.name||'the agent'),
+      'Agent phone: '+(a.phone||''),
+    ].filter(Boolean);
+    return lines.join('\n');
+  }
+
+  function buildRecordSummaryText(p){
+    const last = p.history[p.history.length-1];
+    const lines = [
+      p.name,
+      p.leadType==='Corporate' && p.contactPerson ? 'Contact: '+p.contactPerson : null,
+      p.phone ? 'Phone: '+p.phone : null,
+      p.email ? 'Email: '+p.email : null,
+      p.product ? 'Product: '+p.product : null,
+      p.premiumAmount ? 'Premium: '+fmtMoney(p.premiumAmount)+' ('+(p.premiumFrequency||'')+')' : null,
+      'Stage: '+p.stage,
+      'Status: '+p.category,
+      'Last contact: '+fmtDate(last.date)
+    ].filter(Boolean);
+    return lines.join('\n');
+  }
+  function buildRecordCSV(p){
+    const last = p.history[p.history.length-1];
+    const rows = [
+      ['Field','Value'],
+      ['Lead Type', p.leadType],
+      ['Name', p.name],
+      ['Contact Person', p.contactPerson||''],
+      ['Phone', p.phone||''],
+      ['Email', p.email||''],
+      ['Sector', sectorDisplay(p)],
+      ['County', p.county||''],
+      ['Product', p.product||''],
+      ['Premium Amount', p.premiumAmount||''],
+      ['Premium Frequency', p.premiumFrequency||''],
+      ['Category', p.category],
+      ['Stage', p.stage],
+      ['Date Captured', dateOnly(p.createdAt)],
+      ['Time Captured', timeOnly(p.createdAt)],
+      ['Date Closed', dateOnly(p.closedAt)],
+      ['Date Last Contacted', dateOnly(last.date)],
+      ['Latest Note', last.note]
+    ];
+    return rows.map(r=>r.map(v=>'"'+String(v||'').replace(/"/g,'""')+'"').join(',')).join('\n');
+  }
+
+  async function sendRecord(p){
+    const csv = buildRecordCSV(p);
+    const text = buildRecordSummaryText(p);
+    const filename = 'prospect-'+p.name.replace(/[^a-z0-9]+/gi,'-').toLowerCase()+'.csv';
+
+    if(navigator.canShare){
+      try{
+        const file = new File([csv], filename, {type:'text/csv'});
+        if(navigator.canShare({files:[file]})){
+          await navigator.share({ files:[file], title:'Prospect record: '+p.name, text });
+          return;
+        }
+      }catch(e){}
+    }
+    if(navigator.share){
+      try{ await navigator.share({ title:'Prospect record: '+p.name, text }); return; }
+      catch(e){}
+    }
+    return 'fallback';
+  }
+
+  // ---------- Detail sheet ----------
+  // ---------- Reminders ----------
+  function reminderStatus(dateStr){
+    if(!dateStr) return null;
+    const today = new Date(); today.setHours(0,0,0,0);
+    const due = new Date(dateStr+'T00:00:00');
+    const diffDays = Math.round((due-today)/86400000);
+    if(diffDays < 0) return 'overdue';
+    if(diffDays === 0) return 'today';
+    if(diffDays <= 7) return 'upcoming';
+    return 'later';
+  }
+  function daysUntilNextBirthday(dob){
+    if(!dob) return null;
+    const birth = new Date(dob+'T00:00:00');
+    const today = new Date(); today.setHours(0,0,0,0);
+    let next = new Date(today.getFullYear(), birth.getMonth(), birth.getDate());
+    if(next < today) next = new Date(today.getFullYear()+1, birth.getMonth(), birth.getDate());
+    return Math.round((next-today)/86400000);
+  }
+  function getBirthdayAlerts(){
+    return prospects.filter(p=>p.dateOfBirth && daysUntilNextBirthday(p.dateOfBirth)===1);
+  }
+  function getUpcomingBirthdays(withinDays){
+    return prospects.filter(p=>{
+      if(!p.dateOfBirth) return false;
+      const d = daysUntilNextBirthday(p.dateOfBirth);
+      return d!==null && d<=withinDays;
+    }).sort((a,b)=>daysUntilNextBirthday(a.dateOfBirth)-daysUntilNextBirthday(b.dateOfBirth));
+  }
+  function getDueReminders(){
+    const followUps = prospects.filter(p=>{
+      const s = reminderStatus(p.nextFollowUp);
+      return s==='overdue' || s==='today';
+    });
+    const birthdays = getBirthdayAlerts();
+    return Array.from(new Set([...followUps, ...birthdays]));
+  }
+  function renderReminderBadge(){
+    const due = getDueReminders().length;
+    const badge = $('#reminderBadge');
+    if(due>0){ badge.textContent = due>99?'99+':due; badge.style.display = 'block'; }
+    else { badge.style.display = 'none'; }
+  }
+  let notifiedThisSession = false;
+  function maybeNotifyReminders(){
+    if(notifiedThisSession) return;
+    notifiedThisSession = true;
+    const followUpsDue = prospects.filter(p=>{ const s=reminderStatus(p.nextFollowUp); return s==='overdue'||s==='today'; });
+    const birthdaysDue = getBirthdayAlerts();
+    if(followUpsDue.length===0 && birthdaysDue.length===0) return;
+    const parts = [];
+    if(followUpsDue.length) parts.push(followUpsDue.length+' follow-up'+(followUpsDue.length===1?'':'s'));
+    if(birthdaysDue.length) parts.push(birthdaysDue.length+' birthday'+(birthdaysDue.length===1?'':'s')+' tomorrow');
+    showToast(parts.join(' · ')+' — tap 🔔 to see them');
+    if(typeof Notification !== 'undefined' && Notification.permission === 'granted'){
+      try{
+        new Notification('Prospect Ledger', { body: parts.join(' · ') });
+      }catch(e){}
+    }
+  }
+  function requestNotificationPermission(){
+    if(typeof Notification === 'undefined'){ showToast('Notifications not supported in this browser'); return; }
+    Notification.requestPermission().then(perm=>{
+      showToast(perm==='granted' ? 'Notifications enabled' : 'Notifications not enabled');
+    });
+  }
+
+  function chainRollup(id){
+    const descendants = collectDescendants(id); // every person downstream, at any depth — NOT including id itself
+    const closed = descendants.filter(d=>d.category==='Closed');
+    return {
+      referred: descendants.length,
+      nops: closed.length,
+      api: closed.reduce((s,d)=>s+annualizedPremium(d), 0)
+    };
+  }
+
+  function openReferralChain(id){
+    const p = prospects.find(x=>x.id===id);
+    if(!p) return;
+    const roll = chainRollup(p.id);
+    const treeHtml = buildChainTreeHtml(p.id, 0);
+
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    overlay.innerHTML = `
+      <div class="sheet">
+        <div class="sheet-head"><h2>${escapeHtml(p.name)}'s Referral Chain</h2><button class="close-x">&times;</button></div>
+        <div class="field-note">Everyone ${escapeHtml(p.name)} has referred, directly or indirectly, at any depth.</div>
+
+        <div class="kpi-row">
+          <div class="kpi-card"><div class="kpi-num">${roll.referred}</div><div class="kpi-label">People referred</div></div>
+          <div class="kpi-card"><div class="kpi-num">${roll.nops}</div><div class="kpi-label">NOPS</div></div>
+          <div class="kpi-card"><div class="kpi-num">${fmtMoney(Math.round(roll.api))}</div><div class="kpi-label">API (KES/yr)</div></div>
+        </div>
+
+        <label>Chain tree</label>
+        <div style="font-weight:700;">${escapeHtml(p.name)} <span class="status-dot ${p.category}"></span><span style="font-size:11px;color:var(--ink-soft);">${p.category}</span></div>
+        ${treeHtml || '<div class="field-note">No referrals yet from this person.</div>'}
+
+        <div class="sheet-actions"><button class="btn btn-ghost" id="closeChain" style="width:100%;">Close</button></div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    function close(){ overlay.remove(); }
+    overlay.querySelector('.close-x').addEventListener('click', close);
+    overlay.querySelector('#closeChain').addEventListener('click', close);
+    overlay.addEventListener('click', (e)=>{ if(e.target===overlay) close(); });
+    overlay.querySelectorAll('.chain-link').forEach(a=>{
+      a.addEventListener('click', (e)=>{
+        e.preventDefault();
+        close();
+        openDetail(a.dataset.id);
+      });
+    });
+  }
+
+  function openDetail(id){
+    const p = prospects.find(x=>x.id===id);
+    if(!p) return;
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    const waLink = p.phone ? 'https://wa.me/'+normalizeForLink(p.phone) : '#';
+    const callLink = p.phone ? 'tel:+'+normalizeForLink(p.phone) : '#';
+    const emailLink = p.email ? 'mailto:'+p.email : '#';
+    const referrer = p.referredBy ? prospects.find(x=>x.id===p.referredBy) : null;
+    const directReferrals = prospects.filter(x=>x.referredBy===p.id);
+    const chainRoll = chainRollup(p.id);
+
+    overlay.innerHTML = `
+      <div class="sheet">
+        <div class="sheet-head"><h2>${escapeHtml(p.name)}</h2><button class="close-x">&times;</button></div>
+
+        <div class="contact-actions">
+          ${p.phone ? `<a class="call-link" href="${callLink}">📞 Call</a>
+          <a class="wa-link" href="${waLink}" target="_blank" rel="noopener">💬 WhatsApp</a>` : ''}
+          ${p.email ? `<a class="call-link" id="detEmailLink" href="${emailLink}" style="color:var(--gold);">✉️ Email</a>` : ''}
+          <button type="button" class="send-link" id="sendBtn">📤 Send</button>
+          <button type="button" class="send-link" id="aiDraftBtn" style="background:#EAF0FA; color:#3E5FA6; border-color:#c9d7ef;">✨ AI Draft</button>
+        </div>
+
+        <div class="detail-facts">
+          <div><span class="fk">Lead type</span>${escapeHtml(p.leadType)}</div>
+          ${p.leadType==='Corporate' ? `<div><span class="fk">Contact person</span>${escapeHtml(p.contactPerson || '—')}</div>` : ''}
+          <div><span class="fk">Phone</span>${escapeHtml(p.phone || '—')}</div>
+          <div><span class="fk">Gender</span>${escapeHtml(p.gender || '—')}</div>
+          <div><span class="fk">Date of birth</span>${p.dateOfBirth ? new Date(p.dateOfBirth+'T00:00:00').toLocaleDateString(undefined,{day:'numeric',month:'long',year:'numeric'}) + ' (birthday in '+daysUntilNextBirthday(p.dateOfBirth)+' day'+(daysUntilNextBirthday(p.dateOfBirth)===1?'':'s')+')' : '—'}</div>
+          <div><span class="fk">Email</span>${escapeHtml(p.email || '—')}</div>
+          <div><span class="fk">Sector</span>${escapeHtml(sectorDisplay(p) || '—')}</div>
+          <div><span class="fk">County</span>${escapeHtml(p.county || '—')}</div>
+          <div><span class="fk">Met at</span>${escapeHtml(p.location || '—')}</div>
+          ${p.leadType==='Corporate' ? `<div><span class="fk">Lives covered</span>${escapeHtml(p.numberOfLives ? String(p.numberOfLives) : '—')}</div>` : ''}
+          <div><span class="fk">Product</span>${escapeHtml(p.product || '—')}</div>
+          <div><span class="fk">Premium</span>${p.premiumAmount ? fmtMoney(p.premiumAmount)+' ('+escapeHtml(p.premiumFrequency||'')+')' : '—'}</div>
+          <div><span class="fk">Stage</span>${escapeHtml(p.stage)}</div>
+          <div><span class="fk">Date captured</span>${fmtDate(p.createdAt)}</div>
+          <div><span class="fk">Date last contacted</span>${fmtDate(p.history[p.history.length-1].date)}</div>
+          ${p.closedAt ? `<div><span class="fk">Date closed</span>${fmtDate(p.closedAt)}</div>` : ''}
+          <div><span class="fk">Referred by</span>${referrer ? `<a href="#" id="referrerLink" style="color:var(--blue); font-weight:600; text-decoration:none;">${escapeHtml(referrer.name)}</a>` : '— (direct/cold contact)'}</div>
+          <div><span class="fk">Referrals made</span>${directReferrals.length} direct, ${chainRoll.referred} total down the chain</div>
+          ${chainRoll.referred>0 ? `<div><span class="fk">Chain business</span>${chainRoll.nops} NOPS · ${fmtMoney(Math.round(chainRoll.api))} API</div>` : ''}
+        </div>
+
+        <label>Next follow-up ${p.nextFollowUp ? '('+(reminderStatus(p.nextFollowUp)==='overdue'?'⚠️ overdue':reminderStatus(p.nextFollowUp)==='today'?'🔔 due today':'set') +')' : ''}</label>
+        <div class="two-col">
+          <input type="date" id="detReminderDate" value="${escapeHtml(p.nextFollowUp||'')}">
+          <button class="btn btn-ghost" id="detReminderSave" style="flex:0 0 auto;">Save</button>
+        </div>
+
+        <button class="btn btn-ghost" id="editToggle" style="margin-top:10px;width:100%;">Edit details</button>
+        <button class="btn btn-ghost" id="chainBtn" style="margin-top:8px;width:100%;">🔗 View referral chain</button>
+
+        <label>Category</label>
+        <div class="cat-select" id="detCatSelect"></div>
+
+        <label>Add a follow-up note</label>
+        <div class="voice-row">
+          <textarea id="detNote" placeholder="Log today's conversation…"></textarea>
+          <button type="button" class="mic-btn" id="detMic">🎤</button>
+        </div>
+        <div class="field-note">This will be timestamped with today's date automatically.</div>
+        <div class="sheet-actions">
+          <button class="btn btn-ghost" id="closeDet">Close</button>
+          <button class="btn btn-primary" id="addFollowup">Add follow-up</button>
+        </div>
+
+        <div class="history">
+          <label style="margin-top:0;">History</label>
+          <div id="historyList"></div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    buildCatSelect(overlay.querySelector('#detCatSelect'), CATEGORIES, ()=>p.category, (c)=>{
+      setCategory(p, c); scheduleSave(); syncUpsert(p); render();
+      close(); openDetail(p.id);
+    });
+
+    function renderHistory(){
+      const hEl = overlay.querySelector('#historyList');
+      hEl.innerHTML = '';
+      p.history.slice().reverse().forEach(h=>{
+        const item = document.createElement('div');
+        item.className = 'history-item';
+        item.innerHTML = `<div class="history-date">${fmtDate(h.date)}</div><div class="history-note">${escapeHtml(h.note)}</div>`;
+        hEl.appendChild(item);
+      });
+    }
+    renderHistory();
+    attachVoice(overlay.querySelector('#detMic'), overlay.querySelector('#detNote'));
+
+    const detCallBtn = overlay.querySelector('.call-link:not(#detEmailLink)');
+    if(detCallBtn) detCallBtn.addEventListener('click', ()=>{ logCommunication(p, 'call'); renderHistory(); });
+    const detWaBtn = overlay.querySelector('.wa-link');
+    if(detWaBtn) detWaBtn.addEventListener('click', ()=>{ logCommunication(p, 'whatsapp'); renderHistory(); });
+    const detEmailBtn = overlay.querySelector('#detEmailLink');
+    if(detEmailBtn) detEmailBtn.addEventListener('click', ()=>{ logCommunication(p, 'email'); renderHistory(); });
+
+    overlay.querySelector('#sendBtn').addEventListener('click', async ()=>{
+      const result = await sendRecord(p);
+      if(result === 'fallback'){
+        const text = encodeURIComponent(buildRecordSummaryText(p));
+        const sendOverlay = document.createElement('div');
+        sendOverlay.className = 'overlay';
+        sendOverlay.innerHTML = `
+          <div class="sheet">
+            <div class="sheet-head"><h2>Send record</h2><button class="close-x">&times;</button></div>
+            <div class="field-note">Your browser doesn't support direct file sharing here, so these open with the details pre-filled as text — you can attach the CSV manually if needed (use Export for that).</div>
+            <div class="contact-actions" style="margin-top:12px;">
+              <a class="call-link" href="mailto:?subject=${encodeURIComponent('Prospect record: '+p.name)}&body=${text}">✉️ Email</a>
+              <a class="wa-link" href="https://wa.me/?text=${text}" target="_blank" rel="noopener">💬 WhatsApp</a>
+            </div>
+            <div class="sheet-actions"><button class="btn btn-ghost" id="closeSend" style="width:100%;">Close</button></div>
+          </div>
+        `;
+        document.body.appendChild(sendOverlay);
+        function closeSend(){ sendOverlay.remove(); }
+        sendOverlay.querySelector('.close-x').addEventListener('click', closeSend);
+        sendOverlay.querySelector('#closeSend').addEventListener('click', closeSend);
+        sendOverlay.addEventListener('click', (e)=>{ if(e.target===sendOverlay) closeSend(); });
+      }
+    });
+
+    overlay.querySelector('#aiDraftBtn').addEventListener('click', ()=>{
+      const aiOverlay = document.createElement('div');
+      aiOverlay.className = 'overlay';
+      aiOverlay.innerHTML = `
+        <div class="sheet">
+          <div class="sheet-head"><h2>✨ AI Draft for ${escapeHtml(p.name)}</h2><button class="close-x">&times;</button></div>
+          ${settings.aiApiKey ? '' : '<div class="field-note">No API key set yet — add one under ⚙ Settings → AI Message Assistant to use this.</div>'}
+          <label>Purpose</label>
+          <select id="aiPurpose">
+            <option value="follow-up">Follow-up after contact</option>
+            <option value="birthday">Birthday wish</option>
+            <option value="holiday">Holiday / seasonal greeting</option>
+            <option value="reminder">Premium / policy reminder</option>
+            <option value="custom">Custom — describe below</option>
+          </select>
+          <div id="aiCustomWrap" style="display:none;">
+            <label>Describe what you want</label>
+            <textarea id="aiCustomPrompt" placeholder="e.g. Congratulate them on their new job and ask if they'd like to review their cover"></textarea>
+          </div>
+          <label>Channel</label>
+          <div class="cat-select" id="aiChannelSelect"></div>
+          <button class="btn btn-primary" id="aiGenerateBtn" style="width:100%;margin-top:10px;" ${settings.aiApiKey?'':'disabled'}>✨ Generate draft</button>
+          <div id="aiResultWrap" style="display:none;">
+            <label>Draft (edit freely before sending)</label>
+            <textarea id="aiResultText" style="min-height:120px;"></textarea>
+            <div class="contact-actions" style="margin-top:10px;" id="aiSendActions"></div>
+          </div>
+          <div class="sheet-actions"><button class="btn btn-ghost" id="closeAiDraft" style="width:100%;">Close</button></div>
+        </div>
+      `;
+      document.body.appendChild(aiOverlay);
+      function closeAi(){ aiOverlay.remove(); }
+      aiOverlay.querySelector('.close-x').addEventListener('click', closeAi);
+      aiOverlay.querySelector('#closeAiDraft').addEventListener('click', closeAi);
+      aiOverlay.addEventListener('click', (e)=>{ if(e.target===aiOverlay) closeAi(); });
+
+      let channel = p.email ? 'email' : 'whatsapp';
+      buildCatSelect(aiOverlay.querySelector('#aiChannelSelect'), ['Email','WhatsApp/SMS'], ()=>channel==='email'?'Email':'WhatsApp/SMS', (v)=>{ channel = v==='Email'?'email':'whatsapp'; }, 'lead');
+
+      aiOverlay.querySelector('#aiPurpose').addEventListener('change', (e)=>{
+        aiOverlay.querySelector('#aiCustomWrap').style.display = e.target.value==='custom' ? 'block' : 'none';
+      });
+
+      aiOverlay.querySelector('#aiGenerateBtn').addEventListener('click', async ()=>{
+        const btn = aiOverlay.querySelector('#aiGenerateBtn');
+        const purpose = aiOverlay.querySelector('#aiPurpose').value;
+        const purposeText = {
+          'follow-up':'a warm follow-up message after recent contact, gently moving the conversation forward',
+          'birthday':'a short, warm birthday wish',
+          'holiday':'a short, warm seasonal/holiday greeting',
+          'reminder':'a polite reminder about their premium or policy, with no pressure tone',
+          'custom': aiOverlay.querySelector('#aiCustomPrompt').value.trim() || 'a warm, professional message'
+        }[purpose];
+        const channelNote = channel==='email' ? 'Write this as a short EMAIL (a couple of short paragraphs is fine).' : 'Write this as a short SMS/WhatsApp message (2-4 sentences max, no email formatting).';
+        const prompt = 'Write '+purposeText+' for this client, from their insurance agent.\n\n'+buildAIContext(p)+'\n\n'+channelNote+' Do not include a subject line. Sign off naturally with the agent\'s first name.';
+        btn.textContent = 'Generating…'; btn.disabled = true;
+        try{
+          const draft = await callClaudeAI(prompt);
+          aiOverlay.querySelector('#aiResultText').value = draft;
+          aiOverlay.querySelector('#aiResultWrap').style.display = 'block';
+          const actionsEl = aiOverlay.querySelector('#aiSendActions');
+          if(channel==='email' && p.email){
+            actionsEl.innerHTML = `<a class="call-link" id="aiSendEmail" href="#">✉️ Open in Email</a>`;
+            actionsEl.querySelector('#aiSendEmail').addEventListener('click', (e)=>{
+              e.preventDefault();
+              const body = aiOverlay.querySelector('#aiResultText').value;
+              window.location.href = 'mailto:'+p.email+'?subject='+encodeURIComponent('A message for you')+'&body='+encodeURIComponent(body);
+              logActivity(p, '✨ AI-drafted email sent');
+              scheduleSave(); syncUpsert(p);
+            });
+          } else if(channel==='whatsapp' && p.phone){
+            actionsEl.innerHTML = `<a class="wa-link" id="aiSendWa" href="#" target="_blank" rel="noopener">💬 Open in WhatsApp</a>`;
+            actionsEl.querySelector('#aiSendWa').addEventListener('click', ()=>{
+              const body = aiOverlay.querySelector('#aiResultText').value;
+              aiOverlay.querySelector('#aiSendWa').href = 'https://wa.me/'+normalizeForLink(p.phone)+'?text='+encodeURIComponent(body);
+              logActivity(p, '✨ AI-drafted WhatsApp message opened');
+              scheduleSave(); syncUpsert(p);
+            });
+          } else {
+            actionsEl.innerHTML = '<div class="field-note">No '+(channel==='email'?'email':'phone number')+' on file for this contact — copy the draft manually instead.</div>';
+          }
+        }catch(err){
+          showToast('AI draft failed: '+err.message);
+        }finally{
+          btn.textContent = '✨ Generate draft'; btn.disabled = false;
+        }
+      });
+    });
+
+    overlay.querySelector('#detReminderSave').addEventListener('click', ()=>{
+      const val = overlay.querySelector('#detReminderDate').value || null;
+      if(val !== p.nextFollowUp){
+        const before = p.nextFollowUp;
+        p.nextFollowUp = val;
+        if(!before && val) logActivity(p, '🔔 Reminder set for '+new Date(val+'T00:00:00').toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}));
+        else if(before && !val) logActivity(p, '🔔 Reminder cleared');
+        else logActivity(p, '🔔 Reminder moved to '+new Date(val+'T00:00:00').toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}));
+        scheduleSave();
+        syncUpsert(p);
+        renderReminderBadge();
+        showToast('Reminder saved');
+        close();
+        openDetail(p.id);
+      }
+    });
+
+    overlay.querySelector('#editToggle').addEventListener('click', ()=>{
+      close();
+      openEditSheet(p.id);
+    });
+
+    function close(){ overlay.remove(); }
+    overlay.querySelector('.close-x').addEventListener('click', close);
+    overlay.querySelector('#closeDet').addEventListener('click', close);
+    overlay.addEventListener('click', (e)=>{ if(e.target===overlay) close(); });
+
+    const referrerLinkEl = overlay.querySelector('#referrerLink');
+    if(referrerLinkEl) referrerLinkEl.addEventListener('click', (e)=>{
+      e.preventDefault();
+      close();
+      openDetail(p.referredBy);
+    });
+    overlay.querySelector('#chainBtn').addEventListener('click', ()=>{
+      close();
+      openReferralChain(p.id);
+    });
+
+    overlay.querySelector('#addFollowup').addEventListener('click', ()=>{
+      const note = overlay.querySelector('#detNote').value.trim();
+      if(!note){ showToast('Enter a note first'); return; }
+      p.history.push({ id: uid(), date: new Date().toISOString(), note });
+      scheduleSave();
+      syncUpsert(p);
+      overlay.querySelector('#detNote').value = '';
+      renderHistory();
+      render();
+      showToast('Follow-up added');
+    });
+  }
+
+  // ---------- Reports ----------
+  function annualizedPremium(p){
+    const amt = Number(p.premiumAmount)||0;
+    const mult = FREQ_MULTIPLIER[p.premiumFrequency]||1;
+    return amt*mult;
+  }
+
+  function periodBounds(mode, val){
+    if(mode==='daily'){
+      const d = new Date(val+'T00:00:00');
+      return { from: d, to: new Date(d.getFullYear(),d.getMonth(),d.getDate(),23,59,59) };
+    }
+    if(mode==='weekly'){
+      const d = new Date(val+'T00:00:00');
+      const day = d.getDay();
+      const diff = (day===0 ? 6 : day-1);
+      const from = new Date(d.getFullYear(), d.getMonth(), d.getDate()-diff);
+      const to = new Date(from.getFullYear(), from.getMonth(), from.getDate()+6, 23,59,59);
+      return { from, to };
+    }
+    if(mode==='monthly'){
+      const [y,m] = val.split('-').map(Number);
+      return { from: new Date(y,m-1,1), to: new Date(y,m,0,23,59,59) };
+    }
+    if(mode==='yearly'){
+      const y = Number(val);
+      return { from: new Date(y,0,1), to: new Date(y,11,31,23,59,59) };
+    }
+    return { from: new Date(val.from+'T00:00:00'), to: new Date(val.to+'T23:59:59') };
+  }
+
+  function donutSvg(pct, color){
+    const dash = Math.max(0, Math.min(100, pct));
+    return `<svg viewBox="0 0 36 36">
+      <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#EDE9DC" stroke-width="3.2"/>
+      <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="${color}" stroke-width="3.2" stroke-dasharray="${dash}, 100" stroke-linecap="round"/>
+      <text x="18" y="20.5" class="donut-text" fill="#1B2A4A" font-weight="700">${pct}%</text>
+    </svg>`;
+  }
+
+  const CHART_PALETTE = ['#3E6B8A','#2F6B4F','#C9932E','#A44A38','#5C8C6E','#8A5FA6','#4A90A4','#B4893C','#6B4A8A','#2FA968','#D97B4F','#4F6BD9'];
+  function paletteColor(i){ return CHART_PALETTE[i % CHART_PALETTE.length]; }
+
+  function groupCounts(items, accessor, topN){
+    const counts = {};
+    items.forEach(p=>{
+      const v = accessor(p);
+      if(!v) return;
+      counts[v] = (counts[v]||0)+1;
+    });
+    let entries = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+    if(topN && entries.length>topN){
+      const top = entries.slice(0,topN);
+      const restSum = entries.slice(topN).reduce((s,e)=>s+e[1],0);
+      top.push(['Other counties', restSum]);
+      entries = top;
+    }
+    return entries.map(([label,count],i)=>({label,count,color:paletteColor(i)}));
+  }
+
+  function multiPieSvg(segments){
+    const total = segments.reduce((s,d)=>s+d.count,0) || 1;
+    let cum = 0;
+    let paths = '';
+    segments.forEach(seg=>{
+      const pct = (seg.count/total)*100;
+      paths += `<path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="${seg.color}" stroke-width="7" stroke-dasharray="${pct}, 100" stroke-dashoffset="${-cum}"/>`;
+      cum += pct;
+    });
+    return `<svg viewBox="0 0 36 36" class="pie-chart-svg">${paths}</svg>`;
+  }
+
+  function legendListHtml(segments, total){
+    return segments.map(s=>`
+      <div class="bar-row">
+        <div class="bar-label" style="width:auto;flex:1;"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${s.color};margin-right:6px;vertical-align:middle;"></span>${escapeHtml(s.label)}</div>
+        <div class="bar-count" style="width:auto;">${s.count} (${total?Math.round(s.count/total*100):0}%)</div>
+      </div>`).join('');
+  }
+
+  function chartGenreToggleHtml(key, current, options){
+    return '<div class="segmented" data-genre="'+key+'" style="margin-bottom:8px;">' +
+      options.map(o=>'<button data-t="'+o.value+'" class="'+(current===o.value?'active':'')+'">'+o.label+'</button>').join('') +
+      '</div>';
+  }
+
+  function barSegmentsHtml(segments, total){
+    return segments.map(s=>`
+      <div class="bar-row">
+        <div class="bar-label" style="width:120px;">${escapeHtml(s.label)}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${total?Math.round(s.count/total*100):0}%; background:${s.color};"></div></div>
+        <div class="bar-count">${s.count}</div>
+      </div>
+    `).join('');
+  }
+
+  function pieSegmentsHtml(segments, total){
+    return `<div class="report-donut">${multiPieSvg(segments)}<div class="report-stats">${legendListHtml(segments, total)}</div></div>`;
+  }
+
+  function renderBarOrPie(segments, total, chartType){
+    if(segments.length===0) return '';
+    return chartType==='pie' ? pieSegmentsHtml(segments, total) : barSegmentsHtml(segments, total);
+  }
+
+  function wireGenreToggles(container, prefsObj, onChange){
+    container.querySelectorAll('[data-genre]').forEach(el=>{
+      el.addEventListener('click', (e)=>{
+        const btn = e.target.closest('button');
+        if(!btn) return;
+        const key = el.dataset.genre;
+        prefsObj[key] = btn.dataset.t;
+        onChange();
+      });
+    });
+  }
+
+  function renderCohortReport(container, mode, val, chartPrefs){
+    const {from, to} = periodBounds(mode, val);
+    const cohort = prospects.filter(p=>p.leadType===leadTypeFilter && new Date(p.createdAt) >= from && new Date(p.createdAt) <= to);
+    const total = cohort.length;
+    const closed = cohort.filter(p=>p.category==='Closed').length;
+    const pct = total ? Math.round((closed/total)*100) : 0;
+
+    const catCounts = {Unsorted:0, New:0, Promising:0, Difficult:0, Closed:0};
+    cohort.forEach(p=>catCounts[p.category] = (catCounts[p.category]||0)+1);
+    const catColors = {Unsorted:'#F2B705', New:'#5C8C6E', Promising:'#C9932E', Difficult:'#A44A38', Closed:'#2F6B4F'};
+    const catSegments = CATEGORIES.map(c=>({label:c, count:catCounts[c], color:catColors[c]}));
+
+    const closedInPeriod = prospects.filter(p=>p.leadType===leadTypeFilter && p.closedAt && new Date(p.closedAt) >= from && new Date(p.closedAt) <= to);
+    const nops = closedInPeriod.length;
+    const api = closedInPeriod.reduce((sum,p)=>sum+annualizedPremium(p), 0);
+    const avgCompleteness = total ? Math.round(cohort.reduce((s,p)=>s+completenessPct(p),0)/total) : 0;
+    const completenessColor = avgCompleteness>=80 ? '#2F6B4F' : avgCompleteness>=50 ? '#C9932E' : '#A44A38';
+
+    const sectorSegments = groupCounts(cohort, p=>sectorMajorOf(sectorDisplay(p)), 8);
+    const countySegments = groupCounts(cohort, p=>p.county, 8);
+    const genreOptions = [{value:'bar',label:'Bar'},{value:'pie',label:'Pie'}];
+
+    container.innerHTML = `
+      <div class="report-donut">
+        ${donutSvg(pct, '#2F6B4F')}
+        <div class="report-stats">
+          <span>Closed vs. captured</span>
+          <b>${closed} of ${total}</b>
+          <span>${pct}% close rate for leads captured in this period</span>
+        </div>
+      </div>
+      <label>Breakdown (by capture)</label>
+      ${chartGenreToggleHtml('cat', chartPrefs.cat, genreOptions)}
+      ${renderBarOrPie(catSegments, total, chartPrefs.cat)}
+
+      <label>Closed business (by date closed)</label>
+      <div class="kpi-row">
+        <div class="kpi-card"><div class="kpi-num">${nops}</div><div class="kpi-label">NOPS</div></div>
+        <div class="kpi-card"><div class="kpi-num">${fmtMoney(Math.round(api))}</div><div class="kpi-label">API (KES/yr)</div></div>
+      </div>
+      <div class="field-note">NOPS = number of policies closed in this period. API = annualized premium income (Monthly×12, Quarterly×4, Semiannual×2, Annual×1, Single Premium at face value — adjust if your company uses a different single-premium convention).</div>
+
+      <label>Agent Performance — Average Data Captured per Prospect</label>
+      <div class="report-donut">
+        ${donutSvg(avgCompleteness, completenessColor)}
+        <div class="report-stats">
+          <span>Average completeness across 11 key fields</span>
+          <b>${avgCompleteness}%</b>
+          <span>${total} prospect${total===1?'':'s'} assessed in this period</span>
+        </div>
+      </div>
+      <div class="field-note">Fields checked: Name, Phone, Email, Where Met, Sector, County, Product, Premium, Frequency, Stage, Category. This gauges how thoroughly you capture prospect details while selling.</div>
+
+      <label>Prospects by Sector</label>
+      ${sectorSegments.length ? chartGenreToggleHtml('sector', chartPrefs.sector, genreOptions) + renderBarOrPie(sectorSegments, total, chartPrefs.sector) + '<div class="field-note">Grouped by major sector — a prospect logged under any subsector (e.g. "Manufacturing – Textile & Apparel") counts toward its parent sector here.</div>' : '<div class="field-note">No sector data captured yet in this period.</div>'}
+
+      <label>Clients by County</label>
+      ${countySegments.length ? chartGenreToggleHtml('county', chartPrefs.county, genreOptions) + renderBarOrPie(countySegments, total, chartPrefs.county) : '<div class="field-note">No county data captured yet in this period.</div>'}
+    `;
+    wireGenreToggles(container, chartPrefs, ()=>renderCohortReport(container, mode, val, chartPrefs));
+  }
+
+  function trendBuckets(granularity){
+    const now = new Date();
+    const buckets = [];
+    if(granularity==='daily'){
+      for(let i=13;i>=0;i--){
+        const d = new Date(now.getFullYear(), now.getMonth(), now.getDate()-i);
+        buckets.push({ label: d.toLocaleDateString(undefined,{day:'numeric',month:'short'}), from:d, to:new Date(d.getFullYear(),d.getMonth(),d.getDate(),23,59,59) });
+      }
+    }else if(granularity==='weekly'){
+      const day = now.getDay();
+      const diff = (day===0?6:day-1);
+      const thisMon = new Date(now.getFullYear(), now.getMonth(), now.getDate()-diff);
+      for(let i=11;i>=0;i--){
+        const from = new Date(thisMon.getFullYear(), thisMon.getMonth(), thisMon.getDate()-7*i);
+        const to = new Date(from.getFullYear(), from.getMonth(), from.getDate()+6,23,59,59);
+        buckets.push({ label: from.toLocaleDateString(undefined,{day:'numeric',month:'short'}), from, to });
+      }
+    }else if(granularity==='monthly'){
+      for(let i=11;i>=0;i--){
+        const from = new Date(now.getFullYear(), now.getMonth()-i, 1);
+        const to = new Date(from.getFullYear(), from.getMonth()+1, 0, 23,59,59);
+        buckets.push({ label: from.toLocaleDateString(undefined,{month:'short'}), from, to });
+      }
+    }else{
+      for(let i=5;i>=0;i--){
+        const y = now.getFullYear()-i;
+        buckets.push({ label: String(y), from: new Date(y,0,1), to: new Date(y,11,31,23,59,59) });
+      }
+    }
+    return buckets;
+  }
+
+  function computeTrendData(granularity){
+    const buckets = trendBuckets(granularity);
+    return buckets.map(b=>{
+      const captured = prospects.filter(p=>p.leadType===leadTypeFilter && new Date(p.createdAt)>=b.from && new Date(p.createdAt)<=b.to).length;
+      const closed = prospects.filter(p=>p.leadType===leadTypeFilter && p.closedAt && new Date(p.closedAt)>=b.from && new Date(p.closedAt)<=b.to).length;
+      return { label:b.label, captured, closed };
+    });
+  }
+
+  function rankedLineSvg(ranked){
+    const W=340, H=170, padL=24, padR=10, padT=10, padB=34;
+    const plotW=W-padL-padR, plotH=H-padT-padB;
+    const n=ranked.length;
+    const slot = n>1 ? plotW/(n-1) : 0;
+    const maxVal = Math.max(...ranked.map(r=>r.value)) || 1;
+    function y(v){ return padT+plotH-(v/maxVal)*plotH; }
+    let svg = `<svg class="trend-chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">`;
+    for(let g=0; g<=2; g++){
+      const gy = padT+plotH*(g/2);
+      svg += `<line x1="${padL}" y1="${gy}" x2="${W-padR}" y2="${gy}" stroke="#EDE9DC" stroke-width="1"/>`;
+    }
+    const pts = ranked.map((r,i)=> (padL+slot*i) + ',' + y(r.value)).join(' ');
+    svg += `<polyline points="${pts}" fill="none" stroke="#B4893C" stroke-width="2.4"/>`;
+    ranked.forEach((r,i)=>{
+      const cx = padL+slot*i;
+      svg += `<circle cx="${cx}" cy="${y(r.value)}" r="3.2" fill="#B4893C"/>`;
+      const shortName = r.p.name.length>9 ? r.p.name.slice(0,8)+'…' : r.p.name;
+      svg += `<text x="${cx}" y="${H-8}" font-size="7" fill="#425073" text-anchor="middle">${escapeHtml(shortName)}</text>`;
+    });
+    svg += `</svg>`;
+    return svg;
+  }
+
+  function renderReferralLeaderboard(container, metric, refPrefs, onChange){
+    const scoped = prospects.filter(p=>p.leadType===leadTypeFilter);
+    const ranked = scoped.map(p=>{
+      const roll = chainRollup(p.id);
+      const value = metric==='people' ? roll.referred : metric==='nops' ? roll.nops : roll.api;
+      return { p, roll, value };
+    }).filter(r=>r.value>0).sort((a,b)=>b.value-a.value).slice(0,10);
+
+    if(ranked.length===0){
+      container.innerHTML = '<div class="field-note">No referral chains with this metric yet — link a "Referred by" on a prospect to start building one.</div>';
+      return;
+    }
+    const maxVal = Math.max(...ranked.map(r=>r.value));
+    const metricLabel = metric==='people' ? 'People Referred' : metric==='nops' ? 'NOPS' : 'API (KES/yr)';
+    const genreOptions = [{value:'bar',label:'Bar'},{value:'line',label:'Line'}];
+    const chartHtml = refPrefs.chart==='line' ? rankedLineSvg(ranked) : ranked.map(r=>`
+        <div class="bar-row">
+          <div class="bar-label" style="width:130px; cursor:pointer;" data-id="${r.p.id}">${escapeHtml(r.p.name)}</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${Math.round(r.value/maxVal*100)}%; background:var(--gold);"></div></div>
+          <div class="bar-count" style="width:auto;">${metric==='api' ? fmtMoney(Math.round(r.value)) : r.value}</div>
+        </div>
+      `).join('');
+
+    container.innerHTML = `
+      <div class="field-note">Top ${ranked.length} ${leadTypeFilter.toLowerCase()} clients ranked by ${metricLabel.toLowerCase()} generated through their referral chain — every level down, not just direct referrals.</div>
+      ${chartGenreToggleHtml('chart', refPrefs.chart, genreOptions)}
+      ${chartHtml}
+      ${refPrefs.chart==='line' ? '<div class="field-note">Points read left to right, highest first. Switch to Bar to tap through to each client.</div>' : ''}
+    `;
+    container.querySelectorAll('.bar-label[data-id]').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        overlayCloseAndOpenDetail(el.dataset.id);
+      });
+    });
+    wireGenreToggles(container, refPrefs, onChange);
+  }
+  function overlayCloseAndOpenDetail(id){
+    document.querySelectorAll('.overlay').forEach(o=>o.remove());
+    openDetail(id);
+  }
+
+  function renderTrendChart(container, chartType, granularity){
+    const data = computeTrendData(granularity);
+    const CHART_YELLOW = '#F2B705';
+    const CHART_GREEN = '#2FA968';
+    const CHART_LINE_PROSPECTED = '#2E5FE0';
+    const CHART_LINE_CLOSED = '#E0632E';
+
+    const maxVal = chartType==='stacked'
+      ? Math.max(1, ...data.map(d=>d.captured + d.closed))
+      : Math.max(1, ...data.map(d=>Math.max(d.captured, d.closed)));
+    const W = 340, H = 160, padL = 24, padB = 22, padT = 8, padR = 8;
+    const plotW = W - padL - padR, plotH = H - padT - padB;
+    const n = data.length;
+    const slot = plotW / n;
+
+    function y(v){ return padT + plotH - (v/maxVal)*plotH; }
+
+    let svg = `<svg class="trend-chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">`;
+    for(let g=0; g<=2; g++){
+      const gy = padT + plotH*(g/2);
+      svg += `<line x1="${padL}" y1="${gy}" x2="${W-padR}" y2="${gy}" stroke="#EDE9DC" stroke-width="1"/>`;
+    }
+
+    if(chartType==='bar'){
+      const barW = slot*0.32;
+      data.forEach((d,i)=>{
+        const cx = padL + slot*i + slot*0.5;
+        const hb1 = plotH - (y(d.captured)-padT);
+        svg += `<rect x="${cx-barW-1}" y="${y(d.captured)}" width="${barW}" height="${hb1}" fill="${CHART_YELLOW}" rx="1.5"/>`;
+        const hb2 = plotH - (y(d.closed)-padT);
+        svg += `<rect x="${cx+1}" y="${y(d.closed)}" width="${barW}" height="${hb2}" fill="${CHART_GREEN}" rx="1.5"/>`;
+      });
+    } else if(chartType==='stacked'){
+      const barW = slot*0.5;
+      data.forEach((d,i)=>{
+        const cx = padL + slot*i + slot*0.5;
+        const baseY = padT + plotH;
+        const prospectedH = (d.captured/maxVal)*plotH;
+        const closedH = (d.closed/maxVal)*plotH;
+        svg += `<rect x="${cx-barW/2}" y="${baseY-prospectedH}" width="${barW}" height="${prospectedH}" fill="${CHART_YELLOW}" rx="1.5"/>`;
+        svg += `<rect x="${cx-barW/2}" y="${baseY-prospectedH-closedH}" width="${barW}" height="${closedH}" fill="${CHART_GREEN}" rx="1.5"/>`;
+      });
+    } else if(chartType==='line'){
+      const pts = data.map((d,i)=> (padL+slot*i+slot*0.5) + ',' + y(d.closed)).join(' ');
+      svg += `<polyline points="${pts}" fill="none" stroke="${CHART_LINE_CLOSED}" stroke-width="2.4"/>`;
+      data.forEach((d,i)=>{
+        const cx = padL+slot*i+slot*0.5;
+        svg += `<circle cx="${cx}" cy="${y(d.closed)}" r="2.6" fill="${CHART_LINE_CLOSED}"/>`;
+      });
+      const pts2 = data.map((d,i)=> (padL+slot*i+slot*0.5) + ',' + y(d.captured)).join(' ');
+      svg += `<polyline points="${pts2}" fill="none" stroke="${CHART_LINE_PROSPECTED}" stroke-width="2.4"/>`;
+      data.forEach((d,i)=>{
+        const cx = padL+slot*i+slot*0.5;
+        svg += `<circle cx="${cx}" cy="${y(d.captured)}" r="2.6" fill="${CHART_LINE_PROSPECTED}"/>`;
+      });
+    }
+    const labelEvery = n>10 ? 2 : 1;
+    data.forEach((d,i)=>{
+      if(i % labelEvery !== 0 && i !== n-1) return;
+      const cx = padL+slot*i+slot*0.5;
+      svg += `<text x="${cx}" y="${H-6}" font-size="7" fill="#425073" text-anchor="middle">${d.label}</text>`;
+    });
+    svg += `</svg>`;
+
+    container.innerHTML = `
+      ${svg}
+      <div class="chart-legend">
+        <span><i style="background:${chartType==='line'?CHART_LINE_PROSPECTED:CHART_YELLOW};"></i>Prospected</span>
+        <span><i style="background:${chartType==='line'?CHART_LINE_CLOSED:CHART_GREEN};"></i>Closed</span>
+      </div>
+      <div class="field-note">${granularity==='daily'?'Last 14 days':granularity==='weekly'?'Last 12 weeks':granularity==='monthly'?'Last 12 months':'Last 6 years'} · ${leadTypeFilter}${chartType==='line' ? ' · Line uses blue (prospected) / orange (closed) — a high-contrast pair chosen to stay distinguishable, including for colorblind viewers.' : ''}</div>
+    `;
+  }
+
+  $('#reportsBtn').addEventListener('click', ()=>{
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    const today = new Date().toISOString().slice(0,10);
+    const thisMonth = today.slice(0,7);
+    const thisYear = today.slice(0,4);
+    overlay.innerHTML = `
+      <div class="sheet">
+        <div class="sheet-head"><h2>Reports — ${leadTypeFilter}</h2><button class="close-x">&times;</button></div>
+        <div class="segmented" id="viewTabs">
+          <button data-v="cohort" class="active">Agent Summary</button>
+          <button data-v="trends">Activity Trends</button>
+          <button data-v="referrals">Referral Leaderboard</button>
+        </div>
+        <div id="cohortPanel">
+          <div class="segmented" id="periodTabs">
+            <button data-p="daily" class="active">Daily</button>
+            <button data-p="weekly">Weekly</button>
+            <button data-p="monthly">Monthly</button>
+            <button data-p="yearly">Annually</button>
+            <button data-p="custom">Custom</button>
+          </div>
+          <div id="periodInput"></div>
+          <div id="reportBody"></div>
+        </div>
+        <div id="trendsPanel" style="display:none;">
+          <div class="segmented" id="chartTypeTabs">
+            <button data-c="bar" class="active">Bar</button>
+            <button data-c="line">Line</button>
+            <button data-c="stacked">Stacked</button>
+          </div>
+          <div class="segmented" id="granTabs">
+            <button data-g="daily" class="active">Daily</button>
+            <button data-g="weekly">Weekly</button>
+            <button data-g="monthly">Monthly</button>
+            <button data-g="yearly">Yearly</button>
+          </div>
+          <div id="trendBody"></div>
+        </div>
+        <div id="referralsPanel" style="display:none;">
+          <div class="segmented" id="refMetricTabs">
+            <button data-m="people" class="active">People Referred</button>
+            <button data-m="nops">NOPS</button>
+            <button data-m="api">API</button>
+          </div>
+          <div id="referralsBody"></div>
+        </div>
+        <div class="sheet-actions"><button class="btn btn-ghost" id="closeReport" style="width:100%;">Close</button></div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    const body = overlay.querySelector('#reportBody');
+    const periodInputEl = overlay.querySelector('#periodInput');
+    let mode = 'daily';
+    const cohortChartPrefs = {cat:'bar', sector:'bar', county:'pie'};
+
+    function renderPeriodInput(){
+      if(mode==='daily'){
+        periodInputEl.innerHTML = `<label>Date</label><input type="date" id="pDaily" value="${today}">`;
+        periodInputEl.querySelector('#pDaily').addEventListener('change', refresh);
+      }else if(mode==='weekly'){
+        periodInputEl.innerHTML = `<label>Any date in the week</label><input type="date" id="pWeekly" value="${today}">`;
+        periodInputEl.querySelector('#pWeekly').addEventListener('change', refresh);
+      }else if(mode==='monthly'){
+        periodInputEl.innerHTML = `<label>Month</label><input type="month" id="pMonthly" value="${thisMonth}">`;
+        periodInputEl.querySelector('#pMonthly').addEventListener('change', refresh);
+      }else if(mode==='yearly'){
+        periodInputEl.innerHTML = `<label>Year</label><input type="number" id="pYearly" value="${thisYear}" min="2000" max="2100" step="1">`;
+        periodInputEl.querySelector('#pYearly').addEventListener('change', refresh);
+      }else{
+        periodInputEl.innerHTML = `<div class="two-col"><div><label>From</label><input type="date" id="pFrom" value="${today}"></div><div><label>To</label><input type="date" id="pTo" value="${today}"></div></div>`;
+        periodInputEl.querySelector('#pFrom').addEventListener('change', refresh);
+        periodInputEl.querySelector('#pTo').addEventListener('change', refresh);
+      }
+      refresh();
+    }
+    function refresh(){
+      let val;
+      if(mode==='daily') val = periodInputEl.querySelector('#pDaily').value || today;
+      else if(mode==='weekly') val = periodInputEl.querySelector('#pWeekly').value || today;
+      else if(mode==='monthly') val = periodInputEl.querySelector('#pMonthly').value || thisMonth;
+      else if(mode==='yearly') val = periodInputEl.querySelector('#pYearly').value || thisYear;
+      else val = { from: periodInputEl.querySelector('#pFrom').value || today, to: periodInputEl.querySelector('#pTo').value || today };
+      renderCohortReport(body, mode, val, cohortChartPrefs);
+    }
+    renderPeriodInput();
+
+    overlay.querySelector('#periodTabs').addEventListener('click', (e)=>{
+      const b = e.target.closest('button');
+      if(!b) return;
+      mode = b.dataset.p;
+      overlay.querySelectorAll('#periodTabs button').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      renderPeriodInput();
+    });
+
+    let chartType = 'bar', granularity = 'daily';
+    const trendBody = overlay.querySelector('#trendBody');
+    function refreshTrend(){ renderTrendChart(trendBody, chartType, granularity); }
+    refreshTrend();
+    overlay.querySelector('#chartTypeTabs').addEventListener('click', (e)=>{
+      const b = e.target.closest('button'); if(!b) return;
+      chartType = b.dataset.c;
+      overlay.querySelectorAll('#chartTypeTabs button').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      refreshTrend();
+    });
+    overlay.querySelector('#granTabs').addEventListener('click', (e)=>{
+      const b = e.target.closest('button'); if(!b) return;
+      granularity = b.dataset.g;
+      overlay.querySelectorAll('#granTabs button').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      refreshTrend();
+    });
+
+    let refMetric = 'people';
+    const refPrefs = {chart:'bar'};
+    const referralsBody = overlay.querySelector('#referralsBody');
+    function refreshReferrals(){ renderReferralLeaderboard(referralsBody, refMetric, refPrefs, refreshReferrals); }
+    overlay.querySelector('#refMetricTabs').addEventListener('click', (e)=>{
+      const b = e.target.closest('button'); if(!b) return;
+      refMetric = b.dataset.m;
+      overlay.querySelectorAll('#refMetricTabs button').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      refreshReferrals();
+    });
+
+    overlay.querySelector('#viewTabs').addEventListener('click', (e)=>{
+      const b = e.target.closest('button'); if(!b) return;
+      overlay.querySelectorAll('#viewTabs button').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      const v = b.dataset.v;
+      overlay.querySelector('#cohortPanel').style.display = v==='cohort' ? 'block' : 'none';
+      overlay.querySelector('#trendsPanel').style.display = v==='trends' ? 'block' : 'none';
+      overlay.querySelector('#referralsPanel').style.display = v==='referrals' ? 'block' : 'none';
+      if(v==='trends') refreshTrend();
+      if(v==='referrals') refreshReferrals();
+    });
+
+    function close(){ overlay.remove(); }
+    overlay.querySelector('.close-x').addEventListener('click', close);
+    overlay.querySelector('#closeReport').addEventListener('click', close);
+    overlay.addEventListener('click', (e)=>{ if(e.target===overlay) close(); });
+  });
+
+  // ---------- More menu (overflow for less-frequent actions) ----------
+  $('#moreBtn').addEventListener('click', ()=>{
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    overlay.innerHTML = `
+      <div class="sheet">
+        <div class="sheet-head"><h2>More</h2><button class="close-x">&times;</button></div>
+
+        <div class="more-menu-section">Reports &amp; Data</div>
+        <div class="more-menu-item data" data-target="reportsBtn">
+          <div class="more-menu-icon">📊</div>
+          <div><div>Reports</div><div class="desc">Performance, trends, referral leaderboard</div></div>
+        </div>
+        <div class="more-menu-item data" data-target="exportBtn">
+          <div class="more-menu-icon">⬇</div>
+          <div><div>Export</div><div class="desc">Excel report or quick PDF</div></div>
+        </div>
+
+        <div class="more-menu-section">Outreach</div>
+        <div class="more-menu-item outreach" data-target="phonebookBtn">
+          <div class="more-menu-icon">📇</div>
+          <div><div>Phone Book</div><div class="desc">Import or export contacts</div></div>
+        </div>
+        <div class="more-menu-item outreach" data-target="broadcastBtn">
+          <div class="more-menu-icon">📣</div>
+          <div><div>Broadcast</div><div class="desc">Message many prospects at once</div></div>
+        </div>
+
+        <div class="more-menu-section">Help &amp; Settings</div>
+        <div class="more-menu-item admin" data-target="helpBtn">
+          <div class="more-menu-icon">❓</div>
+          <div><div>Help</div><div class="desc">How to use this ledger</div></div>
+        </div>
+        <div class="more-menu-item admin" data-target="settingsBtn">
+          <div class="more-menu-icon">⚙</div>
+          <div><div>Settings</div><div class="desc">Agent profile, sync, backup</div></div>
+        </div>
+
+        <div class="sheet-actions"><button class="btn btn-ghost" id="closeMore" style="width:100%;">Close</button></div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    function close(){ overlay.remove(); }
+    overlay.querySelector('.close-x').addEventListener('click', close);
+    overlay.querySelector('#closeMore').addEventListener('click', close);
+    overlay.addEventListener('click', (e)=>{ if(e.target===overlay) close(); });
+    overlay.querySelectorAll('.more-menu-item').forEach(item=>{
+      item.addEventListener('click', ()=>{
+        const targetId = item.dataset.target;
+        close();
+        const target = document.getElementById(targetId);
+        if(target) target.click();
+      });
+    });
+  });
+
+  // ---------- Help ----------
+  $('#helpBtn').addEventListener('click', ()=>{
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    overlay.innerHTML = `
+      <div class="sheet">
+        <div class="sheet-head"><h2>How to use this ledger</h2><button class="close-x">&times;</button></div>
+        <div class="help-step"><div class="help-num">1</div><div><b>Log a prospect</b>Tap the + button. Pick Individual or Corporate, fill in their details, and save — the date is stamped automatically.</div></div>
+        <div class="help-step"><div class="help-num">2</div><div><b>Follow up</b>Search or tap a row to open it, add a dated note each time you speak with them, and update their Category and Stage.</div></div>
+        <div class="help-step"><div class="help-num">3</div><div><b>Find someone</b>Use the search bar (name/phone/email), the Open/Closed filter, 🔍 Filters (date, gender, county, sector, stage), or the sort dropdown with the ▲▼ direction toggle.</div></div>
+        <div class="help-step"><div class="help-num">4</div><div><b>Broadcast a message</b>📣 Broadcast sends one message to many people at once — narrow your audience with 🔍 Filters first, then compose. Email goes out in one tap (via BCC); WhatsApp steps you through your list one chat at a time, since that's the most any website is allowed to automate.</div></div>
+        <div class="help-step"><div class="help-num">5</div><div><b>Check performance</b>📊 Reports shows your close rate, NOPS, and API for any period, plus activity trend charts.</div></div>
+        <div class="help-step"><div class="help-num">6</div><div><b>Export or send</b>Use the download icon for a full Excel-style report or a quick PDF. Use 📤 Send on any record to share it via your phone's Share sheet.</div></div>
+        <div class="help-step"><div class="help-num">7</div><div><b>Import contacts</b>📇 Phone Book lets you pull in phone contacts as 🟡 Unsorted leads — sort them into your pipeline once you've reached out — and export your list back to your phone's Contacts app.</div></div>
+        <div class="help-step"><div class="help-num">8</div><div><b>Back it up</b>This data lives only on this device. In ⚙ Settings, export a JSON backup regularly, and set up Google Sheet sync if you want a cloud copy.</div></div>
+        <div class="help-step"><div class="help-num">9</div><div><b>Reminders</b>Set a "Next follow-up" date on any record, then check 🔔 for what's Overdue, Due today, or coming up in the next 7 days. Turn on browser notifications from inside 🔔 — these only fire while the app is open, since no website can alert you when it's closed.</div></div>
+        <div class="sheet-actions"><button class="btn btn-primary" id="closeHelp" style="width:100%;">Got it</button></div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    function close(){ overlay.remove(); }
+    overlay.querySelector('.close-x').addEventListener('click', close);
+    overlay.querySelector('#closeHelp').addEventListener('click', close);
+    overlay.addEventListener('click', (e)=>{ if(e.target===overlay) close(); });
+  });
+
+  // ---------- Phone Book: import from contacts, export to contacts ----------
+  function parseVCF(text){
+    const contacts = [];
+    const blocks = text.split(/BEGIN:VCARD/i).slice(1);
+    blocks.forEach(block=>{
+      const nameMatch = block.match(/\nFN[^:]*:(.*)/i);
+      const telMatch = block.match(/\nTEL[^:]*:(.*)/i);
+      const emailMatch = block.match(/\nEMAIL[^:]*:(.*)/i);
+      const name = nameMatch ? nameMatch[1].trim() : '';
+      const phone = telMatch ? telMatch[1].trim() : '';
+      const email = emailMatch ? emailMatch[1].trim() : '';
+      if(name || phone) contacts.push({name, phone, email});
+    });
+    return contacts;
+  }
+  function parseContactsCSV(text){
+    const lines = text.split(/\r?\n/).filter(l=>l.trim().length>0);
+    if(lines.length<2) return [];
+    const headers = lines[0].split(',').map(h=>h.trim().replace(/^"|"$/g,'').toLowerCase());
+    const findCol = (keys)=>headers.findIndex(h=>keys.some(k=>h.includes(k)));
+    const nameIdx = findCol(['name']);
+    const phoneIdx = findCol(['phone','mobile','tel']);
+    const emailIdx = findCol(['email']);
+    const contacts = [];
+    for(let i=1;i<lines.length;i++){
+      const cols = lines[i].split(',').map(c=>c.trim().replace(/^"|"$/g,''));
+      const name = nameIdx>=0 ? (cols[nameIdx]||'') : '';
+      const phone = phoneIdx>=0 ? (cols[phoneIdx]||'') : '';
+      const email = emailIdx>=0 ? (cols[emailIdx]||'') : '';
+      if(name || phone) contacts.push({name, phone, email});
+    }
+    return contacts;
+  }
+
+  function importParsedContacts(list){
+    let added=0, skippedDup=0, skippedNoPhone=0;
+    list.forEach(c=>{
+      const phone = (c.phone||'').trim();
+      if(!phone){ skippedNoPhone++; return; }
+      if(findDuplicatePhone(phone, null)){ skippedDup++; return; }
+      const now = new Date().toISOString();
+      const p = {
+        id: uid(), leadType:'Individual', name: c.name || phone, phone, email: (c.email||'').trim(),
+        location:'', sector:'', sectorOther:'', county:'',
+        product:'', premiumAmount:'', premiumFrequency:'',
+        category:'Unsorted', closedAt:null, stage: STAGES_BY_TYPE.Individual[0],
+        createdAt: now, history:[{id:uid(), date:now, note:'Imported from phone contacts — not yet reviewed.'}]
+      };
+      prospects.push(p);
+      added++;
+    });
+    if(added>0){ scheduleSave(); render(); }
+    return {added, skippedDup, skippedNoPhone};
+  }
+
+  async function pickFromPhoneContacts(){
+    if(!('contacts' in navigator && 'ContactsManager' in window)){
+      showToast('Contact picker not supported in this browser — use Import from file below');
+      return null;
+    }
+    try{
+      const results = await navigator.contacts.select(['name','tel','email'], {multiple:true});
+      return results.map(c=>({
+        name: (c.name && c.name[0]) || '',
+        phone: (c.tel && c.tel[0]) || '',
+        email: (c.email && c.email[0]) || ''
+      }));
+    }catch(e){ return null; }
+  }
+
+  function exportContactsVCF(items){
+    if(items.length===0){ showToast('Nothing to export with the current filters'); return; }
+    let vcf = '';
+    items.forEach(p=>{
+      vcf += 'BEGIN:VCARD\nVERSION:3.0\n';
+      vcf += 'FN:'+(p.name||'')+'\n';
+      if(p.phone) vcf += 'TEL;TYPE=CELL:'+p.phone+'\n';
+      if(p.email) vcf += 'EMAIL:'+p.email+'\n';
+      if(p.leadType==='Corporate' && p.contactPerson) vcf += 'NOTE:Contact person - '+p.contactPerson+'\n';
+      vcf += 'END:VCARD\n';
+    });
+    const blob = new Blob([vcf], {type:'text/vcard'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'prospect-ledger-contacts-'+new Date().toISOString().slice(0,10)+'.vcf';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    showToast('Contacts file downloaded — open it to add to your phone contacts');
+  }
+
+  $('#phonebookBtn').addEventListener('click', ()=>{
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    const pickerSupported = ('contacts' in navigator && 'ContactsManager' in window);
+    overlay.innerHTML = `
+      <div class="sheet">
+        <div class="sheet-head"><h2>Phone Book</h2><button class="close-x">&times;</button></div>
+        <div class="field-note">Imported contacts land as <b>Unsorted</b> (🟡) so they stay separate from clients you're already working — open any of them and update the Category/Stage once you've reached out.</div>
+
+        <label>Pick from phone contacts</label>
+        <button class="btn btn-ghost" id="pickContactsBtn" style="width:100%;" ${pickerSupported?'':'disabled'}>${pickerSupported ? '📇 Choose contacts to import' : 'Not supported in this browser'}</button>
+        ${pickerSupported ? '' : '<div class="field-note">This one-tap picker only works in Chrome on Android. Use the file import below on any other phone.</div>'}
+
+        <label>Import from a contacts file (.vcf or .csv)</label>
+        <div class="field-note">Export your contacts from your phone's Contacts app first (usually Settings → Export), then choose that file here.</div>
+        <button class="btn btn-ghost" id="pickFileBtn" style="width:100%;margin-top:8px;">📁 Choose file</button>
+        <input type="file" id="contactsFileInput" accept=".vcf,.csv,text/vcard,text/csv" style="display:none;">
+
+        <div id="importPreview"></div>
+
+        <label>Export to phone contacts</label>
+        <div class="field-note">Downloads a contacts file for the ${leadTypeFilter} records currently matching your search/filters — open it afterwards to add them to your phone's Contacts app.</div>
+        <button class="btn btn-ghost" id="exportContactsBtn" style="width:100%;margin-top:8px;">⬇ Export visible list to contacts file</button>
+
+        <div class="sheet-actions"><button class="btn btn-primary" id="closePhonebook" style="width:100%;">Close</button></div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    function close(){ overlay.remove(); }
+    overlay.querySelector('.close-x').addEventListener('click', close);
+    overlay.querySelector('#closePhonebook').addEventListener('click', close);
+    overlay.addEventListener('click', (e)=>{ if(e.target===overlay) close(); });
+
+    let pendingContacts = [];
+    function showPreview(list){
+      pendingContacts = list;
+      const withPhone = list.filter(c=>(c.phone||'').trim()).length;
+      const preview = overlay.querySelector('#importPreview');
+      preview.innerHTML = `
+        <div class="field-note">Found ${list.length} contact${list.length===1?'':'s'} — ${withPhone} ha${withPhone===1?'s':'ve'} a phone number (required to import).</div>
+        <button class="btn btn-primary" id="confirmImportBtn" style="width:100%;margin-top:8px;">Import ${withPhone} contact${withPhone===1?'':'s'}</button>
+      `;
+      preview.querySelector('#confirmImportBtn').addEventListener('click', ()=>{
+        const result = importParsedContacts(pendingContacts);
+        let msg = result.added+' imported as Unsorted.';
+        if(result.skippedDup) msg += ' '+result.skippedDup+' skipped (already in your ledger).';
+        if(result.skippedNoPhone) msg += ' '+result.skippedNoPhone+' skipped (no phone number).';
+        showToast(msg);
+        preview.innerHTML = '';
+        pendingContacts = [];
+      });
+    }
+
+    overlay.querySelector('#pickContactsBtn').addEventListener('click', async ()=>{
+      const list = await pickFromPhoneContacts();
+      if(list && list.length) showPreview(list);
+      else if(list) showToast('No contacts selected');
+    });
+    overlay.querySelector('#pickFileBtn').addEventListener('click', ()=>{
+      overlay.querySelector('#contactsFileInput').click();
+    });
+    overlay.querySelector('#contactsFileInput').addEventListener('change', async (e)=>{
+      const file = e.target.files[0];
+      if(!file) return;
+      const text = await file.text();
+      const isVcf = /\.vcf$/i.test(file.name) || text.includes('BEGIN:VCARD');
+      const list = isVcf ? parseVCF(text) : parseContactsCSV(text);
+      if(list.length===0){ showToast('Could not find any contacts in that file'); return; }
+      showPreview(list);
+    });
+    overlay.querySelector('#exportContactsBtn').addEventListener('click', ()=>{
+      exportContactsVCF(getVisibleItems());
+    });
+  });
+
+  // ---------- Broadcast ----------
+  function broadcastAudienceRowHtml(p, checked){
+    const via = [];
+    if(p.phone) via.push('📞');
+    if(p.email) via.push('✉️');
+    const searchKey = (p.name+' '+(p.phone||'')+' '+(p.email||'')).toLowerCase();
+    return `<div class="export-col-row" data-search="${escapeHtml(searchKey)}">
+      <input type="checkbox" class="bcAudienceCheck" data-id="${p.id}" ${checked?'checked':''}>
+      <label>${escapeHtml(p.name)} <span style="color:var(--ink-soft);font-size:11.5px;">${via.join(' ')||'no contact info'}</span></label>
+    </div>`;
+  }
+
+  $('#broadcastBtn').addEventListener('click', ()=>{
+    const baseAudience = getVisibleItems();
+    const selected = new Set(baseAudience.map(p=>p.id));
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    overlay.innerHTML = `
+      <div class="sheet">
+        <div class="sheet-head"><h2>Broadcast</h2><button class="close-x">&times;</button></div>
+        <div class="field-note">Audience starts as your current filtered list (${baseAudience.length} ${leadTypeFilter.toLowerCase()} record${baseAudience.length===1?'':'s'}) — untick anyone you want to leave out, or use ⚙ Filters first to narrow this down (e.g. by County, Sector, or Gender) before opening Broadcast.</div>
+
+        <label>Audience (<span id="bcCount">${selected.size}</span> selected)</label>
+        <input type="text" id="bcSearch" placeholder="Search audience by name, phone, or email…" autocomplete="off" style="margin-bottom:8px;">
+        <div class="two-col" style="margin-bottom:8px;">
+          <button class="btn btn-ghost" id="bcSelectAll">Select all</button>
+          <button class="btn btn-ghost" id="bcSelectNone">Select none</button>
+        </div>
+        <div id="bcAudienceList" style="max-height:180px; overflow-y:auto; border:1px solid var(--line); border-radius:8px; padding:0 10px;">
+          ${baseAudience.map(p=>broadcastAudienceRowHtml(p, true)).join('')}
+        </div>
+        <div class="field-note" id="bcSearchNote" style="display:none;"></div>
+
+        <label>Message</label>
+        <div class="voice-row">
+          <textarea id="bcMessage" placeholder="e.g. Happy holidays! Wishing you and your family a blessed season..."></textarea>
+          <button type="button" class="mic-btn" id="bcMic">🎤</button>
+        </div>
+
+        <div id="bcSendPanel">
+          <label>Send via</label>
+          <div class="cat-select" id="bcChannelSelect"></div>
+          <div id="bcChannelBody"></div>
+        </div>
+
+        <div class="sheet-actions"><button class="btn btn-ghost" id="closeBroadcast" style="width:100%;">Close</button></div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    function close(){ overlay.remove(); }
+    overlay.querySelector('.close-x').addEventListener('click', close);
+    overlay.querySelector('#closeBroadcast').addEventListener('click', close);
+    overlay.addEventListener('click', (e)=>{ if(e.target===overlay) close(); });
+    attachVoice(overlay.querySelector('#bcMic'), overlay.querySelector('#bcMessage'));
+
+    const listEl = overlay.querySelector('#bcAudienceList');
+    const countEl = overlay.querySelector('#bcCount');
+    const searchInput = overlay.querySelector('#bcSearch');
+    const searchNote = overlay.querySelector('#bcSearchNote');
+    function updateCount(){ countEl.textContent = selected.size; }
+    function applyAudienceSearch(){
+      const q = searchInput.value.trim().toLowerCase();
+      let visibleCount = 0;
+      listEl.querySelectorAll('.export-col-row').forEach(row=>{
+        const match = !q || (row.dataset.search||'').includes(q);
+        row.style.display = match ? 'flex' : 'none';
+        if(match) visibleCount++;
+      });
+      if(q){
+        searchNote.style.display = 'block';
+        searchNote.textContent = visibleCount+' match'+(visibleCount===1?'':'es')+' — Select all/none only affects what\'s currently shown.';
+      } else {
+        searchNote.style.display = 'none';
+      }
+    }
+    searchInput.addEventListener('input', applyAudienceSearch);
+    listEl.addEventListener('change', (e)=>{
+      const cb = e.target.closest('.bcAudienceCheck');
+      if(!cb) return;
+      if(cb.checked) selected.add(cb.dataset.id); else selected.delete(cb.dataset.id);
+      updateCount();
+    });
+    overlay.querySelector('#bcSelectAll').addEventListener('click', ()=>{
+      listEl.querySelectorAll('.export-col-row').forEach(row=>{
+        if(row.style.display==='none') return;
+        const cb = row.querySelector('.bcAudienceCheck');
+        cb.checked=true; selected.add(cb.dataset.id);
+      });
+      updateCount();
+    });
+    overlay.querySelector('#bcSelectNone').addEventListener('click', ()=>{
+      listEl.querySelectorAll('.export-col-row').forEach(row=>{
+        if(row.style.display==='none') return;
+        const cb = row.querySelector('.bcAudienceCheck');
+        cb.checked=false; selected.delete(cb.dataset.id);
+      });
+      updateCount();
+    });
+
+    let channel = 'email';
+    const channelBody = overlay.querySelector('#bcChannelBody');
+
+    function renderChannelBody(){
+      const audience = baseAudience.filter(p=>selected.has(p.id));
+      const message = overlay.querySelector('#bcMessage').value.trim();
+      if(channel==='email'){
+        const withEmail = audience.filter(p=>p.email);
+        channelBody.innerHTML = `
+          <div class="field-note">${withEmail.length} of ${audience.length} selected have an email address. This opens your email app with everyone in BCC (so recipients don't see each other) — one tap sends to all.</div>
+          <button class="btn btn-primary" id="bcSendEmail" style="width:100%;margin-top:8px;">✉️ Open email to ${withEmail.length} recipients</button>
+        `;
+        channelBody.querySelector('#bcSendEmail').addEventListener('click', ()=>{
+          if(!message){ showToast('Write a message first'); return; }
+          if(withEmail.length===0){ showToast('No selected contacts have an email address'); return; }
+          const bcc = withEmail.map(p=>p.email).join(',');
+          const mailto = 'mailto:?bcc='+encodeURIComponent(bcc)+'&subject='+encodeURIComponent('A message for you')+'&body='+encodeURIComponent(message);
+          window.location.href = mailto;
+          withEmail.forEach(p=>{ logActivity(p, '📢 Broadcast email sent: "'+message.slice(0,60)+(message.length>60?'…':'')+'"'); });
+          scheduleSave();
+          withEmail.forEach(p=>syncUpsert(p));
+          showToast('Email app opened for '+withEmail.length+' recipients');
+        });
+      } else {
+        const withPhone = audience.filter(p=>p.phone);
+        if(withPhone.length===0){
+          channelBody.innerHTML = '<div class="field-note">None of the selected contacts have a phone number.</div>';
+          return;
+        }
+        let idx = 0;
+        function renderQueueStep(){
+          if(!message){ channelBody.innerHTML = '<div class="field-note">Write a message above first.</div>'; return; }
+          if(idx >= withPhone.length){
+            channelBody.innerHTML = `<div class="field-note">✅ Queue complete — worked through all ${withPhone.length} contacts.</div>`;
+            return;
+          }
+          const p = withPhone[idx];
+          const waLink = 'https://wa.me/'+normalizeForLink(p.phone)+'?text='+encodeURIComponent(message);
+          channelBody.innerHTML = `
+            <div class="field-note">WhatsApp can only open one chat at a time — this steps you through your audience one by one. Tap Open, hit send in WhatsApp, then come back and tap Next.</div>
+            <div style="font-weight:700; margin-top:8px;">${idx+1} of ${withPhone.length}: ${escapeHtml(p.name)}</div>
+            <div class="contact-actions" style="margin-top:8px;">
+              <a class="wa-link" id="bcWaOpen" href="${waLink}" target="_blank" rel="noopener">💬 Open WhatsApp</a>
+              <button type="button" class="call-link" id="bcWaNext">Next ▶</button>
+            </div>
+          `;
+          channelBody.querySelector('#bcWaOpen').addEventListener('click', ()=>{
+            logActivity(p, '📢 Broadcast WhatsApp opened: "'+message.slice(0,60)+(message.length>60?'…':'')+'"');
+            scheduleSave();
+            syncUpsert(p);
+          });
+          channelBody.querySelector('#bcWaNext').addEventListener('click', ()=>{
+            idx++;
+            renderQueueStep();
+          });
+        }
+        renderQueueStep();
+      }
+    }
+
+    buildCatSelect(overlay.querySelector('#bcChannelSelect'), ['Email','WhatsApp'], ()=>channel==='email'?'Email':'WhatsApp', (v)=>{
+      channel = v==='Email' ? 'email' : 'whatsapp';
+      renderChannelBody();
+    }, 'lead');
+    overlay.querySelector('#bcMessage').addEventListener('input', renderChannelBody);
+    renderChannelBody();
+  });
+
+  // ---------- Reminders view ----------
+  $('#remindersBtn').addEventListener('click', ()=>{
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    overlay.innerHTML = `
+      <div class="sheet">
+        <div class="sheet-head"><h2>Reminders</h2><button class="close-x">&times;</button></div>
+        <div class="field-note">Set a "Next follow-up" date on any prospect (in their detail view or the edit form) to have it show up here. Notifications only fire while this app is open in your browser — no website can send alerts when it's closed, so 🔔 checking in regularly is still the reliable habit.</div>
+        <button class="btn btn-ghost" id="enableNotifBtn" style="width:100%;margin:8px 0;">🔔 Enable browser notifications</button>
+        <div class="segmented" id="remTabs">
+          <button data-r="overdue" class="active">Overdue</button>
+          <button data-r="today">Today</button>
+          <button data-r="upcoming">Next 7 days</button>
+          <button data-r="birthdays">🎂 Birthdays</button>
+          <button data-r="all">All set</button>
+        </div>
+        <div id="remBody"></div>
+        <div class="sheet-actions"><button class="btn btn-ghost" id="closeRem" style="width:100%;">Close</button></div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    function close(){ overlay.remove(); }
+    overlay.querySelector('.close-x').addEventListener('click', close);
+    overlay.querySelector('#closeRem').addEventListener('click', close);
+    overlay.addEventListener('click', (e)=>{ if(e.target===overlay) close(); });
+    overlay.querySelector('#enableNotifBtn').addEventListener('click', requestNotificationPermission);
+
+    const remBody = overlay.querySelector('#remBody');
+    function renderBirthdayList(){
+      const list = getUpcomingBirthdays(30);
+      if(list.length===0){
+        remBody.innerHTML = '<div class="empty">No birthdays on file in the next 30 days. Add a date of birth on a prospect to track theirs.</div>';
+        return;
+      }
+      remBody.innerHTML = list.map(p=>{
+        const days = daysUntilNextBirthday(p.dateOfBirth);
+        const label = days===0 ? '🎂 Today!' : days===1 ? '🎂 Tomorrow' : 'in '+days+' days';
+        const color = days<=1 ? 'var(--gold)' : 'var(--ink-soft)';
+        const bday = new Date(p.dateOfBirth+'T00:00:00');
+        return `<div class="row ${p.category}" data-id="${p.id}" style="cursor:pointer;">
+          <div class="row-top">
+            <div class="row-main">
+              <div class="row-name">${escapeHtml(p.name)}</div>
+              <div class="row-sub">${bday.toLocaleDateString(undefined,{day:'numeric', month:'long'})}</div>
+            </div>
+            <div class="row-right">
+              <div style="font-size:11px; font-weight:700; color:${color};">${label}</div>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+      remBody.querySelectorAll('.row[data-id]').forEach(el=>{
+        el.addEventListener('click', ()=>{ close(); openDetail(el.dataset.id); });
+      });
+    }
+    function renderRemList(tab){
+      if(tab==='birthdays'){ renderBirthdayList(); return; }
+      let list = prospects.filter(p=>p.nextFollowUp);
+      if(tab!=='all') list = list.filter(p=>reminderStatus(p.nextFollowUp)===tab);
+      list.sort((a,b)=>new Date(a.nextFollowUp) - new Date(b.nextFollowUp));
+      if(list.length===0){
+        remBody.innerHTML = '<div class="empty">Nothing here.</div>';
+        return;
+      }
+      remBody.innerHTML = list.map(p=>{
+        const status = reminderStatus(p.nextFollowUp);
+        const statusLabel = status==='overdue' ? '⚠️ Overdue' : status==='today' ? '🔔 Today' : status==='upcoming' ? 'Upcoming' : 'Later';
+        const statusColor = status==='overdue' ? 'var(--red)' : status==='today' ? 'var(--gold)' : 'var(--ink-soft)';
+        return `<div class="row ${p.category}" data-id="${p.id}" style="cursor:pointer;">
+          <div class="row-top">
+            <div class="row-main">
+              <div class="row-name">${escapeHtml(p.name)}</div>
+              <div class="row-sub">${new Date(p.nextFollowUp+'T00:00:00').toLocaleDateString(undefined,{weekday:'short', day:'numeric', month:'short', year:'numeric'})}</div>
+            </div>
+            <div class="row-right">
+              <div style="font-size:11px; font-weight:700; color:${statusColor};">${statusLabel}</div>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+      remBody.querySelectorAll('.row[data-id]').forEach(el=>{
+        el.addEventListener('click', ()=>{ close(); openDetail(el.dataset.id); });
+      });
+    }
+    renderRemList('overdue');
+    overlay.querySelector('#remTabs').addEventListener('click', (e)=>{
+      const b = e.target.closest('button'); if(!b) return;
+      overlay.querySelectorAll('#remTabs button').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      renderRemList(b.dataset.r);
+    });
+  });
+
+  // ---------- Settings ----------
+  function resizeImageToDataUrl(file, maxSize){
+    return new Promise((resolve, reject)=>{
+      const img = new Image();
+      const reader = new FileReader();
+      reader.onload = (e)=>{ img.src = e.target.result; };
+      reader.onerror = reject;
+      img.onload = ()=>{
+        let w = img.width, h = img.height;
+        if(w>h){ if(w>maxSize){ h = Math.round(h*maxSize/w); w = maxSize; } }
+        else{ if(h>maxSize){ w = Math.round(w*maxSize/h); h = maxSize; } }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', 0.72));
+      };
+      img.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  $('#settingsBtn').addEventListener('click', ()=>{
+    const a = settings.agent || {};
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    overlay.innerHTML = `
+      <div class="sheet">
+        <div class="sheet-head"><h2>Settings</h2><button class="close-x">&times;</button></div>
+
+        <label>Profile photo</label>
+        <div class="avatar-upload-row">
+          <div class="avatar-preview" id="avatarPreview">${a.photo ? '' : '👤'}</div>
+          <div>
+            <button class="btn btn-ghost" id="choosePhotoBtn" type="button">Choose photo</button>
+            <input type="file" id="photoInput" accept="image/*" style="display:none;">
+          </div>
+        </div>
+
+        <label>Agent name</label>
+        <input type="text" id="agName" value="${escapeHtml(a.name||'')}" placeholder="Your full name">
+        <div class="two-col">
+          <div><label>Gender</label><select id="agGender">
+            <option value="">—</option>
+            ${optionsHtml(GENDERS, a.gender)}
+          </select></div>
+          <div><label>Agent code</label><input type="text" id="agCode" value="${escapeHtml(a.agentCode||'')}" placeholder="e.g. AG-1023"></div>
+        </div>
+        <label>Email address</label>
+        <input type="email" id="agEmail" value="${escapeHtml(a.email||'')}" placeholder="you@example.com">
+        <label>Phone number</label>
+        <input type="tel" id="agPhone" value="${escapeHtml(a.phone||'')}" placeholder="e.g. 0712 345 678">
+        <label>Date coded (start date with the company)</label>
+        <input type="date" id="agDateCoded" value="${escapeHtml(a.dateCoded||'')}">
+        <div class="field-note">Your tenure (e.g. "1 year, 6 months old") is calculated automatically and shown in the header and reports.</div>
+
+        <label>Default country code (used for Call, WhatsApp &amp; phone validation)</label>
+        <input type="text" id="ccInput" value="${escapeHtml(settings.countryCode)}" placeholder="e.g. 254">
+        <label>Google Sheet sync — Apps Script URL</label>
+        <input type="text" id="sheetUrlInput" value="${escapeHtml(settings.sheetSyncUrl)}" placeholder="https://script.google.com/macros/s/.../exec">
+        <button class="btn btn-ghost" id="syncNowBtn" style="width:100%;margin-top:10px;">Push all prospects to sheet now</button>
+
+        <label>AI Message Assistant (optional)</label>
+        <div class="field-note">Paste your own Anthropic API key (from console.anthropic.com) to enable ✨ AI-drafted emails and SMS/WhatsApp messages on each record. This stays on this device only — never synced to Google Sheets and never included in JSON backups — and usage is billed to your own Anthropic account, not free. Leave blank to skip this feature entirely. You'll need to re-enter it after restoring a backup on a new device.</div>
+        <input type="password" id="aiKeyInput" value="${escapeHtml(settings.aiApiKey||'')}" placeholder="sk-ant-...">
+        <label>Model</label>
+        <select id="aiModelInput">
+          <option value="claude-sonnet-5" ${settings.aiModel==='claude-sonnet-5'||!settings.aiModel?'selected':''}>Claude Sonnet 5 (balanced quality/cost)</option>
+          <option value="claude-haiku-4-5-20251001" ${settings.aiModel==='claude-haiku-4-5-20251001'?'selected':''}>Claude Haiku 4.5 (fastest, cheapest)</option>
+          <option value="claude-opus-5" ${settings.aiModel==='claude-opus-5'?'selected':''}>Claude Opus 5 (highest quality)</option>
+        </select>
+
+        <label>Full backup — everything (this data lives only in this browser)</label>
+        <div class="field-note">This is the only format that can be imported back in. It includes every prospect record <b>and</b> your agent profile (name, contact details, code, photo). Use this for backups, moving to a new phone, or restoring after a browser reset — not the Export button up top, which produces read-only Excel/PDF reports that can't be re-imported.</div>
+        <div class="two-col">
+          <button class="btn btn-ghost" id="exportJsonBtn">⬇ Export full backup (.json)</button>
+          <button class="btn btn-ghost" id="importJsonBtn">⬆ Restore from backup (.json)</button>
+        </div>
+        <input type="file" id="importJsonFile" accept="application/json" style="display:none;">
+
+        <div class="sheet-actions">
+          <button class="btn btn-ghost" id="closeSettings">Close</button>
+          <button class="btn btn-primary" id="saveSettings">Save</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    let pendingPhoto = a.photo || '';
+    const preview = overlay.querySelector('#avatarPreview');
+    if(pendingPhoto) preview.style.backgroundImage = 'url('+pendingPhoto+')';
+
+    overlay.querySelector('#choosePhotoBtn').addEventListener('click', ()=>{
+      overlay.querySelector('#photoInput').click();
+    });
+    overlay.querySelector('#photoInput').addEventListener('change', async (e)=>{
+      const file = e.target.files[0];
+      if(!file) return;
+      try{
+        pendingPhoto = await resizeImageToDataUrl(file, 200);
+        preview.style.backgroundImage = 'url('+pendingPhoto+')';
+        preview.textContent = '';
+      }catch(err){ showToast('Could not load that image'); }
+    });
+
+    function close(){ overlay.remove(); }
+    overlay.querySelector('.close-x').addEventListener('click', close);
+    overlay.querySelector('#closeSettings').addEventListener('click', close);
+    overlay.addEventListener('click', (e)=>{ if(e.target===overlay) close(); });
+    overlay.querySelector('#syncNowBtn').addEventListener('click', ()=>{
+      settings.sheetSyncUrl = overlay.querySelector('#sheetUrlInput').value.trim();
+      persistSettings();
+      syncAll();
+      syncProfile();
+    });
+    overlay.querySelector('#exportJsonBtn').addEventListener('click', exportJSONBackup);
+    overlay.querySelector('#importJsonBtn').addEventListener('click', ()=>{
+      overlay.querySelector('#importJsonFile').click();
+    });
+    overlay.querySelector('#importJsonFile').addEventListener('change', (e)=>{
+      const file = e.target.files[0];
+      if(file) importJSONBackup(file);
+    });
+    overlay.querySelector('#saveSettings').addEventListener('click', ()=>{
+      settings.countryCode = digitsOnly(overlay.querySelector('#ccInput').value) || settings.countryCode;
+      settings.sheetSyncUrl = overlay.querySelector('#sheetUrlInput').value.trim();
+      settings.aiApiKey = overlay.querySelector('#aiKeyInput').value.trim();
+      settings.aiModel = overlay.querySelector('#aiModelInput').value;
+      settings.agent = {
+        name: overlay.querySelector('#agName').value.trim(),
+        gender: overlay.querySelector('#agGender').value,
+        email: overlay.querySelector('#agEmail').value.trim(),
+        phone: overlay.querySelector('#agPhone').value.trim(),
+        agentCode: overlay.querySelector('#agCode').value.trim(),
+        dateCoded: overlay.querySelector('#agDateCoded').value,
+        photo: pendingPhoto
+      };
+      persistSettings();
+      syncProfile();
+      renderAgentHeader();
+      close();
+      render();
+      showToast('Settings saved');
+    });
+  });
+
+  // ---------- Export date range ----------
+  function exportRangeBounds(mode, val){
+    const now = new Date();
+    if(mode==='thisWeek'){
+      const day = now.getDay(); const diff = (day===0?6:day-1);
+      const from = new Date(now.getFullYear(), now.getMonth(), now.getDate()-diff);
+      return { from, to: new Date(from.getFullYear(),from.getMonth(),from.getDate()+6,23,59,59) };
+    }
+    if(mode==='lastWeek'){
+      const day = now.getDay(); const diff = (day===0?6:day-1);
+      const thisMon = new Date(now.getFullYear(), now.getMonth(), now.getDate()-diff);
+      const from = new Date(thisMon.getFullYear(), thisMon.getMonth(), thisMon.getDate()-7);
+      return { from, to: new Date(from.getFullYear(),from.getMonth(),from.getDate()+6,23,59,59) };
+    }
+    if(mode==='thisYear'){
+      return { from: new Date(now.getFullYear(),0,1), to: new Date(now.getFullYear(),11,31,23,59,59) };
+    }
+    if(mode==='custom'){
+      return { from: new Date(val.from+'T00:00:00'), to: new Date(val.to+'T23:59:59') };
+    }
+    if(mode.startsWith('month:')){
+      const m = parseInt(mode.split(':')[1],10);
+      return { from: new Date(now.getFullYear(), m, 1), to: new Date(now.getFullYear(), m+1, 0, 23,59,59) };
+    }
+    return { from: new Date(0), to: new Date(8640000000000000) };
+  }
+
+  function aggregateChartData(from, to, items){
+    const spanDays = (to - from) / 86400000;
+    const buckets = [];
+    if(spanDays <= 31){
+      let d = new Date(from.getFullYear(), from.getMonth(), from.getDate());
+      while(d <= to){
+        const bEnd = new Date(d.getFullYear(),d.getMonth(),d.getDate(),23,59,59);
+        buckets.push({ label: d.toLocaleDateString(undefined,{day:'numeric',month:'short'}), from:new Date(d), to:bEnd });
+        d = new Date(d.getFullYear(), d.getMonth(), d.getDate()+1);
+      }
+    } else if(spanDays <= 182){
+      let d = new Date(from.getFullYear(), from.getMonth(), from.getDate());
+      while(d <= to){
+        const bEnd = new Date(d.getFullYear(),d.getMonth(),d.getDate()+6,23,59,59);
+        buckets.push({ label: d.toLocaleDateString(undefined,{day:'numeric',month:'short'}), from:new Date(d), to:bEnd });
+        d = new Date(d.getFullYear(), d.getMonth(), d.getDate()+7);
+      }
+    } else {
+      let d = new Date(from.getFullYear(), from.getMonth(), 1);
+      while(d <= to){
+        const bEnd = new Date(d.getFullYear(), d.getMonth()+1, 0, 23,59,59);
+        buckets.push({ label: d.toLocaleDateString(undefined,{month:'short',year:'2-digit'}), from:new Date(d), to:bEnd });
+        d = new Date(d.getFullYear(), d.getMonth()+1, 1);
+      }
+    }
+    return buckets.map(b=>({
+      label: b.label,
+      prospected: prospects.filter(p=>p.leadType===leadTypeFilter && new Date(p.createdAt)>=b.from && new Date(p.createdAt)<=b.to).length,
+      closed: prospects.filter(p=>p.leadType===leadTypeFilter && p.closedAt && new Date(p.closedAt)>=b.from && new Date(p.closedAt)<=b.to).length
+    }));
+  }
+
+  // ---------- Export (CSV / PDF, choose columns, choose date range) ----------
+  function maskPhone(phone){
+    if(!phone) return phone;
+    const s = String(phone).trim();
+    if(s.length<=6) return s[0]+'*'.repeat(Math.max(s.length-1,1));
+    return s.slice(0,4)+'*'.repeat(Math.max(s.length-6,3))+s.slice(-2);
+  }
+  function maskEmail(email){
+    if(!email) return email;
+    const at = email.indexOf('@');
+    if(at<=1) return email;
+    const local = email.slice(0,at);
+    const domain = email.slice(at);
+    return local.slice(0,2)+'*'.repeat(Math.max(local.length-2,2))+domain;
+  }
+
+  function exportValue(p, colId, maskContacts){
+    const last = p.history[p.history.length-1];
+    switch(colId){
+      case 'leadType': return p.leadType;
+      case 'name': return p.name;
+      case 'contactPerson': return p.contactPerson||'';
+      case 'email': return maskContacts ? maskEmail(p.email||'') : (p.email||'');
+      case 'phone': return maskContacts ? maskPhone(p.phone||'') : (p.phone||'');
+      case 'gender': return p.gender||'';
+      case 'sector': return sectorDisplay(p);
+      case 'county': return p.county||'';
+      case 'referredBy': { const r = p.referredBy ? prospects.find(x=>x.id===p.referredBy) : null; return r ? r.name : ''; }
+      case 'nextFollowUp': return p.nextFollowUp||'';
+      case 'dateOfBirth': return p.dateOfBirth||'';
+      case 'category': return p.category;
+      case 'stage': return p.stage;
+      case 'product': return p.product||'';
+      case 'premiumAmount': return p.premiumAmount||'';
+      case 'premiumFrequency': return p.premiumFrequency||'';
+      case 'location': return p.location||'';
+      case 'numberOfLives': return p.numberOfLives||'';
+      case 'createdAtDate': return dateOnly(p.createdAt);
+      case 'createdAtTime': return timeOnly(p.createdAt);
+      case 'closedAtDate': return dateOnly(p.closedAt);
+      case 'closedAtTime': return timeOnly(p.closedAt);
+      case 'lastContactDate': return dateOnly(last.date);
+      case 'lastContactTime': return timeOnly(last.date);
+      case 'latestNote': return last.note;
+      default: return '';
+    }
+  }
+
+  function csvEscapeRow(arr){
+    return arr.map(v=>'"'+String(v===undefined?'':v).replace(/"/g,'""')+'"').join(',');
+  }
+
+  function exportExcelReport(colIds, items, from, to, maskContacts){
+    const a = settings.agent || {};
+    const cols = EXPORT_COLUMNS.filter(c=>colIds.includes(c.id));
+    const lines = [];
+    lines.push(csvEscapeRow(['Prospect Ledger Report — '+leadTypeFilter]));
+    lines.push(csvEscapeRow(['Period', from.toLocaleDateString()+' to '+to.toLocaleDateString()]));
+    lines.push(csvEscapeRow(['Generated', new Date().toLocaleString()]));
+    if(maskContacts) lines.push(csvEscapeRow(['Note', 'Phone numbers and emails below are masked for privacy']));
+    lines.push('');
+    lines.push(csvEscapeRow(['Agent Name', a.name||'']));
+    lines.push(csvEscapeRow(['Email', a.email||'']));
+    lines.push(csvEscapeRow(['Phone', a.phone||'']));
+    lines.push(csvEscapeRow(['Agent Code', a.agentCode||'']));
+    lines.push(csvEscapeRow(['Active Period', tenureLabel(a.dateCoded)||'']));
+    lines.push('');
+    lines.push(csvEscapeRow(cols.map(c=>c.label)));
+    items.forEach(p=>lines.push(csvEscapeRow(cols.map(c=>exportValue(p,c.id,maskContacts)))));
+    lines.push('');
+    lines.push(csvEscapeRow(['Chart Data — select this table and Insert > Chart in Excel/Sheets to visualize']));
+    lines.push(csvEscapeRow(['Period','Prospected','Closed']));
+    aggregateChartData(from, to, items).forEach(row=>lines.push(csvEscapeRow([row.label, row.prospected, row.closed])));
+    lines.push('');
+    lines.push(csvEscapeRow([DISCLAIMER]));
+
+    const csv = lines.join('\n');
+    const blob = new Blob([csv], {type:'text/csv'});
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'prospect-ledger-report-'+new Date().toISOString().slice(0,10)+'.csv';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function exportPDF(items, from, to, maskContacts){
+    const cols = EXPORT_COLUMNS.filter(c=>PDF_ESSENTIAL_COLUMNS.includes(c.id));
+    const a = settings.agent || {};
+    const win = window.open('', '_blank');
+    if(!win){ showToast('Please allow pop-ups to export PDF'); return; }
+    const head = '<tr>'+cols.map(c=>'<th>'+escapeHtml(c.label)+'</th>').join('')+'</tr>';
+    const body = items.map(p=>'<tr>'+cols.map(c=>'<td>'+escapeHtml(String(exportValue(p,c.id,maskContacts)||''))+'</td>').join('')+'</tr>').join('');
+    win.document.write(`<!DOCTYPE html><html><head><title>Prospect Ledger — ${leadTypeFilter}</title>
+      <style>
+        body{font-family:Arial, sans-serif; padding:20px; color:#1B2A4A;}
+        h2{margin-bottom:2px;} .sub{color:#666; font-size:11px; margin-bottom:2px;}
+        table{width:100%; border-collapse:collapse; margin-top:12px;}
+        th,td{border:1px solid #ccc; padding:6px 8px; font-size:11px; text-align:left;}
+        th{background:#1B2A4A; color:#fff;}
+        tr:nth-child(even){background:#F7F5EF;}
+        .footer{margin-top:16px; font-size:9.5px; color:#666; border-top:1px solid #ccc; padding-top:8px;}
+      </style></head><body>
+      <h2>Prospect Ledger — ${leadTypeFilter} (Quick View)</h2>
+      <div class="sub">${escapeHtml(a.name||'')} · ${escapeHtml(a.email||'')} · ${escapeHtml(a.phone||'')} · ${escapeHtml(a.agentCode||'')}</div>
+      <div class="sub">Period: ${from.toLocaleDateString()} to ${to.toLocaleDateString()} · ${items.length} records${maskContacts ? ' · Phone/email masked for privacy' : ''}</div>
+      <table><thead>${head}</thead><tbody>${body}</tbody></table>
+      <div class="footer">${escapeHtml(DISCLAIMER)}</div>
+      </body></html>`);
+    win.document.close();
+    win.focus();
+    setTimeout(()=>win.print(), 400);
+  }
+
+  $('#exportBtn').addEventListener('click', ()=>{
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    const now = new Date();
+    const monthOptions = MONTH_NAMES.map((m,i)=>`<option value="month:${i}">${m} (this year)</option>`).join('');
+    overlay.innerHTML = `
+      <div class="sheet">
+        <div class="sheet-head"><h2>Export</h2><button class="close-x">&times;</button></div>
+        <div class="field-note">This creates a readable Excel or PDF report for sharing/printing — it can't be imported back into the app. For a full backup you can restore later, use ⚙ Settings → Export full backup instead.</div>
+        <label>Date range (by date captured)</label>
+        <select id="rangeSelect">
+          <option value="all">All records</option>
+          <option value="thisWeek">This week</option>
+          <option value="lastWeek">Last week</option>
+          ${monthOptions}
+          <option value="thisYear">This year</option>
+          <option value="custom">Custom range</option>
+        </select>
+        <div id="rangeCustom" style="display:none;" class="two-col">
+          <div><label>From</label><input type="date" id="rFrom"></div>
+          <div><label>To</label><input type="date" id="rTo"></div>
+        </div>
+        <label>Format</label>
+        <div class="cat-select" id="formatSelect"></div>
+        <div class="export-col-row" style="margin-top:8px;">
+          <input type="checkbox" id="maskContactsCheck">
+          <label for="maskContactsCheck">🔒 Mask phone numbers &amp; emails (e.g. 0712****78, jo***@gmail.com)</label>
+        </div>
+        <div id="colSection">
+          <label>Columns to include (Excel report only — PDF auto-picks key fields)</label>
+          <div id="colList"></div>
+        </div>
+        <div class="sheet-actions">
+          <button class="btn btn-ghost" id="closeExport">Cancel</button>
+          <button class="btn btn-primary" id="runExport">Export</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    const colListEl = overlay.querySelector('#colList');
+    EXPORT_COLUMNS.forEach(c=>{
+      const row = document.createElement('div');
+      row.className = 'export-col-row';
+      row.innerHTML = `<input type="checkbox" id="col_${c.id}" checked><label for="col_${c.id}">${c.label}</label>`;
+      colListEl.appendChild(row);
+    });
+    let format = 'csv';
+    buildCatSelect(overlay.querySelector('#formatSelect'), ['CSV','PDF'], ()=>format.toUpperCase(), (v)=>{
+      format = v.toLowerCase();
+      overlay.querySelector('#colSection').style.display = format==='pdf' ? 'none' : 'block';
+    }, 'lead');
+
+    overlay.querySelector('#rangeSelect').addEventListener('change', (e)=>{
+      overlay.querySelector('#rangeCustom').style.display = e.target.value==='custom' ? 'flex' : 'none';
+    });
+
+    function close(){ overlay.remove(); }
+    overlay.querySelector('.close-x').addEventListener('click', close);
+    overlay.querySelector('#closeExport').addEventListener('click', close);
+    overlay.addEventListener('click', (e)=>{ if(e.target===overlay) close(); });
+
+    overlay.querySelector('#runExport').addEventListener('click', ()=>{
+      const rangeMode = overlay.querySelector('#rangeSelect').value;
+      let from, to;
+      if(rangeMode==='all'){ from = new Date(0); to = new Date(8640000000000000); }
+      else if(rangeMode==='custom'){
+        const rf = overlay.querySelector('#rFrom').value, rt = overlay.querySelector('#rTo').value;
+        if(!rf || !rt){ showToast('Pick both dates'); return; }
+        ({from, to} = exportRangeBounds('custom', {from:rf, to:rt}));
+      } else {
+        ({from, to} = exportRangeBounds(rangeMode));
+      }
+      const items = getVisibleItems().filter(p=>{
+        const d = new Date(p.createdAt);
+        return d >= from && d <= to;
+      });
+      if(items.length===0){ showToast('No records in that range'); return; }
+
+      const maskContacts = overlay.querySelector('#maskContactsCheck').checked;
+      if(format==='csv'){
+        const colIds = EXPORT_COLUMNS.filter(c=>overlay.querySelector('#col_'+c.id).checked).map(c=>c.id);
+        if(colIds.length===0){ showToast('Choose at least one column'); return; }
+        exportExcelReport(colIds, items, from, to, maskContacts);
+      } else {
+        exportPDF(items, from, to, maskContacts);
+      }
+      close();
+    });
+  });
+
+  loadAll();
+})();
+</script>
+</body>
+</html>
