@@ -2,9 +2,18 @@
 
 A mobile-first, offline-capable, **installable** prospecting and client-management tool built for a life insurance agent's day-to-day workflow — capturing leads, tracking them through a full sales pipeline, and reporting on performance. It's a Progressive Web App (PWA): open it once from its hosted link, and it behaves like a real app from then on — an icon on your home screen, its own window, and offline access, with no app store involved.
 
-**Current version: 1.2.0**
+**Current version: 2.0.0**
 
 **Developed by Walter Jungah** · 0798 511 366 · walterjungah9@outlook.com
+
+---
+
+## What's new in 2.0.0
+
+- **New brand & design:** the Team-Growth-Magnifier logo is used for the app icon, header and install icons; new blue design system, bottom navigation, animated cards, bottom sheets and confetti when a deal closes.
+- **Dashboard:** follow-ups due, open pipeline (annualised premium), monthly closes vs target, daily-contact ring, 7-day activity, streak, pipeline mix, win rate and an "Up next" agenda.
+- **Goals & Targets** (More → Goals), **first-run onboarding** with optional sample data, and a richer empty state.
+- **Sellable as a product:** Free plan (25 prospects), 14-day Pro trial, Pro features (Reports, Export, Broadcast, Phone book, unlimited prospects) and **cryptographically signed license keys** that work offline. See `SAAS_GUIDE.md`.
 
 ---
 

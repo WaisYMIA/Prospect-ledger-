@@ -7,7 +7,7 @@
 // background but waits (no skipWaiting) until the page sends 'SKIP_WAITING'
 // when you tap "Update now", so nothing changes under you mid-task.
 
-const VERSION = '1.2.0';
+const VERSION = '2.0.0';
 const CACHE_NAME = 'prospect-ledger-shell-' + VERSION;
 const ASSETS = [
   './',
@@ -16,7 +16,8 @@ const ASSETS = [
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/icon-maskable-512.png',
-  './icons/apple-touch-icon.png'
+  './icons/apple-touch-icon.png',
+  './icons/logo-256.png'
 ];
 
 self.addEventListener('install', (event) => {
