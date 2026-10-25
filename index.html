@@ -302,6 +302,12 @@
   .toast.show{opacity:1;}
   .status{font-size:12px; color:var(--ink-soft); text-align:center; padding:8px 0;}
   .field-note{font-size:11px; color:var(--ink-soft); margin-top:6px;}
+  .app-footer a.ver-link{color:var(--ink); font-weight:700; text-decoration:underline; cursor:pointer;}
+  .pwa-bar{position:fixed; left:8px; right:8px; bottom:8px; z-index:50; background:var(--ink); color:#fff; border-radius:12px; padding:12px 14px; display:flex; align-items:center; justify-content:space-between; gap:10px; box-shadow:0 6px 22px rgba(0,0,0,0.35); max-width:664px; margin:0 auto; font-size:13px; line-height:1.4;}
+  .pwa-bar .pwa-actions{display:flex; gap:8px; flex-shrink:0; align-items:center;}
+  .pwa-bar button{border:none; border-radius:8px; padding:9px 14px; font-weight:700; font-size:13px; cursor:pointer;}
+  .pwa-bar .pwa-primary{background:var(--gold); color:#fff;}
+  .pwa-bar .pwa-secondary{background:transparent; color:#C9D2E3; font-weight:500;}
   .app-footer{text-align:center; font-size:11px; color:var(--ink-soft); padding:24px 10px 10px 10px; line-height:1.6;}
 
   .report-donut{display:flex; align-items:center; gap:18px; margin:10px 0; flex-wrap:wrap;}
@@ -451,7 +457,9 @@
 
   <div class="app-footer">
     © <span id="footerYear"></span> Walter Jungah. All rights reserved.<br>
-    Developed by Walter Jungah · 0798 511 366 · walterjungah9@outlook.com
+    Developed by Walter Jungah · 0798 511 366 · walterjungah9@outlook.com<br>
+    Prospect Ledger <span id="footerVersion">v1.2.0</span> · <a class="ver-link" id="footerCheckUpdate" role="button" tabindex="0">Check for updates</a>
+    <div id="footerUpdateStatus" style="min-height:16px;"></div>
   </div>
 </div>
 
@@ -2972,7 +2980,7 @@
         </div>
         <div class="more-menu-item admin" id="checkUpdateMenuItem">
           <div class="more-menu-icon">🔄</div>
-          <div><div>Check for Updates</div><div class="desc">You're on version 1.1.0</div></div>
+          <div><div>Check for Updates</div><div class="desc">You're on version <span class="ver-text">1.2.0</span></div></div>
         </div>
         <div class="more-menu-item admin" data-target="helpBtn">
           <div class="more-menu-icon">❓</div>
@@ -3001,17 +3009,16 @@
       });
     });
     overlay.querySelector('#installMenuItem').addEventListener('click', async ()=>{
-      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-      if(isStandalone){ showToast('Already installed on this device'); return; }
+      if(isStandalone()){ showToast('Already installed on this device'); return; }
       if(deferredInstallPrompt){
         close();
-        deferredInstallPrompt.prompt();
-        try{ await deferredInstallPrompt.userChoice; }catch(e){}
-        deferredInstallPrompt = null;
+        const p = deferredInstallPrompt; deferredInstallPrompt = null;
+        const b = document.getElementById('installBar'); if(b) b.remove();
+        try{ p.prompt(); await p.userChoice; }catch(e){}
         return;
       }
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-      showToast(isIOS ? 'On iPhone: tap the Share icon, then "Add to Home Screen"' : 'Open your browser menu and choose "Install app" or "Add to Home Screen"');
+      if(!window.isSecureContext){ showToast('Install needs the app opened from an https:// link'); return; }
+      showToast(isIOS() ? 'On iPhone: tap the Share icon, then "Add to Home Screen"' : 'Use your browser menu → "Install app" / "Add to Home Screen"');
     });
     overlay.querySelector('#checkUpdateMenuItem').addEventListener('click', ()=>{
       close();
@@ -3882,24 +3889,80 @@
     });
   });
 
-  // ---------- PWA: service worker + install prompt + update detection ----------
-  const APP_VERSION = '1.1.0';
+  // ---------- PWA: install prompt + service worker + update detection ----------
+  // Keep in sync with sw.js and version.json (use tools/bump-version.js).
+  const APP_VERSION = '1.2.0';
   let deferredInstallPrompt = null;
   let swRegistration = null;
+  let hadController = !!(navigator.serviceWorker && navigator.serviceWorker.controller);
 
+  const isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  const isIOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  const lsGet = (k)=>{ try{ return localStorage.getItem(k); }catch(e){ return null; } };
+  const lsSet = (k,v)=>{ try{ localStorage.setItem(k,v); }catch(e){} };
+
+  function setFooterStatus(msg){
+    const el = document.getElementById('footerUpdateStatus');
+    if(el) el.textContent = msg || '';
+  }
+  document.getElementById('footerVersion').textContent = 'v' + APP_VERSION;
+  document.querySelectorAll('.ver-text').forEach(el=>{ el.textContent = APP_VERSION; });
+  const footerLink = document.getElementById('footerCheckUpdate');
+  footerLink.addEventListener('click', ()=>checkForUpdatesNow());
+  footerLink.addEventListener('keydown', (e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); checkForUpdatesNow(); } });
+
+  function makeBar(id, html){
+    const old = document.getElementById(id); if(old) old.remove();
+    const bar = document.createElement('div');
+    bar.id = id; bar.className = 'pwa-bar'; bar.innerHTML = html;
+    document.body.appendChild(bar);
+    return bar;
+  }
+
+  // ----- Install prompt (shown automatically; browsers require a tap to confirm) -----
+  function showInstallBar(){
+    if(isStandalone() || document.getElementById('installBar')) return;
+    const dismissedAt = parseInt(lsGet('pl_install_dismissed') || '0', 10);
+    if(Date.now() - dismissedAt < 3*24*3600*1000) return; // ask again after 3 days
+    if(deferredInstallPrompt){
+      const bar = makeBar('installBar', '<span>📲 <b>Install Prospect Ledger</b> on this device for one-tap access and offline use.</span><div class="pwa-actions"><button class="pwa-primary" id="installNowBtn">Install</button><button class="pwa-secondary" id="installLaterBtn">Not now</button></div>');
+      bar.querySelector('#installNowBtn').addEventListener('click', async ()=>{
+        bar.remove();
+        const p = deferredInstallPrompt; deferredInstallPrompt = null;
+        try{ p.prompt(); await p.userChoice; }catch(e){}
+      });
+      bar.querySelector('#installLaterBtn').addEventListener('click', ()=>{ lsSet('pl_install_dismissed', String(Date.now())); bar.remove(); });
+    } else if(isIOS()){
+      const bar = makeBar('installBar', '<span>📲 <b>Install this app:</b> tap the Share icon <b>⎙</b> in Safari, then <b>Add to Home Screen</b>.</span><div class="pwa-actions"><button class="pwa-secondary" id="installLaterBtn">Got it</button></div>');
+      bar.querySelector('#installLaterBtn').addEventListener('click', ()=>{ lsSet('pl_install_dismissed', String(Date.now())); bar.remove(); });
+    }
+  }
   window.addEventListener('beforeinstallprompt', (e)=>{
     e.preventDefault();
     deferredInstallPrompt = e;
+    showInstallBar();
   });
+  window.addEventListener('appinstalled', ()=>{
+    deferredInstallPrompt = null;
+    const b = document.getElementById('installBar'); if(b) b.remove();
+    showToast('Installed — open it from your home screen or app list');
+  });
+  if(isIOS()) window.addEventListener('load', ()=>setTimeout(showInstallBar, 1500));
 
-  function showUpdateBanner(worker){
+  // ----- Update prompt -----
+  async function fetchLatestVersion(){
+    try{
+      const r = await fetch('./version.json?t=' + Date.now(), { cache: 'no-store' });
+      if(!r.ok) return null;
+      return await r.json();
+    }catch(e){ return null; }
+  }
+  function showUpdateBanner(worker, newVersion){
     if(document.getElementById('updateBanner')) return;
-    const bar = document.createElement('div');
-    bar.id = 'updateBanner';
-    bar.style.cssText = 'position:fixed; left:0; right:0; bottom:0; z-index:50; background:var(--ink); color:#fff; padding:12px 16px; display:flex; align-items:center; justify-content:space-between; gap:10px; box-shadow:0 -4px 14px rgba(0,0,0,0.25);';
-    bar.innerHTML = `<span style="font-size:13px;">🔄 A new version is ready.</span><div style="display:flex; gap:8px;"><button id="updateNowBtn" style="background:var(--gold); color:#fff; border:none; border-radius:7px; padding:8px 14px; font-weight:700; font-size:13px;">Update now</button><button id="updateLaterBtn" style="background:transparent; color:#C9D2E3; border:none; font-size:13px;">Later</button></div>`;
-    document.body.appendChild(bar);
+    const label = newVersion ? ('Version ' + newVersion + ' is ready.') : 'A new version is ready.';
+    const bar = makeBar('updateBanner', '<span>🔄 ' + label + ' Your data stays safe.</span><div class="pwa-actions"><button class="pwa-primary" id="updateNowBtn">Update now</button><button class="pwa-secondary" id="updateLaterBtn">Later</button></div>');
     bar.querySelector('#updateNowBtn').addEventListener('click', ()=>{
+      bar.querySelector('#updateNowBtn').textContent = 'Updating…';
       worker.postMessage('SKIP_WAITING');
     });
     bar.querySelector('#updateLaterBtn').addEventListener('click', ()=>{ bar.remove(); });
@@ -3909,52 +3972,58 @@
     window.addEventListener('load', async ()=>{
       try{
         swRegistration = await navigator.serviceWorker.register('./sw.js');
-
-        // A worker already waiting from a previous check (e.g. tab was open when it installed).
-        if(swRegistration.waiting) showUpdateBanner(swRegistration.waiting);
-
-        // A new worker starts installing — this fires whenever GitHub Pages is
-        // serving a sw.js with a different CACHE_NAME than what's cached here.
+        if(swRegistration.waiting && navigator.serviceWorker.controller){
+          fetchLatestVersion().then(v=>showUpdateBanner(swRegistration.waiting, v && v.version));
+        }
         swRegistration.addEventListener('updatefound', ()=>{
-          const newWorker = swRegistration.installing;
-          if(!newWorker) return;
-          newWorker.addEventListener('statechange', ()=>{
-            if(newWorker.state === 'installed' && navigator.serviceWorker.controller){
-              showUpdateBanner(newWorker);
+          const nw = swRegistration.installing;
+          if(!nw) return;
+          nw.addEventListener('statechange', async ()=>{
+            if(nw.state === 'installed' && navigator.serviceWorker.controller){
+              const v = await fetchLatestVersion();
+              showUpdateBanner(nw, v && v.version);
             }
           });
         });
-
-        // Ask the browser to check right now instead of waiting for its own
-        // schedule — this is the actual "send a request to check for updates".
-        swRegistration.update().catch(()=>{});
-        document.addEventListener('visibilitychange', ()=>{
-          if(document.visibilityState === 'visible') swRegistration.update().catch(()=>{});
-        });
-      }catch(e){ /* fine if this file isn't hosted alongside index.html yet */ }
+        // Check now, whenever the app returns to the foreground, and every 30 minutes.
+        const check = ()=>swRegistration.update().catch(()=>{});
+        check();
+        document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState === 'visible') check(); });
+        setInterval(check, 30*60*1000);
+      }catch(e){ console.warn('Service worker registration failed:', e); }
     });
 
-    // Once the new worker takes control, reload once to load the new files.
-    let reloadedForUpdate = false;
+    // Reload once when a NEW worker takes over — never on the very first install.
+    let reloading = false;
     navigator.serviceWorker.addEventListener('controllerchange', ()=>{
-      if(reloadedForUpdate) return;
-      reloadedForUpdate = true;
+      if(!hadController){ hadController = true; return; }
+      if(reloading) return;
+      reloading = true;
       window.location.reload();
     });
   }
 
   async function checkForUpdatesNow(){
-    if(!('serviceWorker' in navigator)){ showToast('Not supported in this browser'); return; }
-    if(!swRegistration){ showToast('Update checking isn\'t available yet — try again after this page finishes loading'); return; }
-    showToast('Checking for updates…');
+    if(!('serviceWorker' in navigator) || !window.isSecureContext){
+      setFooterStatus('Updates and install need the app to be opened from an https:// address.');
+      showToast('Open the app from its https:// link to enable updates');
+      return;
+    }
+    if(!swRegistration){ setFooterStatus('Still starting up — try again in a moment.'); return; }
+    setFooterStatus('Checking for updates…');
     try{
-      await swRegistration.update();
-      setTimeout(()=>{
-        if(swRegistration.waiting) showUpdateBanner(swRegistration.waiting);
-        else showToast('You\'re on the latest version ('+APP_VERSION+')');
-      }, 1200);
+      const [latest] = await Promise.all([fetchLatestVersion(), swRegistration.update()]);
+      await new Promise(r=>setTimeout(r, 1500));
+      if(swRegistration.waiting){
+        setFooterStatus('Update found' + (latest ? ' (v' + latest.version + ')' : '') + '.');
+        showUpdateBanner(swRegistration.waiting, latest && latest.version);
+      } else if(swRegistration.installing){
+        setFooterStatus('Downloading update…');
+      } else {
+        setFooterStatus('You\'re on the latest version (v' + APP_VERSION + ').');
+      }
     }catch(e){
-      showToast('Could not check for updates — check your connection');
+      setFooterStatus('Could not check — are you online?');
     }
   }
 

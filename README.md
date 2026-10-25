@@ -2,6 +2,8 @@
 
 A mobile-first, offline-capable, **installable** prospecting and client-management tool built for a life insurance agent's day-to-day workflow — capturing leads, tracking them through a full sales pipeline, and reporting on performance. It's a Progressive Web App (PWA): open it once from its hosted link, and it behaves like a real app from then on — an icon on your home screen, its own window, and offline access, with no app store involved.
 
+**Current version: 1.2.0**
+
 **Developed by Walter Jungah** · 0798 511 366 · walterjungah9@outlook.com
 
 ---
@@ -12,6 +14,8 @@ A mobile-first, offline-capable, **installable** prospecting and client-manageme
 prospect-ledger/
 ├── index.html                          ← the entire app (open this in a browser)
 ├── manifest.json                       ← PWA metadata (name, icons, colors)
+├── version.json                        ← current version number (read by the update checker)
+├── tools/bump-version.js               ← one command to bump the version everywhere
 ├── sw.js                               ← service worker (offline app-shell caching)
 ├── icons/
 │   ├── icon-192.png
@@ -48,6 +52,17 @@ prospect-ledger/
    https://<your-username>.github.io/<your-repo>/
    ```
 5. **This must be served over HTTPS** for installability to work — GitHub Pages does this automatically, so no extra setup is needed there.
+
+### Releasing a new version (v1.2.0 onward)
+
+1. Make your changes.
+2. Run `node tools/bump-version.js 1.3.0 "What changed"` — this updates `version.json`, `sw.js`, `index.html` (footer + menu) and this README together. (No Node? Edit those four spots by hand: `VERSION` in sw.js, `APP_VERSION` in index.html, `version` in version.json, and the line above.)
+3. Zip the folder as `prospect-ledger-repo-v1.3.0.zip` for your records, and upload the files to your host.
+4. Devices detect the change, show **"Version 1.3.0 is ready — Update now / Later"**, and reload after confirmation.
+
+**Install prompt:** on first open, Chrome/Edge (Android & desktop) show an in-app **Install** bar; iPhone Safari shows Add-to-Home-Screen steps. If dismissed, it returns after 3 days. The footer shows the version with a **Check for updates** link.
+
+**Install not offered?** It requires an `https://` address (or `http://localhost`) — opening `index.html` as a file, or over `http://192.168…`, can never install or update.
 
 ### Updating the app later (and how devices find out)
 
