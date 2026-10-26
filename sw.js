@@ -7,7 +7,7 @@
 // background but waits (no skipWaiting) until the page sends 'SKIP_WAITING'
 // when you tap "Update now", so nothing changes under you mid-task.
 
-const VERSION = '2.0.0';
+const VERSION = '2.1.0';
 const CACHE_NAME = 'prospect-ledger-shell-' + VERSION;
 const ASSETS = [
   './',

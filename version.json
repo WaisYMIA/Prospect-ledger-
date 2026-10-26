@@ -1,11 +1,11 @@
 {
   "name": "Prospect Ledger",
-  "version": "2.0.0",
-  "released": "2026-10-25",
+  "version": "2.1.0",
+  "released": "2026-10-26",
   "notes": [
-    "New brand identity and logo, fully redesigned interface with bottom navigation",
-    "Dashboard: follow-ups, pipeline value, goals ring, weekly activity, streaks and agenda",
-    "Goals, onboarding with sample data, celebration on closed deals",
-    "Plans: free tier + 14-day trial + signed offline license keys for Pro features"
+    "New PC portal: sidebar navigation, wide dashboard, sortable table view",
+    "Reminders can be marked Done (with outcome and next date), snoozed, and birthdays cleared",
+    "Kenyan phone number check: flags and auto-fixes non-standard or invalid numbers, finds duplicates",
+    "Reports grouped by month with a colour per month (real .xlsx, PDF and CSV)"
   ]
 }

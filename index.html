@@ -567,17 +567,104 @@
   #confetti{position:fixed;inset:0;pointer-events:none;z-index:100;}
   .cta-row{margin-bottom:6px;}
   @media (min-width:700px){.overlay{align-items:center;} .sheet{border-radius:26px;max-width:600px;} .sheet::before{display:none;} .bottom-nav-inner{max-width:560px;}}
+  /* ================= v2.1 ================= */
+  .phone-flag{display:inline-block;font-size:10.5px;font-weight:800;padding:1px 8px;border-radius:99px;margin-left:6px;vertical-align:middle;}
+  .phone-flag.invalid{background:#FDE7E5;color:#C0392B;} .phone-flag.fixable{background:#FFF1D2;color:#B46F00;} .phone-flag.foreign{background:#E7EEFF;color:var(--brand);}
+  .phone-alert{display:none;align-items:center;justify-content:space-between;gap:10px;background:#FFF6DD;border:1px solid #F3DDA0;color:#7A5500;border-radius:14px;padding:10px 14px;font-size:13px;margin-bottom:12px;}
+  .phone-alert button{border:none;border-radius:9px;padding:8px 14px;font-weight:700;background:var(--grad-brand);color:#fff;cursor:pointer;flex-shrink:0;}
+  .nc-h{font-size:13px;margin:16px 0 6px;font-weight:800;} .nc-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid #EEF2FA;} .nc-main{flex:1;min-width:0;word-break:break-word;}
+  .nc-btns{display:flex;gap:6px;flex-shrink:0;} .nc-dup{background:#fff;border-radius:12px;padding:8px 12px;margin-bottom:8px;border:1px solid #E1E8F5;}
+  .chip-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;}
+  .out-chip{border:1.5px solid #D3DCEE;background:#fff;border-radius:99px;padding:8px 13px;font:inherit;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;transition:all .15s;}
+  .out-chip.on{background:var(--brand);border-color:var(--brand);color:#fff;} .out-chip:active{transform:scale(.95);}
+  .mini-action.done{background:#DCF3E8;color:#14804F;} .mini-action.snooze{background:#FFF1D2;color:#B46F00;}
+  .ag-done{margin-left:8px;width:30px;height:30px;border-radius:50%;border:none;background:#DCF3E8;color:#14804F;font-weight:900;cursor:pointer;flex-shrink:0;}
+  .ag-item .ag-when{margin-left:auto;}
+  .section-head,.desk-add,.sidebar,.desk-only{display:none;}
+  .toolbar{display:block;}
+  .tbl-wrap{overflow-x:auto;background:#fff;border-radius:16px;box-shadow:var(--shadow);border:1px solid rgba(221,228,242,.8);}
+  .pl-table{width:100%;border-collapse:collapse;font-size:13px;}
+  .pl-table th{position:sticky;top:0;background:#F3F6FC;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);padding:12px 14px;border-bottom:1px solid #E1E8F5;white-space:nowrap;}
+  .pl-table td{padding:11px 14px;border-bottom:1px solid #EEF2FA;vertical-align:middle;}
+  .pl-table tbody tr{cursor:pointer;transition:background .12s;} .pl-table tbody tr:hover{background:#F5F8FF;} .pl-table tbody tr:last-child td{border-bottom:none;}
+  .pl-table .num{text-align:right;white-space:nowrap;} .pl-table .muted{color:var(--ink-soft);white-space:nowrap;}
+  .t-name{display:flex;align-items:center;gap:10px;min-width:190px;} .t-tag{font-size:9.5px;font-weight:800;background:#EEEAFE;color:#5B43C8;padding:1px 6px;border-radius:99px;vertical-align:middle;}
+  .fu{font-weight:700;font-size:12px;white-space:nowrap;} .fu.overdue{color:var(--red);} .fu.today{color:#B46F00;} .fu.upcoming{color:var(--brand);} .fu.later{color:var(--ink-soft);}
+  .t-act{white-space:nowrap;text-align:right;} .t-act .mini-action{flex:none;min-width:0;display:inline-flex;width:34px;height:34px;padding:0;align-items:center;justify-content:center;margin-left:4px;text-decoration:none;font-size:14px;}
+  .list.table-mode{display:block !important;}
+
+  @media (min-width:1024px){
+    body{padding-left:256px;padding-bottom:40px;background-image:radial-gradient(1200px 420px at 60% -140px,#DCE8FF 0%,rgba(242,245,251,0) 70%);}
+    .bottom-nav{display:none;}
+    .sidebar{display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;width:256px;padding:22px 14px 16px;background:linear-gradient(185deg,#0B1F4D 0%,#10317F 100%);color:#fff;z-index:30;overflow-y:auto;box-shadow:6px 0 30px rgba(11,31,77,.18);}
+    .sb-brand{display:flex;align-items:center;gap:11px;padding:2px 8px 22px;}
+    .sb-brand img{width:42px;height:42px;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,.4);}
+    .sb-brand b{display:block;font-size:16px;font-weight:800;letter-spacing:-.01em;} .sb-brand span{font-size:11px;color:#9DB3E6;}
+    .sb-group{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#6F88C7;padding:14px 12px 6px;}
+    .sidebar button[data-go]{display:flex;align-items:center;gap:11px;width:100%;border:none;background:none;color:#C9D6F5;font:inherit;font-size:14px;font-weight:600;padding:10px 12px;border-radius:12px;cursor:pointer;text-align:left;transition:background .15s,color .15s;}
+    .sidebar button[data-go] i{font-style:normal;width:26px;text-align:center;font-size:16px;}
+    .sidebar button[data-go]:hover{background:rgba(255,255,255,.09);color:#fff;} .sidebar button[data-go].active{background:rgba(43,176,255,.22);color:#fff;box-shadow:inset 3px 0 0 #2BB0FF;}
+    .sb-badge{margin-left:auto;background:#D64545;color:#fff;border-radius:99px;font-size:10.5px;font-weight:800;padding:1px 7px;display:none;}
+    .sb-foot{margin-top:auto;padding:14px 10px 0;font-size:11px;color:#9DB3E6;border-top:1px solid rgba(255,255,255,.1);} .sb-foot .plan-pill{margin-left:0;}
+    .wrap{max-width:1360px;padding:0 36px;margin:0 auto;}
+    .agent-header{margin:26px 0 22px;border-radius:24px;padding:28px 34px 26px;display:block;}
+    .agent-header-top{position:absolute;top:22px;right:26px;margin:0;z-index:2;} .agent-header-top .brand{display:none;}
+    .header-actions{display:flex;align-items:center;gap:10px;}
+    .desk-add{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:12px;padding:0 18px;height:38px;font:inherit;font-weight:800;font-size:13.5px;background:#fff;color:var(--brand-deep);cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.25);transition:transform .15s;} .desk-add:hover{transform:translateY(-1px);}
+    .agent-id-row{margin:0;} .agent-name{font-size:28px;} .avatar-circle{width:64px;height:64px;}
+    .agent-meta{margin-top:14px;} .agent-date{position:absolute;right:30px;bottom:20px;margin:0;}
+    .desk-add{order:-1;} .ag-item .ag-when{flex-shrink:0;} .ag-item>div:nth-child(2){min-width:0;}
+    .dash{display:grid;grid-template-columns:repeat(12,1fr);gap:18px;margin-bottom:28px;}
+    .dash .phone-alert{grid-column:1/-1;margin:0;}
+    .dash .kpi-grid{grid-column:1/8;margin:0;gap:18px;} .dash .tally{grid-column:8/13;margin:0;}
+    .dash .insights{grid-column:1/8;margin:0;} .dash .agenda{grid-column:8/13;}
+    .kpi{padding:18px 18px;} .kpi-num{font-size:30px;} .kpi-label{font-size:12.5px;} .kpi-icon{font-size:20px;margin-bottom:8px;}
+    .week-bars{height:96px;} .ring,.ring svg{width:92px;height:92px;} .ring .tally-num{font-size:30px;}
+    .section-head{display:flex;align-items:center;justify-content:space-between;margin:6px 0 14px;} .section-head h2{margin:0;font-size:22px;font-weight:800;letter-spacing:-.02em;}
+    .view-toggle{display:inline-flex;background:#E6ECF8;border-radius:12px;padding:3px;} .view-toggle button{border:none;background:none;font:inherit;font-size:13px;font-weight:700;color:var(--ink-soft);padding:8px 16px;border-radius:9px;cursor:pointer;}
+    .view-toggle button.active{background:#fff;color:var(--brand);box-shadow:0 2px 8px rgba(15,35,80,.12);}
+    .toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:16px;}
+    .toolbar .segmented{margin:0;min-width:240px;flex:0 0 auto;} .toolbar .cat-filter-row{flex:1 1 100%;order:5;margin:0;}
+    .toolbar .searchbar{position:static;flex:1 1 360px;margin:0;padding:0;background:none;backdrop-filter:none;-webkit-backdrop-filter:none;display:flex;gap:10px;align-items:center;order:3;}
+    .toolbar .searchbar .search-row{flex:1;} .toolbar .sort-row{margin:0;flex:0 0 auto;} .toolbar .sort-row select{min-width:170px;}
+    .toolbar .segmented.lead-type{order:1;} .toolbar #statusFilter{order:2;}
+    .list:not(.table-mode){display:grid;grid-template-columns:repeat(2,1fr);gap:16px;align-items:start;} .list:not(.table-mode) .row{margin-bottom:0;}
+    .list .empty,.list .empty-state{grid-column:1/-1;}
+    .toast{bottom:32px;} .pwa-bar{bottom:20px;margin-left:calc(50% - 332px + 128px);}
+    .footer-wrap,.app-footer{padding-top:30px;}
+  }
+  @media (min-width:1600px){ .list:not(.table-mode){grid-template-columns:repeat(3,1fr);} }
   @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important;}}
-  @media (min-width:700px){.wrap{max-width:720px;} .kpi-grid{gap:14px;} .agent-header{border-radius:28px;margin:14px 0 18px;}.searchbar{margin:0;padding-left:0;padding-right:0;}}
+  @media (min-width:700px) and (max-width:1023px){.wrap{max-width:720px;} .kpi-grid{gap:14px;} .agent-header{border-radius:28px;margin:14px 0 18px;}.searchbar{margin:0;padding-left:0;padding-right:0;}}
 </style>
 </head>
 <body>
+<aside class="sidebar" id="sidebar" aria-label="Main navigation">
+  <div class="sb-brand"><img src="./icons/logo-256.png" alt=""><div><b>Prospect Ledger</b><span>Sell smarter. Follow up faster.</span></div></div>
+  <div class="sb-group">Workspace</div>
+  <button data-go="home" class="active"><i>🏠</i>Dashboard</button>
+  <button data-go="prospects"><i>👥</i>Prospects</button>
+  <button data-go="reminders"><i>🔔</i>Reminders<span class="sb-badge" id="sbRemBadge"></span></button>
+  <button data-go="reports"><i>📊</i>Reports</button>
+  <div class="sb-group">Tools</div>
+  <button data-go="export"><i>⬇️</i>Export</button>
+  <button data-go="phonebook"><i>📇</i>Phone book</button>
+  <button data-go="broadcast"><i>📣</i>Broadcast</button>
+  <button data-go="numcheck"><i>📞</i>Number check<span class="sb-badge" id="sbNumBadge"></span></button>
+  <div class="sb-group">Account</div>
+  <button data-go="goals"><i>🎯</i>Goals &amp; targets</button>
+  <button data-go="plan"><i>💎</i>Plan &amp; license</button>
+  <button data-go="settings"><i>⚙️</i>Settings</button>
+  <button data-go="updates"><i>🔄</i>Check for updates</button>
+  <div class="sb-foot"><span class="plan-pill" id="sbPlan">Free</span> &nbsp;<span id="sbVersion"></span></div>
+</aside>
 <div class="wrap">
   <header class="agent-header">
     <div class="agent-header-top">
       <div class="brand"><img class="brand-logo" src="./icons/logo-256.png" alt=""><div><div class="brand-name">Prospect Ledger<span class="plan-pill" id="planPill">Free</span></div><div class="brand-tag">Sell smarter. Follow up faster.</div></div></div>
       <div class="header-actions">
         <button class="icon-btn" id="dateFilterBtn" title="Filters">🔍</button>
+        <button class="desk-add" id="deskAdd" type="button">＋ New prospect</button>
         <button class="icon-btn" id="remindersBtn" title="Reminders" style="position:relative;">🔔<span id="reminderBadge" style="display:none; position:absolute; top:-4px; right:-4px; background:var(--red); color:#fff; font-size:9px; font-weight:700; border-radius:999px; min-width:15px; height:15px; line-height:15px; text-align:center; padding:0 3px;"></span></button>
         <button class="icon-btn" id="moreBtn" title="More" style="display:none;">⋯</button>
         <button class="icon-btn" id="helpBtn" title="Help" style="display:none;">❓</button>
@@ -603,6 +690,7 @@
 
 
   <section class="dash" id="dash">
+    <div class="phone-alert" id="phoneAlert"></div>
     <div class="kpi-grid">
       <div class="kpi" id="kpiFollowCard"><div class="kpi-icon">⏰</div><div class="kpi-num" id="kpiFollow">0</div><div class="kpi-label">Follow-ups due</div><div class="kpi-sub" id="kpiFollowSub">All clear</div></div>
       <div class="kpi" id="kpiPipeCard"><div class="kpi-icon">📈</div><div class="kpi-num" id="kpiPipe">0</div><div class="kpi-label">Open pipeline</div><div class="kpi-sub">premium / year</div></div>
@@ -627,6 +715,8 @@
     <div class="agenda"><h3>Up next</h3><div id="agendaList"></div></div>
   </section>
 
+  <div class="section-head" id="prospectsHead"><h2>Prospects</h2><div class="view-toggle" id="viewToggle"><button data-v="table">☰ Table</button><button data-v="cards">▦ Cards</button></div></div>
+  <div class="toolbar" id="toolbar">
   <div class="segmented lead-type" id="leadTypeFilter">
     <button data-t="Individual" class="active">Individual</button>
     <button data-t="Corporate">Corporate</button>
@@ -656,6 +746,7 @@
       </select>
       <button class="sort-dir-btn" id="sortDirBtn" title="Toggle ascending/descending">▼</button>
     </div>
+  </div>
   </div>
   <div class="filter-badge" id="filterBadge"><span id="filterBadgeText"></span><button id="clearFilterBtn">✕</button></div>
 
@@ -901,7 +992,7 @@
     if(tenure) chips.push('⏱ '+escapeHtml(tenure));
     const metaEl = $('#agentMeta');
     metaEl.innerHTML = chips.length===0
-      ? '<div class="meta-chips"><span>Tap More → Settings to add your name and details</span></div>'
+      ? '<div class="meta-chips"><span>Add your name and details in Settings</span></div>'
       : '<div class="meta-chips">'+chips.map(c=>'<span>'+c+'</span>').join('')+'</div>';
     const h = new Date().getHours();
     $('#greeting').textContent = (h<12?'Good morning':h<17?'Good afternoon':'Good evening')+(a.name?',':'');
@@ -915,30 +1006,35 @@
     const v = (raw||'').replace(/\s+/g,'');
     if(!v) return true;
     if(settings.countryCode === '254'){
-      return /^0[17]\d{8}$/.test(v) || /^\+254[17]\d{8}$/.test(v);
+      return ['ok','fixable','foreign','landline'].includes(kePhoneCheck(raw).state);
     }
     return /^\+?\d{7,15}$/.test(v);
   }
   function findDuplicatePhone(phone, excludeId){
     const d = digitsOnly(phone);
     if(!d) return null;
-    return prospects.find(p => p.id!==excludeId && digitsOnly(p.phone)===d) || null;
+    const nd = normalizeForLink(phone);
+    return prospects.find(p => p.id!==excludeId && (digitsOnly(p.phone)===d || (nd && normalizeForLink(p.phone)===nd))) || null;
   }
   function bindPhoneValidation(input, errEl, excludeId){
     if(!input) return;
     const check = ()=>{
-      const v = input.value.trim();
-      let msg = '';
+      let v = input.value.trim();
+      let msg = '', info = '';
+      if(v && settings.countryCode==='254'){
+        const r0 = kePhoneCheck(v);
+        if(r0.state==='fixable'){ input.value = r0.canonical; info = 'Reformatted to the standard: '+r0.canonical; v = r0.canonical; }
+      }
       if(!v){
         msg = 'Phone number is required — it is this ledger\'s unique ID for each prospect';
       }else if(!isValidPhone(v)){
-        msg = settings.countryCode==='254' ? 'Use 07XXXXXXXX/01XXXXXXXX or +254 7XXXXXXXX' : 'Enter a valid phone number';
+        msg = settings.countryCode==='254' ? (kePhoneCheck(v).issue||'Invalid number')+' — use 07XXXXXXXX, 01XXXXXXXX or +2547XXXXXXXX' : 'Enter a valid phone number';
       }else{
         const dup = findDuplicatePhone(v, excludeId);
         if(dup) msg = 'Already used by "'+dup.name+'" — phone numbers must be unique';
       }
       input.classList.toggle('invalid', !!msg);
-      if(errEl) errEl.textContent = msg;
+      if(errEl){ errEl.textContent = msg || info; errEl.style.color = msg ? '' : 'var(--green)'; }
       return !msg;
     };
     input.addEventListener('blur', check);
@@ -1786,6 +1882,7 @@
   function renderList(query){
     listEl.innerHTML = '';
     listEl.classList.toggle('animate', animateList); animateList = false;
+    listEl.classList.remove('table-mode');
     const items = getVisibleItems();
 
     if(items.length===0){
@@ -1794,6 +1891,7 @@
       return;
     }
 
+    if(isDesktop() && viewMode==='table'){ renderTableView(items); return; }
     items.forEach((p, idx)=>{
       const last = p.history[p.history.length-1];
       const row = document.createElement('div');
@@ -1819,7 +1917,7 @@
           <div class="row-main">
             ${p.leadType==='Corporate' ? '<div class="row-type">Corporate</div>' : ''}
             <div class="row-name">${escapeHtml(p.name)}${miniDonutSvg(completenessPct(p))}</div>
-            <div class="row-sub">${subLine}</div>
+            <div class="row-sub">${subLine}${phoneFlagHtml(p)}</div>
             <div class="row-stage">${escapeHtml(p.stage)}</div>
             ${tags.length ? '<div class="row-tags">'+tags.join('')+'</div>' : ''}
           </div>
@@ -2303,7 +2401,7 @@
     return Math.round((next-today)/86400000);
   }
   function getBirthdayAlerts(){
-    return prospects.filter(p=>p.dateOfBirth && daysUntilNextBirthday(p.dateOfBirth)===1);
+    return prospects.filter(p=>p.dateOfBirth && daysUntilNextBirthday(p.dateOfBirth)===1 && !birthdayAcked(p));
   }
   function getUpcomingBirthdays(withinDays){
     return prospects.filter(p=>{
@@ -2323,6 +2421,7 @@
   function renderReminderBadge(){
     const due = getDueReminders().length;
     const badge = $('#reminderBadge');
+    const sbR = document.getElementById('sbRemBadge'); if(sbR){ sbR.textContent = due; sbR.style.display = due ? 'inline-block' : 'none'; }
     if(due>0){ badge.textContent = due>99?'99+':due; badge.style.display = 'block'; }
     else { badge.style.display = 'none'; }
   }
@@ -2427,7 +2526,7 @@
         <div class="detail-facts">
           <div><span class="fk">Lead type</span>${escapeHtml(p.leadType)}</div>
           ${p.leadType==='Corporate' ? `<div><span class="fk">Contact person</span>${escapeHtml(p.contactPerson || '—')}</div>` : ''}
-          <div><span class="fk">Phone</span>${escapeHtml(p.phone || '—')}</div>
+          <div><span class="fk">Phone</span>${escapeHtml(p.phone || '—')}${phoneFlagHtml(p)}</div>
           <div><span class="fk">Gender</span>${escapeHtml(p.gender || '—')}</div>
           <div><span class="fk">Date of birth</span>${p.dateOfBirth ? new Date(p.dateOfBirth+'T00:00:00').toLocaleDateString(undefined,{day:'numeric',month:'long',year:'numeric'}) + ' (birthday in '+daysUntilNextBirthday(p.dateOfBirth)+' day'+(daysUntilNextBirthday(p.dateOfBirth)===1?'':'s')+')' : '—'}</div>
           <div><span class="fk">Email</span>${escapeHtml(p.email || '—')}</div>
@@ -2451,6 +2550,7 @@
           <input type="date" id="detReminderDate" value="${escapeHtml(p.nextFollowUp||'')}">
           <button class="btn btn-ghost" id="detReminderSave" style="flex:0 0 auto;">Save</button>
         </div>
+        ${p.nextFollowUp ? '<button class="btn btn-primary" id="detReminderDone" style="margin-top:8px;width:100%;">✓ Mark follow-up done</button>' : ''}
 
         <button class="btn btn-ghost" id="editToggle" style="margin-top:10px;width:100%;">Edit details</button>
         <button class="btn btn-ghost" id="chainBtn" style="margin-top:8px;width:100%;">🔗 View referral chain</button>
@@ -2632,6 +2732,9 @@
         openDetail(p.id);
       }
     });
+
+    const detDone = overlay.querySelector('#detReminderDone');
+    if(detDone) detDone.addEventListener('click', ()=>{ close(); openDoneSheet(p, ()=>openDetail(p.id)); });
 
     overlay.querySelector('#editToggle').addEventListener('click', ()=>{
       close();
@@ -3204,6 +3307,10 @@
           <div class="more-menu-icon">🎯</div>
           <div><div>Goals &amp; Targets</div><div class="desc">Daily contacts and monthly closes</div></div>
         </div>
+        <div class="more-menu-item admin" id="numCheckMenuItem">
+          <div class="more-menu-icon">📞</div>
+          <div><div>Number check</div><div class="desc">Find phone numbers not in the Kenyan standard</div></div>
+        </div>
         <div class="more-menu-item admin" id="planMenuItem">
           <div class="more-menu-icon">💎</div>
           <div><div>Plan &amp; License</div><div class="desc">Upgrade or enter a license key</div></div>
@@ -3256,6 +3363,7 @@
     });
     overlay.querySelector('#goalsMenuItem').addEventListener('click', ()=>{ close(); openGoalsSheet(); });
     overlay.querySelector('#planMenuItem').addEventListener('click', ()=>{ close(); openPlanSheet(); });
+    overlay.querySelector('#numCheckMenuItem').addEventListener('click', ()=>{ close(); openNumberCheck(); });
     overlay.querySelector('#checkUpdateMenuItem').addEventListener('click', ()=>{
       close();
       checkForUpdatesNow();
@@ -3651,6 +3759,14 @@
     overlay.querySelector('#enableNotifBtn').addEventListener('click', requestNotificationPermission);
 
     const remBody = overlay.querySelector('#remBody');
+    remBody.addEventListener('click', (e)=>{
+      const b = e.target.closest('[data-act]'); if(!b) return;
+      const row = b.closest('[data-id]'); const p = row && prospects.find(x=>x.id===row.dataset.id); if(!p) return;
+      const refresh = ()=>{ const t = overlay.querySelector('#remTabs .active'); renderRemList(t ? t.dataset.r : 'overdue'); };
+      if(b.dataset.act==='done') openDoneSheet(p, refresh);
+      else if(b.dataset.act==='snooze'){ snoozeReminder(p, 1); refresh(); }
+      else if(b.dataset.act==='wished'){ ackBirthday(p); refresh(); }
+    });
     function renderBirthdayList(){
       const list = getUpcomingBirthdays(30);
       if(list.length===0){
@@ -3672,10 +3788,11 @@
               <div style="font-size:11px; font-weight:700; color:${color};">${label}</div>
             </div>
           </div>
+          <div class="row-actions">${birthdayAcked(p) ? '<span class="mini-action done" style="cursor:default;">✓ Wished</span>' : '<button type="button" class="mini-action done" data-act="wished">✓ Done</button>'}</div>
         </div>`;
       }).join('');
       remBody.querySelectorAll('.row[data-id]').forEach(el=>{
-        el.addEventListener('click', ()=>{ close(); openDetail(el.dataset.id); });
+        el.addEventListener('click', (e)=>{ if(e.target.closest('[data-act]')) return; close(); openDetail(el.dataset.id); });
       });
     }
     function renderRemList(tab){
@@ -3701,10 +3818,11 @@
               <div style="font-size:11px; font-weight:700; color:${statusColor};">${statusLabel}</div>
             </div>
           </div>
+          <div class="row-actions"><button type="button" class="mini-action done" data-act="done">✓ Done</button><button type="button" class="mini-action snooze" data-act="snooze">⏰ +1 day</button></div>
         </div>`;
       }).join('');
       remBody.querySelectorAll('.row[data-id]').forEach(el=>{
-        el.addEventListener('click', ()=>{ close(); openDetail(el.dataset.id); });
+        el.addEventListener('click', (e)=>{ if(e.target.closest('[data-act]')) return; close(); openDetail(el.dataset.id); });
       });
     }
     renderRemList('overdue');
@@ -3888,6 +4006,14 @@
   }
 
   function aggregateChartData(from, to, items){
+    // 'All records' passes an unbounded range — clamp it to the data so we never build millions of buckets
+    if(from.getTime()===0 || to.getTime()>4102444800000){
+      const ts = items.map(p=>new Date(p.createdAt).getTime()).filter(isFinite);
+      const lo = ts.length ? Math.min(...ts) : Date.now();
+      const hi = Math.max(Date.now(), ...items.map(p=>p.closedAt ? new Date(p.closedAt).getTime() : 0));
+      if(from.getTime()===0) from = new Date(new Date(lo).getFullYear(), new Date(lo).getMonth(), 1);
+      if(to.getTime()>4102444800000) to = new Date(hi);
+    }
     const spanDays = (to - from) / 86400000;
     const buckets = [];
     if(spanDays <= 31){
@@ -4013,7 +4139,7 @@
     const win = window.open('', '_blank');
     if(!win){ showToast('Please allow pop-ups to export PDF'); return; }
     const head = '<tr>'+cols.map(c=>'<th>'+escapeHtml(c.label)+'</th>').join('')+'</tr>';
-    const body = items.map(p=>'<tr>'+cols.map(c=>'<td>'+escapeHtml(String(exportValue(p,c.id,maskContacts)||''))+'</td>').join('')+'</tr>').join('');
+    const body = pdfBody(items, cols, maskContacts);
     win.document.write(`<!DOCTYPE html><html><head><title>Prospect Ledger — ${leadTypeFilter}</title>
       <style>
         body{font-family:Arial, sans-serif; padding:20px; color:#1B2A4A;}
@@ -4021,7 +4147,7 @@
         table{width:100%; border-collapse:collapse; margin-top:12px;}
         th,td{border:1px solid #ccc; padding:6px 8px; font-size:11px; text-align:left;}
         th{background:#1B2A4A; color:#fff;}
-        tr:nth-child(even){background:#F7F5EF;}
+        *{-webkit-print-color-adjust:exact; print-color-adjust:exact;}
         .footer{margin-top:16px; font-size:9.5px; color:#666; border-top:1px solid #ccc; padding-top:8px;}
       </style></head><body>
       <h2>Prospect Ledger — ${leadTypeFilter} (Quick View)</h2>
@@ -4043,7 +4169,7 @@
     overlay.innerHTML = `
       <div class="sheet">
         <div class="sheet-head"><h2>Export</h2><button class="close-x">&times;</button></div>
-        <div class="field-note">This creates a readable Excel or PDF report for sharing/printing — it can't be imported back into the app. For a full backup you can restore later, use ⚙ Settings → Export full backup instead.</div>
+        <div class="field-note">This creates a readable Excel (.xlsx), PDF or CSV report; reports covering several months are grouped by month with a colour for each for sharing/printing — it can't be imported back into the app. For a full backup you can restore later, use ⚙ Settings → Export full backup instead.</div>
         <label>Date range (by date captured)</label>
         <select id="rangeSelect">
           <option value="all">All records</option>
@@ -4064,7 +4190,7 @@
           <label for="maskContactsCheck">🔒 Mask phone numbers &amp; emails (e.g. 0712****78, jo***@gmail.com)</label>
         </div>
         <div id="colSection">
-          <label>Columns to include (Excel report only — PDF auto-picks key fields)</label>
+          <label>Columns to include (Excel/CSV only — PDF auto-picks key fields)</label>
           <div id="colList"></div>
         </div>
         <div class="sheet-actions">
@@ -4081,8 +4207,8 @@
       row.innerHTML = `<input type="checkbox" id="col_${c.id}" checked><label for="col_${c.id}">${c.label}</label>`;
       colListEl.appendChild(row);
     });
-    let format = 'csv';
-    buildCatSelect(overlay.querySelector('#formatSelect'), ['CSV','PDF'], ()=>format.toUpperCase(), (v)=>{
+    let format = 'excel';
+    buildCatSelect(overlay.querySelector('#formatSelect'), ['Excel','PDF','CSV'], ()=>({excel:'Excel',pdf:'PDF',csv:'CSV'}[format]), (v)=>{
       format = v.toLowerCase();
       overlay.querySelector('#colSection').style.display = format==='pdf' ? 'none' : 'block';
     }, 'lead');
@@ -4114,10 +4240,10 @@
       if(items.length===0){ showToast('No records in that range'); return; }
 
       const maskContacts = overlay.querySelector('#maskContactsCheck').checked;
-      if(format==='csv'){
+      if(format==='csv' || format==='excel'){
         const colIds = EXPORT_COLUMNS.filter(c=>overlay.querySelector('#col_'+c.id).checked).map(c=>c.id);
         if(colIds.length===0){ showToast('Choose at least one column'); return; }
-        exportExcelReport(colIds, items, from, to, maskContacts);
+        if(format==='excel') exportXlsxReport(colIds, items, from, to, maskContacts); else exportExcelReport(colIds, items, from, to, maskContacts);
       } else {
         exportPDF(items, from, to, maskContacts);
       }
@@ -4216,10 +4342,11 @@
         const diff = Math.round((new Date(p.nextFollowUp+'T00:00:00')-today0)/86400000);
         const st = diff<0?'overdue':diff===0?'today':'soon';
         const label = diff<0 ? Math.abs(diff)+'d overdue' : diff===0 ? 'Today' : diff===1 ? 'Tomorrow' : new Date(p.nextFollowUp+'T00:00:00').toLocaleDateString(undefined,{weekday:'short'});
-        return '<div class="ag-item" data-id="'+p.id+'"><div class="avatar-sm cat-'+p.category+'">'+escapeHtml(initialsOf(p.name))+'</div><div><div class="ag-name">'+escapeHtml(p.name)+'</div><div class="ag-sub">'+escapeHtml(p.stage||'')+'</div></div><span class="ag-when '+st+'">'+label+'</span></div>';
+        return '<div class="ag-item" data-id="'+p.id+'"><div class="avatar-sm cat-'+p.category+'">'+escapeHtml(initialsOf(p.name))+'</div><div><div class="ag-name">'+escapeHtml(p.name)+'</div><div class="ag-sub">'+escapeHtml(p.stage||'')+'</div></div><span class="ag-when '+st+'">'+label+'</span><button type="button" class="ag-done" data-done="'+p.id+'" title="Mark done">✓</button></div>';
       }).join('');
-      ag.querySelectorAll('.ag-item').forEach(el=>el.addEventListener('click', ()=>openDetail(el.dataset.id)));
+      ag.querySelectorAll('.ag-item').forEach(el=>el.addEventListener('click', (e)=>{ if(e.target.closest('.ag-done')){ e.stopPropagation(); const pp = prospects.find(x=>x.id===el.dataset.id); if(pp) openDoneSheet(pp); return; } openDetail(el.dataset.id); }));
     }
+    updatePhoneAlert();
     updatePlanUI();
   }
   document.getElementById('kpiFollowCard').addEventListener('click', ()=>$('#remindersBtn').click());
@@ -4318,6 +4445,7 @@
     const st = planState();
     const pill = document.getElementById('planPill');
     if(pill){ pill.textContent = st.id==='pro' ? 'Pro' : st.label; pill.className = 'plan-pill'+(st.id==='pro'?' pro':''); }
+    const sbp = document.getElementById('sbPlan'); if(sbp){ sbp.textContent = st.id==='pro' ? 'Pro' : st.label; sbp.className = 'plan-pill'+(st.id==='pro'?' pro':''); }
     const fp = document.getElementById('footerPlan');
     if(fp) fp.innerHTML = 'Plan: <b>'+escapeHtml(st.label)+'</b>'+(st.id!=='pro' ? ' · <a class="ver-link" id="footerUpgrade" role="button" tabindex="0">Upgrade</a>' : '');
     const up = document.getElementById('footerUpgrade'); if(up) up.onclick = ()=>openPlanSheet();
@@ -4442,9 +4570,325 @@
     }
   }
 
+  // ================= v2.1: number integrity, reminder completion, month-grouped reports, desktop portal =================
+
+  // ----- Kenyan phone number standard -----
+  // Accepted: 07XXXXXXXX, 01[01]XXXXXXX (spaces allowed), +2547XXXXXXXX / +25411XXXXXXX, and landlines 0[2-6]X…
+  function kePhoneCheck(raw){
+    const t = String(raw||'').trim();
+    if(!t) return { state:'empty' };
+    if(/[*•…]/.test(t)) return { state:'invalid', issue:'Number is masked or incomplete' };
+    if(/[A-Za-z]/.test(t)) return { state:'invalid', issue:'Contains letters' };
+    if(/[^0-9+\s\-().]/.test(t)) return { state:'invalid', issue:'Contains unexpected characters' };
+    const digits = t.replace(/\D/g,'');
+    if(!digits) return { state:'invalid', issue:'No digits found' };
+    const flaws = []; let nsn, intl = false;
+    if(t.startsWith('+')){
+      if(digits.startsWith('254')){ nsn = digits.slice(3); intl = true; }
+      else if(digits.startsWith('0')){ nsn = digits.slice(1); flaws.push('stray + before 0'); }
+      else return { state:'foreign', issue:'Not a Kenyan number (+'+digits.slice(0,3)+'…)' };
+    } else if(digits.startsWith('00254')){ nsn = digits.slice(5); intl = true; flaws.push('00254 should be +254'); }
+    else if(digits.startsWith('254')){ nsn = digits.slice(3); intl = true; flaws.push('missing + before 254'); }
+    else if(digits.startsWith('0')){ nsn = digits.slice(1); }
+    else if(/^[17]\d{8}$/.test(digits)){ nsn = digits; flaws.push('missing leading 0'); }
+    else return { state:'invalid', issue:'Must start with 07, 01, +2547 or +2541' };
+    const mobile = /^(7\d{8}|1[01]\d{7})$/.test(nsn), land = /^(20|[4-6]\d)\d{7}$/.test(nsn);
+    if(!mobile && !land){
+      const n = nsn.length;
+      const issue = n<9 ? 'Too short — '+n+' digits after the 0, Kenyan numbers have 9'
+                  : n>9 ? 'Too long — '+n+' digits after the 0, Kenyan numbers have 9'
+                  : 'Unrecognised network prefix';
+      return { state:'invalid', issue };
+    }
+    if(/[\-().]/.test(t)) flaws.push('remove - ( ) . characters');
+    const canonical = (intl ? '+254' : '0') + nsn;
+    if(flaws.length) return { state:'fixable', issue:'Not in standard format: '+flaws.join(', '), canonical };
+    return { state:'ok', kind: mobile ? 'mobile' : 'landline', canonical };
+  }
+  function phoneIssue(p){
+    if(!p.phone || settings.countryCode !== '254') return null;
+    const r = kePhoneCheck(p.phone);
+    return (r.state==='invalid' || r.state==='fixable' || r.state==='foreign') ? r : null;
+  }
+  function phoneFlagHtml(p){
+    const r = phoneIssue(p); if(!r) return '';
+    const label = r.state==='fixable' ? 'Fix format' : r.state==='foreign' ? 'Non-Kenyan' : 'Check number';
+    return ' <span class="phone-flag '+r.state+'" title="'+escapeHtml(r.issue)+'">⚠ '+label+'</span>';
+  }
+  function duplicateGroups(){
+    const map = new Map();
+    prospects.forEach(p=>{ const k = normalizeForLink(p.phone||''); if(k && k.length>=9){ (map.get(k)||map.set(k,[]).get(k)).push(p); } });
+    return [...map.values()].filter(g=>g.length>1);
+  }
+  function updatePhoneAlert(){
+    const el = document.getElementById('phoneAlert'); if(!el) return;
+    const bad = prospects.filter(p=>phoneIssue(p)).length, dups = duplicateGroups().length;
+    const n = bad + dups;
+    const sb = document.getElementById('sbNumBadge'); if(sb){ sb.textContent = n; sb.style.display = n ? 'inline-block' : 'none'; }
+    if(!n){ el.style.display = 'none'; return; }
+    el.style.display = 'flex';
+    el.innerHTML = '<span>⚠ <b>'+bad+'</b> number'+(bad===1?'':'s')+' not in the Kenyan standard'+(dups?' · <b>'+dups+'</b> duplicate'+(dups===1?'':'s'):'')+'</span><button type="button" class="pwa-primary" id="phoneAlertBtn">Review</button>';
+    document.getElementById('phoneAlertBtn').onclick = openNumberCheck;
+  }
+  function openNumberCheck(){
+    const bad = prospects.filter(p=>phoneIssue(p));
+    const dups = duplicateGroups();
+    const fixable = bad.filter(p=>phoneIssue(p).canonical);
+    const item = (p, r)=>'<div class="nc-item" data-id="'+p.id+'"><div class="avatar-sm cat-'+p.category+'">'+escapeHtml(initialsOf(p.name))+'</div><div class="nc-main"><div class="ag-name">'+escapeHtml(p.name)+'</div><div class="ag-sub"><b>'+escapeHtml(p.phone)+'</b>'+(r&&r.canonical?' → <b style="color:var(--green)">'+escapeHtml(r.canonical)+'</b>':'')+'</div><div class="ag-sub" style="color:var(--red)">'+escapeHtml(r?r.issue:'')+'</div></div><div class="nc-btns">'+(r&&r.canonical?'<button type="button" class="mini-action call" data-fix="'+p.id+'">Fix</button>':'')+'<button type="button" class="mini-action edit" data-edit="'+p.id+'">Edit</button></div></div>';
+    openSheet('<div class="sheet-head"><h2>📞 Number check</h2><button class="close-x">&times;</button></div>'+
+      '<div class="field-note">Kenyan numbers are written <b>07XXXXXXXX</b>, <b>01XXXXXXXX</b> or <b>+2547XXXXXXXX</b> / <b>+2541XXXXXXXX</b>. Anything else is flagged here.</div>'+
+      (bad.length===0 && dups.length===0 ? '<div class="status-box ok">✓ All '+prospects.filter(p=>p.phone).length+' phone numbers look good.</div>' : '')+
+      (fixable.length ? '<div class="sheet-actions"><button class="btn btn-primary" id="fixAllBtn">Fix all '+fixable.length+' auto-fixable</button></div>' : '')+
+      (bad.length ? '<h3 class="nc-h">Needs attention ('+bad.length+')</h3>'+bad.map(p=>item(p, phoneIssue(p))).join('') : '')+
+      (dups.length ? '<h3 class="nc-h">Duplicate numbers ('+dups.length+')</h3>'+dups.map(g=>'<div class="nc-dup"><div class="ag-sub"><b>'+escapeHtml(g[0].phone)+'</b> is used by:</div>'+g.map(p=>item(p,null)).join('')+'</div>').join('') : ''),
+    (ov, close)=>{
+      const fix = (p)=>{ const r = phoneIssue(p); if(r && r.canonical){ const old = p.phone; p.phone = r.canonical; logActivity(p, '📞 Number reformatted: '+old+' → '+r.canonical); syncUpsert(p); } };
+      ov.addEventListener('click', (e)=>{
+        const f = e.target.closest('[data-fix]'), ed = e.target.closest('[data-edit]');
+        if(f){ const p = prospects.find(x=>x.id===f.dataset.fix); if(p){ fix(p); scheduleSave(); render(); close(); openNumberCheck(); } }
+        else if(ed){ close(); openEditSheet(ed.dataset.edit); }
+      });
+      const all = ov.querySelector('#fixAllBtn');
+      if(all) all.addEventListener('click', ()=>{ fixable.forEach(fix); scheduleSave(); render(); close(); showToast(fixable.length+' numbers fixed'); openNumberCheck(); });
+    });
+  }
+
+  // ----- Reminder completion -----
+  function fmtLong(dstr){ return new Date(dstr+'T00:00:00').toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}); }
+  function isoDatePlus(days){ const d = new Date(); d.setDate(d.getDate()+days); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+  function birthdayAcked(p){
+    const d = daysUntilNextBirthday(p.dateOfBirth); if(d===null) return false;
+    return String(p.birthdayAck) === String(new Date(Date.now()+d*864e5).getFullYear());
+  }
+  function ackBirthday(p){
+    const d = daysUntilNextBirthday(p.dateOfBirth);
+    p.birthdayAck = new Date(Date.now()+d*864e5).getFullYear();
+    logActivity(p, '🎂 Birthday wish done');
+    scheduleSave(); syncUpsert(p); render(); showToast('Birthday reminder cleared');
+  }
+  function snoozeReminder(p, days){
+    p.nextFollowUp = isoDatePlus(days);
+    logActivity(p, '⏰ Reminder snoozed to '+fmtLong(p.nextFollowUp));
+    scheduleSave(); syncUpsert(p); render(); showToast('Snoozed until '+fmtLong(p.nextFollowUp));
+  }
+  function openDoneSheet(p, after){
+    const outcomes = ['Spoke — interested','Spoke — needs time','No answer','Sent info / quote','Meeting held','Not interested'];
+    let outcome = '';
+    openSheet('<div class="sheet-head"><h2>✓ Mark follow-up done</h2><button class="close-x">&times;</button></div>'+
+      '<div class="field-note"><b>'+escapeHtml(p.name)+'</b> — log what happened. The reminder clears from your notifications once saved.</div>'+
+      '<label>Outcome</label><div class="chip-row" id="doneOutcomes">'+outcomes.map(o=>'<button type="button" class="out-chip">'+o+'</button>').join('')+'</div>'+
+      '<label>Note (optional)</label><textarea id="doneNote" placeholder="e.g. Will decide after salary on the 28th"></textarea>'+
+      '<label>Next follow-up (optional — leave empty if none needed)</label>'+
+      '<div class="chip-row"><button type="button" class="out-chip" data-d="2">+2 days</button><button type="button" class="out-chip" data-d="7">+1 week</button><button type="button" class="out-chip" data-d="14">+2 weeks</button><button type="button" class="out-chip" data-d="30">+1 month</button></div>'+
+      '<input type="date" id="doneNext" style="margin-top:8px;">'+
+      '<div class="sheet-actions"><button class="btn btn-primary" id="doneSave">Save &amp; clear reminder</button></div>',
+    (ov, close)=>{
+      ov.querySelector('#doneOutcomes').addEventListener('click', (e)=>{
+        const b = e.target.closest('.out-chip'); if(!b) return;
+        ov.querySelectorAll('#doneOutcomes .out-chip').forEach(x=>x.classList.remove('on'));
+        outcome = (outcome===b.textContent) ? '' : b.textContent; if(outcome) b.classList.add('on');
+      });
+      ov.querySelectorAll('[data-d]').forEach(b=>b.addEventListener('click', ()=>{ ov.querySelector('#doneNext').value = isoDatePlus(parseInt(b.dataset.d,10)); }));
+      ov.querySelector('#doneSave').addEventListener('click', ()=>{
+        const note = ov.querySelector('#doneNote').value.trim(), next = ov.querySelector('#doneNext').value || null;
+        logActivity(p, '✅ Follow-up done'+(outcome?' — '+outcome:'')+(note?': '+note:''));
+        p.nextFollowUp = next;
+        if(next) logActivity(p, '🔔 Next follow-up set for '+fmtLong(next));
+        scheduleSave(); syncUpsert(p); render(); close(); showToast(next ? 'Done — next follow-up '+fmtLong(next) : 'Follow-up done — reminder cleared');
+        if(after) after();
+      });
+    });
+  }
+
+  // ----- Month colours & grouping for reports -----
+  const MONTH_BASE = ['#1565C0','#6A1B9A','#C2185B','#E64A19','#F57F17','#9E9D24','#2E7D32','#00897B','#0097A7','#3949AB','#8D6E63','#546E7A'];
+  function hexMix(hex, t){
+    const n = parseInt(hex.slice(1),16), r = n>>16&255, g = n>>8&255, b = n&255, m = c=>Math.round(c+(255-c)*t);
+    return [m(r),m(g),m(b)].map(x=>x.toString(16).padStart(2,'0')).join('').toUpperCase();
+  }
+  function monthTone(m){ const base = MONTH_BASE[m]; return { dark: base.slice(1).toUpperCase(), mid: hexMix(base,.72), a: hexMix(base,.87), b: hexMix(base,.95) }; }
+  function monthGroups(items){
+    const map = new Map();
+    items.slice().sort((a,b)=>new Date(a.createdAt)-new Date(b.createdAt)).forEach(p=>{
+      const d = new Date(p.createdAt), k = d.getFullYear()*12+d.getMonth();
+      if(!map.has(k)) map.set(k, []); map.get(k).push(p);
+    });
+    return [...map.entries()].sort((a,b)=>a[0]-b[0]).map(([k,list])=>{
+      const y = Math.floor(k/12), m = k%12, closed = list.filter(p=>p.category==='Closed');
+      return { year:y, month:m, label:MONTH_NAMES[m]+' '+y, items:list, closedCount:closed.length, closedPremium: closed.reduce((a,p)=>a+annualPremium(p),0) };
+    });
+  }
+  function groupStats(g){
+    return g.items.length+' prospect'+(g.items.length===1?'':'s')+' · '+g.closedCount+' closed'+(g.closedCount ? ' · Annualised premium closed: '+fmtMoney(Math.round(g.closedPremium)) : '');
+  }
+  function pdfBody(items, cols, maskContacts){
+    const cell = (p)=>cols.map(c=>'<td>'+escapeHtml(String(exportValue(p,c.id,maskContacts)||''))+'</td>').join('');
+    const groups = monthGroups(items);
+    if(groups.length<2) return items.map(p=>'<tr>'+cell(p)+'</tr>').join('');
+    return groups.map(g=>{
+      const t = monthTone(g.month);
+      return '<tr><td colspan="'+cols.length+'" style="background:#'+t.dark+';color:#fff;font-weight:bold;font-size:12.5px;padding:8px 10px;">'+g.label.toUpperCase()+' <span style="font-weight:normal;font-size:10.5px;opacity:.92;">— '+escapeHtml(groupStats(g))+'</span></td></tr>'+
+        g.items.map((p,i)=>'<tr style="background:#'+(i%2?t.b:t.a)+';">'+cell(p)+'</tr>').join('');
+    }).join('')+
+    '<tr><td colspan="'+cols.length+'" style="background:#fff;border:none;height:10px;"></td></tr>'+
+    groups.map(g=>{ const t = monthTone(g.month); return '<tr><td colspan="'+cols.length+'" style="background:#'+t.mid+';color:#'+t.dark+';font-weight:bold;">'+g.label+': '+escapeHtml(groupStats(g))+'</td></tr>'; }).join('');
+  }
+
+  // ----- Minimal .xlsx writer (no libraries, works offline) -----
+  function xmlEsc(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g,''); }
+  function colRef(i){ let s='', n=i+1; while(n>0){ const m=(n-1)%26; s=String.fromCharCode(65+m)+s; n=Math.floor((n-1)/26); } return s; }
+  const CRC_T = (()=>{ const t=[]; for(let n=0;n<256;n++){ let c=n; for(let k=0;k<8;k++) c = c&1 ? 0xEDB88320^(c>>>1) : c>>>1; t[n]=c>>>0; } return t; })();
+  function crc32(u8){ let c=-1; for(let i=0;i<u8.length;i++) c = CRC_T[(c^u8[i])&255]^(c>>>8); return (c^-1)>>>0; }
+  function zipStore(files){
+    const enc = new TextEncoder(), parts = [], central = []; let offset = 0;
+    files.forEach(f=>{
+      const name = enc.encode(f.name), data = enc.encode(f.data), crc = crc32(data);
+      const lh = new DataView(new ArrayBuffer(30)); lh.setUint32(0,0x04034b50,true); lh.setUint16(4,20,true); lh.setUint16(6,0x0800,true); lh.setUint16(8,0,true); lh.setUint16(10,0,true); lh.setUint16(12,0x21,true);
+      lh.setUint32(14,crc,true); lh.setUint32(18,data.length,true); lh.setUint32(22,data.length,true); lh.setUint16(26,name.length,true); lh.setUint16(28,0,true);
+      parts.push(new Uint8Array(lh.buffer), name, data);
+      const ch = new DataView(new ArrayBuffer(46)); ch.setUint32(0,0x02014b50,true); ch.setUint16(4,20,true); ch.setUint16(6,20,true); ch.setUint16(8,0x0800,true); ch.setUint16(10,0,true); ch.setUint16(12,0,true); ch.setUint16(14,0x21,true);
+      ch.setUint32(16,crc,true); ch.setUint32(20,data.length,true); ch.setUint32(24,data.length,true); ch.setUint16(28,name.length,true); ch.setUint32(42,offset,true);
+      central.push(new Uint8Array(ch.buffer), name);
+      offset += 30 + name.length + data.length;
+    });
+    const cdSize = central.reduce((a,b)=>a+b.length,0);
+    const end = new DataView(new ArrayBuffer(22)); end.setUint32(0,0x06054b50,true); end.setUint16(8,files.length,true); end.setUint16(10,files.length,true); end.setUint32(12,cdSize,true); end.setUint32(16,offset,true);
+    return new Blob([...parts, ...central, new Uint8Array(end.buffer)], { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  }
+  function buildXlsx(sheetName, rows, widths, merges){
+    const fonts = ['<font><sz val="11"/><name val="Calibri"/></font>'], fills = ['<fill><patternFill patternType="none"/></fill>','<fill><patternFill patternType="gray125"/></fill>'], xfs = ['<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'];
+    const fMap = {}, fillMap = {}, xMap = {};
+    const style = (d)=>{
+      if(!d) return 0; const key = JSON.stringify(d); if(xMap[key]!==undefined) return xMap[key];
+      const fk = JSON.stringify([d.bold,d.italic,d.color,d.size]);
+      if(fMap[fk]===undefined){ fMap[fk] = fonts.length; fonts.push('<font>'+(d.bold?'<b/>':'')+(d.italic?'<i/>':'')+'<sz val="'+(d.size||11)+'"/><color rgb="FF'+(d.color||'000000')+'"/><name val="Calibri"/></font>'); }
+      let fi = 0; if(d.fill){ if(fillMap[d.fill]===undefined){ fillMap[d.fill] = fills.length; fills.push('<fill><patternFill patternType="solid"><fgColor rgb="FF'+d.fill+'"/><bgColor indexed="64"/></patternFill></fill>'); } fi = fillMap[d.fill]; }
+      xfs.push('<xf numFmtId="'+(d.num?3:0)+'" fontId="'+fMap[fk]+'" fillId="'+fi+'" borderId="'+(d.border?1:0)+'" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"'+(d.num?' applyNumberFormat="1"':'')+'><alignment vertical="center"'+(d.wrap?' wrapText="1"':'')+(d.align?' horizontal="'+d.align+'"':'')+'/></xf>');
+      return xMap[key] = xfs.length-1;
+    };
+    const sheetRows = rows.map((r,ri)=>{
+      const cells = r.cells.map((c,ci)=>{
+        const ref = colRef(ci)+(ri+1), s = style(c.s), sAttr = s ? ' s="'+s+'"' : '';
+        if(c.v===undefined || c.v==='' || c.v===null) return '<c r="'+ref+'"'+sAttr+'/>';
+        if(typeof c.v==='number') return '<c r="'+ref+'"'+sAttr+'><v>'+c.v+'</v></c>';
+        return '<c r="'+ref+'"'+sAttr+' t="inlineStr"><is><t xml:space="preserve">'+xmlEsc(c.v)+'</t></is></c>';
+      }).join('');
+      return '<row r="'+(ri+1)+'"'+(r.ht?' ht="'+r.ht+'" customHeight="1"':'')+'>'+cells+'</row>';
+    }).join('');
+    const NS = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main', RNS = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+    const sheet = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="'+NS+'"><sheetViews><sheetView workbookViewId="0" showGridLines="0"/></sheetViews><sheetFormatPr defaultRowHeight="16"/><cols>'+widths.map((w,i)=>'<col min="'+(i+1)+'" max="'+(i+1)+'" width="'+w+'" customWidth="1"/>').join('')+'</cols><sheetData>'+sheetRows+'</sheetData>'+(merges.length?'<mergeCells count="'+merges.length+'">'+merges.map(m=>'<mergeCell ref="'+m+'"/>').join('')+'</mergeCells>':'')+'<pageMargins left="0.5" right="0.5" top="0.6" bottom="0.6" header="0.3" footer="0.3"/></worksheet>';
+    const border = '<border><left style="thin"><color rgb="FFD0D7E5"/></left><right style="thin"><color rgb="FFD0D7E5"/></right><top style="thin"><color rgb="FFD0D7E5"/></top><bottom style="thin"><color rgb="FFD0D7E5"/></bottom><diagonal/></border>';
+    const styles = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="'+NS+'"><fonts count="'+fonts.length+'">'+fonts.join('')+'</fonts><fills count="'+fills.length+'">'+fills.join('')+'</fills><borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border>'+border+'</borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="'+xfs.length+'">'+xfs.join('')+'</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
+    return zipStore([
+      { name:'[Content_Types].xml', data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>' },
+      { name:'_rels/.rels', data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>' },
+      { name:'xl/workbook.xml', data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="'+NS+'" xmlns:r="'+RNS+'"><sheets><sheet name="'+xmlEsc(sheetName)+'" sheetId="1" r:id="rId1"/></sheets></workbook>' },
+      { name:'xl/_rels/workbook.xml.rels', data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>' },
+      { name:'xl/styles.xml', data:styles },
+      { name:'xl/worksheets/sheet1.xml', data:sheet }
+    ]);
+  }
+  function exportXlsxReport(colIds, items, from, to, maskContacts){
+    const a = settings.agent || {};
+    const cols = EXPORT_COLUMNS.filter(c=>colIds.includes(c.id)), n = cols.length;
+    const rows = [], merges = [];
+    const blank = ()=>Array.from({length:n},()=>({}));
+    const full = (text, s, ht)=>{ const cells = blank(); cells[0] = { v:text, s }; rows.push({ cells, ht }); if(n>1) merges.push('A'+rows.length+':'+colRef(n-1)+rows.length); };
+    const kv = (k, v)=>{ const cells = blank(); cells[0] = { v:k, s:{bold:true,color:'425073'} }; if(n>1) cells[1] = { v:String(v||'') }; rows.push({ cells }); };
+    full('Prospect Ledger Report — '+leadTypeFilter, {bold:true,size:16,color:'0B1F4D'}, 26);
+    kv('Period', (from.getTime()===0 ? 'All records' : from.toLocaleDateString()+' to '+to.toLocaleDateString()));
+    kv('Grouped by', 'Month captured');
+    kv('Generated', new Date().toLocaleString());
+    if(maskContacts) kv('Note', 'Phone numbers and emails are masked for privacy');
+    kv('Agent', [a.name,a.agentCode,a.phone,a.email].filter(Boolean).join(' · '));
+    rows.push({ cells: blank() });
+    const head = { bold:true, color:'FFFFFF', fill:'0B1F4D', border:true, wrap:true };
+    const headerRow = ()=>rows.push({ cells: cols.map(c=>({ v:c.label, s:head })), ht:22 });
+    const dataRow = (p, fill, txt)=>rows.push({ cells: cols.map(c=>{
+      const v = exportValue(p, c.id, maskContacts);
+      const isNum = c.id==='premiumAmount' && v!=='' && isFinite(Number(v));
+      return { v: isNum ? Number(v) : String(v===undefined?'':v), s:{ fill, border:true, color:txt||'1B2A4A', num:isNum, align:isNum?'right':undefined } };
+    }) });
+    const groups = monthGroups(items);
+    if(groups.length<2){
+      headerRow(); items.forEach((p,i)=>dataRow(p, i%2?'F4F7FD':'FFFFFF'));
+    } else {
+      groups.forEach(g=>{
+        const t = monthTone(g.month);
+        full(g.label.toUpperCase()+'   —   '+groupStats(g), {bold:true,size:13,color:'FFFFFF',fill:t.dark}, 26);
+        rows.push({ cells: cols.map(c=>({ v:c.label, s:{bold:true,color:t.dark,fill:t.mid,border:true,wrap:true} })), ht:20 });
+        g.items.forEach((p,i)=>dataRow(p, i%2?t.b:t.a));
+        rows.push({ cells: blank() });
+      });
+      full('MONTH SUMMARY', {bold:true,size:13,color:'FFFFFF',fill:'0B1F4D'}, 24);
+      groups.forEach(g=>{ const t = monthTone(g.month); full(g.label+':  '+groupStats(g), {bold:true,color:t.dark,fill:t.mid,border:true}, 20); });
+    }
+    rows.push({ cells: blank() }); 
+    full('Chart data — select this table and Insert > Chart to visualise', {bold:true,color:'425073'});
+    const cd = blank(); cd[0] = {v:'Period',s:head}; if(n>1) cd[1] = {v:'Prospected',s:head}; if(n>2) cd[2] = {v:'Closed',s:head}; rows.push({ cells: cd });
+    aggregateChartData(from, to, items).forEach(r=>{ const c2 = blank(); c2[0] = {v:r.label,s:{border:true}}; if(n>1) c2[1] = {v:r.prospected,s:{border:true}}; if(n>2) c2[2] = {v:r.closed,s:{border:true}}; rows.push({ cells:c2 }); });
+    rows.push({ cells: blank() });
+    full(DISCLAIMER, {italic:true,color:'666666',wrap:true,size:9}, 54);
+    const widths = cols.map(c=>/note|email|referred|sector|location/i.test(c.id) ? 28 : /name|contact|product|stage/i.test(c.id) ? 24 : 16);
+    const blob = buildXlsx('Report', rows, widths, merges);
+    const url = URL.createObjectURL(blob), link = document.createElement('a');
+    link.href = url; link.download = 'prospect-ledger-report-'+new Date().toISOString().slice(0,10)+'.xlsx';
+    document.body.appendChild(link); link.click(); link.remove(); setTimeout(()=>URL.revokeObjectURL(url), 2000);
+  }
+
+  // ----- Desktop portal -----
+  const desktopMQ = window.matchMedia('(min-width: 1024px)');
+  const isDesktop = ()=>desktopMQ.matches;
+  let viewMode = (function(){ try{ return localStorage.getItem('pl_view') || 'table'; }catch(e){ return 'table'; } })();
+  desktopMQ.addEventListener && desktopMQ.addEventListener('change', ()=>render());
+  document.getElementById('viewToggle').addEventListener('click', (e)=>{
+    const b = e.target.closest('button[data-v]'); if(!b) return;
+    viewMode = b.dataset.v; try{ localStorage.setItem('pl_view', viewMode); }catch(_){}
+    syncViewToggle(); renderList(searchInput.value.trim());
+  });
+  function syncViewToggle(){ document.querySelectorAll('#viewToggle button').forEach(b=>b.classList.toggle('active', b.dataset.v===viewMode)); }
+  syncViewToggle();
+
+  function renderTableView(items){
+    listEl.classList.add('table-mode');
+    const rows = items.map(p=>{
+      const last = p.history[p.history.length-1];
+      const st = p.nextFollowUp ? reminderStatus(p.nextFollowUp) : null;
+      const fu = p.nextFollowUp ? '<span class="fu '+st+'">'+fmtLong(p.nextFollowUp)+'</span>' : '<span class="muted">—</span>';
+      return '<tr data-id="'+p.id+'"><td><div class="t-name"><div class="avatar-sm cat-'+p.category+'">'+escapeHtml(initialsOf(p.name))+'</div><div><div class="ag-name">'+escapeHtml(p.name)+(p.leadType==='Corporate'?' <span class="t-tag">Corporate</span>':'')+'</div><div class="ag-sub">'+escapeHtml(p.contactPerson||p.county||'')+'</div></div></div></td>'+
+        '<td>'+escapeHtml(p.phone||'—')+phoneFlagHtml(p)+'</td><td><span class="row-cat '+p.category+'"><span class="status-dot '+p.category+'"></span>'+p.category+'</span></td><td>'+escapeHtml(p.stage||'')+'</td><td>'+escapeHtml(p.product||'—')+'</td>'+
+        '<td class="num">'+(p.premiumAmount ? fmtMoney(p.premiumAmount)+'<div class="ag-sub">'+escapeHtml(p.premiumFrequency||'')+'</div>' : '—')+'</td><td>'+fu+'</td><td class="muted">'+fmtShort(last.date)+'</td>'+
+        '<td class="t-act">'+(p.phone?'<a class="mini-action call" data-log="call" href="tel:+'+normalizeForLink(p.phone)+'" title="Call">📞</a><a class="mini-action wa" data-log="whatsapp" target="_blank" rel="noopener" href="https://wa.me/'+normalizeForLink(p.phone)+'" title="WhatsApp">💬</a>':'')+'<button type="button" class="mini-action edit" data-edit="1" title="Edit">✏️</button></td></tr>';
+    }).join('');
+    listEl.innerHTML = '<div class="tbl-wrap"><table class="pl-table"><thead><tr><th>Prospect</th><th>Phone</th><th>Category</th><th>Stage</th><th>Product</th><th class="num">Premium</th><th>Follow-up</th><th>Last activity</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+    listEl.querySelector('tbody').addEventListener('click', (e)=>{
+      const tr = e.target.closest('tr[data-id]'); if(!tr) return;
+      const p = prospects.find(x=>x.id===tr.dataset.id); if(!p) return;
+      const lg = e.target.closest('[data-log]');
+      if(lg){ logCommunication(p, lg.dataset.log); return; }
+      if(e.target.closest('[data-edit]')){ openEditSheet(p.id); return; }
+      openDetail(p.id);
+    });
+  }
+
+  const SB_ACTIONS = {
+    home: ()=>window.scrollTo({top:0, behavior:'smooth'}),
+    prospects: ()=>document.getElementById('prospectsHead').scrollIntoView({behavior:'smooth', block:'start'}),
+    reminders: ()=>$('#remindersBtn').click(), reports: ()=>$('#reportsBtn').click(), export: ()=>$('#exportBtn').click(),
+    phonebook: ()=>$('#phonebookBtn').click(), broadcast: ()=>$('#broadcastBtn').click(), goals: ()=>openGoalsSheet(),
+    numcheck: ()=>openNumberCheck(), plan: ()=>openPlanSheet(), settings: ()=>$('#settingsBtn').click(),
+    updates: async ()=>{ await checkForUpdatesNow(); const t = document.getElementById('footerUpdateStatus').textContent; if(t) showToast(t); }
+  };
+  document.getElementById('sidebar').addEventListener('click', (e)=>{
+    const b = e.target.closest('[data-go]'); if(!b) return;
+    SB_ACTIONS[b.dataset.go](); 
+    if(b.dataset.go==='home' || b.dataset.go==='prospects'){ document.querySelectorAll('#sidebar [data-go]').forEach(x=>x.classList.toggle('active', x===b)); }
+  });
+  document.getElementById('deskAdd').addEventListener('click', ()=>$('#addFab').click());
+
   // ---------- PWA: install prompt + service worker + update detection ----------
   // Keep in sync with sw.js and version.json (use tools/bump-version.js).
-  const APP_VERSION = '2.0.0';
+  const APP_VERSION = '2.1.0';
   let deferredInstallPrompt = null;
   let swRegistration = null;
   let hadController = !!(navigator.serviceWorker && navigator.serviceWorker.controller);
@@ -4459,6 +4903,7 @@
     if(el) el.textContent = msg || '';
   }
   document.getElementById('footerVersion').textContent = 'v' + APP_VERSION;
+  document.getElementById('sbVersion').textContent = 'v' + APP_VERSION;
   document.querySelectorAll('.ver-text').forEach(el=>{ el.textContent = APP_VERSION; });
   const footerLink = document.getElementById('footerCheckUpdate');
   footerLink.addEventListener('click', ()=>checkForUpdatesNow());

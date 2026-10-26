@@ -2,9 +2,18 @@
 
 A mobile-first, offline-capable, **installable** prospecting and client-management tool built for a life insurance agent's day-to-day workflow — capturing leads, tracking them through a full sales pipeline, and reporting on performance. It's a Progressive Web App (PWA): open it once from its hosted link, and it behaves like a real app from then on — an icon on your home screen, its own window, and offline access, with no app store involved.
 
-**Current version: 2.0.0**
+**Current version: 2.1.0**
 
 **Developed by Walter Jungah** · 0798 511 366 · walterjungah9@outlook.com
+
+---
+
+## What's new in 2.1.0
+
+- **PC portal:** left sidebar, wide dashboard grid, Table / Cards switch for prospects (bottom bar remains on phones).
+- **Reminders:** *Done* (outcome, note, optional next follow-up), *+1 day* snooze, birthday *Done*; completed items leave the bell count immediately.
+- **Number integrity:** Kenyan standard (07XXXXXXXX, 01XXXXXXXX, +2547XXXXXXXX / +2541XXXXXXXX) is checked everywhere; non-standard numbers show a flag, are auto-fixed when you type them, and can be fixed in bulk from *Number check*, which also finds duplicates.
+- **Reports:** exports spanning several months are grouped under month sub-headings with a different colour and shade per month (Excel .xlsx, PDF; CSV stays flat). Fixed a freeze when exporting "All records".
 
 ---
 
