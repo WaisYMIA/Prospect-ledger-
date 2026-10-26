@@ -2,9 +2,20 @@
 
 A mobile-first, offline-capable, **installable** prospecting and client-management tool built for a life insurance agent's day-to-day workflow — capturing leads, tracking them through a full sales pipeline, and reporting on performance. It's a Progressive Web App (PWA): open it once from its hosted link, and it behaves like a real app from then on — an icon on your home screen, its own window, and offline access, with no app store involved.
 
-**Current version: 2.1.0**
+**Current version: 2.2.0**
 
 **Developed by Walter Jungah** · 0798 511 366 · walterjungah9@outlook.com
+
+---
+
+## What's new in 2.2.0 — "agent as a company"
+
+- **Sticky identity header** that collapses to a slim bar while scrolling (phone and PC).
+- **Production dashboard:** API and NOPs for week-, month- and year-to-date, compared with the same point in the previous period, with optional targets.
+- **Activations** and **group trainings** (Corporate) logging with weekly/monthly targets, people engaged and leads captured.
+- **Days off & working week:** logged days off and weekly rest days are never counted as zero-activity days; the streak carries through them.
+- **Contact inbox:** imported phone-book contacts are stored separately, excluded from all reports and charts, and become prospects only when you qualify them.
+- **Performance scorecard (Pro):** pace versus target, previous-period comparison, insights, Excel download.
 
 ---
 

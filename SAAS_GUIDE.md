@@ -23,3 +23,16 @@ Edit the `SAAS` object in `index.html`: `proPrice` (e.g. `'KES 1,500 / month'`; 
   3. **Teams:** workspaces, roles (agent / manager), shared leaderboards, lead assignment, manager reports.
   4. **Compliance:** Kenya Data Protection Act registration, privacy policy and terms, data export/delete on request.
   5. **Integrations:** Google/Outlook calendar, SMS (Africa's Talking), WhatsApp Business API.
+
+## Product packaging: the agent as a one-person company (v2.2 direction)
+
+| Department | What the agent does | In the app today | Next |
+|---|---|---|---|
+| CEO / strategy | Sets targets, reviews results | Goals & targets, Performance scorecard | Weekly review ritual with saved notes |
+| Sales | Works the pipeline | Prospects, stages, follow-ups, API/NOPs | Quotes / proposals tracker |
+| Marketing | Creates new leads | Activations, group trainings, referrals | Campaign / source ROI report |
+| Operations & HR | Plans time, takes leave | Working week, days off, reminders | Weekly planner and calendar |
+| Finance | Earns by results | API and NOPs, pipeline value | Commission and expense tracker |
+| Admin & compliance | Keeps clean records | Number check, Contact inbox, backups | Data-protection tools |
+
+Suggested plans: **Starter (free)** pipeline, reminders, basic dashboard; **Pro** everything above plus scorecard, reports and exports; **Team / Agency (later, needs backend)** manager dashboards, shared targets, lead assignment.

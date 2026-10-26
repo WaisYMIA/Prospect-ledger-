@@ -1,11 +1,12 @@
 {
   "name": "Prospect Ledger",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "released": "2026-10-26",
   "notes": [
-    "New PC portal: sidebar navigation, wide dashboard, sortable table view",
-    "Reminders can be marked Done (with outcome and next date), snoozed, and birthdays cleared",
-    "Kenyan phone number check: flags and auto-fixes non-standard or invalid numbers, finds duplicates",
-    "Reports grouped by month with a colour per month (real .xlsx, PDF and CSV)"
+    "Identity header stays visible and shrinks as you scroll (phone and PC)",
+    "Dashboard shows API and NOPs for week, month and year to date with comparison and targets",
+    "Activations and group trainings with weekly/monthly targets; days off and working week",
+    "Imported phone contacts go to a Contact inbox and stay out of every report until qualified",
+    "Performance scorecard with pace vs target and plain-language insights"
   ]
 }

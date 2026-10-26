@@ -634,6 +634,46 @@
     .footer-wrap,.app-footer{padding-top:30px;}
   }
   @media (min-width:1600px){ .list:not(.table-mode){grid-template-columns:repeat(3,1fr);} }
+  /* ================= v2.2 ================= */
+  .agent-header{position:sticky;top:0;z-index:35;transition:padding .28s ease,border-radius .28s ease,box-shadow .28s ease;}
+  .agent-header .agent-meta,.agent-header .agent-date,.agent-header .agent-greeting{max-height:70px;transition:opacity .2s ease,max-height .28s ease,margin .28s ease;}
+  .agent-header .avatar-circle,.agent-header .agent-name,.agent-header .icon-btn{transition:all .28s ease;}
+  .agent-header.compact{padding:calc(8px + env(safe-area-inset-top,0px)) 14px 8px;border-radius:0 0 18px 18px;margin-bottom:calc(16px + var(--hdr-delta,0px));box-shadow:0 6px 20px rgba(11,31,77,.35);}
+  .agent-header.compact .agent-meta,.agent-header.compact .agent-date,.agent-header.compact .agent-greeting{opacity:0;max-height:0;margin:0;overflow:hidden;pointer-events:none;}
+  .agent-header.compact .agent-header-top{position:absolute;right:12px;top:calc(50% + env(safe-area-inset-top,0px)/2);transform:translateY(-50%);margin:0;}
+  .agent-header.compact .brand{display:none;}
+  .agent-header.compact .avatar-circle{width:36px;height:36px;font-size:16px;border-width:1.5px;}
+  .agent-header.compact .agent-name{font-size:17px;}
+  .agent-header.compact .icon-btn{width:34px;height:34px;font-size:14px;}
+  .agent-header.compact .desk-add{height:34px;font-size:13px;padding:0 14px;}
+  .searchbar{top:calc(var(--hdr-c,56px) - 2px);}
+  .prod-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;}
+  .prod{background:var(--paper-raised);border-radius:var(--radius);padding:12px;box-shadow:var(--shadow);border:1px solid rgba(221,228,242,.7);position:relative;overflow:hidden;animation:rise .5s cubic-bezier(.2,.8,.2,1) both;}
+  .prod::before{content:'';position:absolute;left:0;top:0;right:0;height:3px;background:var(--grad-brand);} .prod.month::before{background:linear-gradient(90deg,#7C4DFF,#B388FF);} .prod.year::before{background:linear-gradient(90deg,#1E9E6A,#5FD3A0);}
+  .prod-label small{font-size:9.5px;font-weight:600;letter-spacing:.02em;text-transform:none;opacity:.85;}
+  .fa-col .ag-sub{margin-top:8px;line-height:1.4;}
+  .prod-label{font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px;}
+  .prod-line{display:flex;align-items:baseline;justify-content:space-between;gap:6px;} .prod-line span{font-size:11px;font-weight:700;color:var(--ink-soft);} .prod-line b{font-size:21px;font-weight:800;letter-spacing:-.02em;color:var(--ink);}
+  .prod-delta{display:block;font-size:10px;font-weight:700;margin-top:5px;line-height:1.3;} .prod-delta.up{color:var(--green);} .prod-delta.down{color:var(--red);} .prod-delta.flat{color:var(--ink-soft);}
+  .prod-target{font-size:10px;color:var(--ink-soft);margin-top:4px;line-height:1.35;}
+  .field-card{background:var(--paper-raised);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);border:1px solid rgba(221,228,242,.7);margin-top:12px;}
+  .fa-cols{display:grid;grid-template-columns:1fr;gap:14px;} .fa-col h4{margin:0 0 8px;font-size:13px;font-weight:800;}
+  .fa-row{display:flex;justify-content:space-between;font-size:12.5px;margin-top:6px;} .fa-row i{font-style:normal;color:var(--ink-soft);font-weight:600;}
+  .fa-btn{width:100%;margin-top:10px;padding:10px 12px;font-size:13px;}
+  .week-bars .wb.off i{background:repeating-linear-gradient(45deg,#E6ECF8,#E6ECF8 4px,#F4F7FD 4px,#F4F7FD 8px);}
+  .week-bars .wb.off span{color:#9AA8C7;}
+  .inbox-alert{background:#EAF2FF;border-color:#C7DAFB;color:#1F4FA8;}
+  .inb-bar{display:flex;justify-content:space-between;align-items:center;margin:4px 0 6px;} .inb-all{display:flex;gap:6px;align-items:center;font-size:12.5px;font-weight:600;text-transform:none;letter-spacing:0;margin:0;}
+  .inb-chk,.inb-all input{width:18px;height:18px;flex:none;accent-color:var(--brand);} .inb-actions{margin:6px 0 8px;}
+  .sc-st{font-size:11px;font-weight:800;padding:3px 10px;border-radius:99px;background:#EEF2FA;color:var(--ink-soft);white-space:nowrap;} .sc-st.ok{background:#DCF3E8;color:#14804F;} .sc-st.mid{background:#FFF1D2;color:#B46F00;} .sc-st.low{background:#FDE7E5;color:#C0392B;}
+  .sc-ins{background:#fff;border:1px solid #E1E8F5;border-radius:12px;padding:10px 12px;margin-bottom:8px;font-size:13px;line-height:1.45;}
+  @media (min-width:1024px){
+    .agent-header.compact{padding:10px 26px;border-radius:0 0 20px 20px;margin-bottom:calc(22px + var(--hdr-delta,0px));}
+    .agent-header.compact .agent-header-top{right:22px;}
+    .prod-grid{grid-column:1/-1;gap:18px;margin:0;} .prod-line b{font-size:28px;} .prod{padding:16px 18px;} .prod-delta,.prod-target{font-size:11.5px;}
+    .dash .inbox-alert{grid-column:1/-1;margin:0;} .dash .field-card{grid-column:1/-1;margin:0;}
+    .fa-cols{grid-template-columns:repeat(3,1fr);gap:28px;}
+  }
   @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important;}}
   @media (min-width:700px) and (max-width:1023px){.wrap{max-width:720px;} .kpi-grid{gap:14px;} .agent-header{border-radius:28px;margin:14px 0 18px;}.searchbar{margin:0;padding-left:0;padding-right:0;}}
 </style>
@@ -644,15 +684,20 @@
   <div class="sb-group">Workspace</div>
   <button data-go="home" class="active"><i>🏠</i>Dashboard</button>
   <button data-go="prospects"><i>👥</i>Prospects</button>
+  <button data-go="inbox"><i>📇</i>Contact inbox<span class="sb-badge" id="sbInboxBadge"></span></button>
   <button data-go="reminders"><i>🔔</i>Reminders<span class="sb-badge" id="sbRemBadge"></span></button>
-  <button data-go="reports"><i>📊</i>Reports</button>
+  <div class="sb-group">My business</div>
+  <button data-go="scorecard"><i>📈</i>Performance</button>
+  <button data-go="activities"><i>📍</i>Activations &amp; training</button>
+  <button data-go="dayoff"><i>🏖</i>Days off</button>
+  <button data-go="goals"><i>🎯</i>Goals &amp; targets</button>
   <div class="sb-group">Tools</div>
+  <button data-go="reports"><i>📊</i>Reports</button>
   <button data-go="export"><i>⬇️</i>Export</button>
-  <button data-go="phonebook"><i>📇</i>Phone book</button>
+  <button data-go="phonebook"><i>📲</i>Phone book</button>
   <button data-go="broadcast"><i>📣</i>Broadcast</button>
   <button data-go="numcheck"><i>📞</i>Number check<span class="sb-badge" id="sbNumBadge"></span></button>
   <div class="sb-group">Account</div>
-  <button data-go="goals"><i>🎯</i>Goals &amp; targets</button>
   <button data-go="plan"><i>💎</i>Plan &amp; license</button>
   <button data-go="settings"><i>⚙️</i>Settings</button>
   <button data-go="updates"><i>🔄</i>Check for updates</button>
@@ -691,6 +736,8 @@
 
   <section class="dash" id="dash">
     <div class="phone-alert" id="phoneAlert"></div>
+    <div class="phone-alert" id="inboxAlert"></div>
+    <div class="prod-grid" id="prodGrid"></div>
     <div class="kpi-grid">
       <div class="kpi" id="kpiFollowCard"><div class="kpi-icon">⏰</div><div class="kpi-num" id="kpiFollow">0</div><div class="kpi-label">Follow-ups due</div><div class="kpi-sub" id="kpiFollowSub">All clear</div></div>
       <div class="kpi" id="kpiPipeCard"><div class="kpi-icon">📈</div><div class="kpi-num" id="kpiPipe">0</div><div class="kpi-label">Open pipeline</div><div class="kpi-sub">premium / year</div></div>
@@ -713,6 +760,7 @@
       <div class="dist-legend" id="distLegend"></div>
     </div>
     <div class="agenda"><h3>Up next</h3><div id="agendaList"></div></div>
+    <div class="field-card" id="fieldCard"></div>
   </section>
 
   <div class="section-head" id="prospectsHead"><h2>Prospects</h2><div class="view-toggle" id="viewToggle"><button data-v="table">☰ Table</button><button data-v="cards">▦ Cards</button></div></div>
@@ -3303,6 +3351,22 @@
         </div>
 
         <div class="more-menu-section">Help &amp; Settings</div>
+        <div class="more-menu-item data" id="inboxMenuItem">
+          <div class="more-menu-icon">📇</div>
+          <div><div>Contact inbox</div><div class="desc">Imported contacts waiting to be qualified</div></div>
+        </div>
+        <div class="more-menu-item admin" id="scoreMenuItem">
+          <div class="more-menu-icon">📈</div>
+          <div><div>Performance</div><div class="desc">Week, month and year scorecard</div></div>
+        </div>
+        <div class="more-menu-item admin" id="actMenuItem">
+          <div class="more-menu-icon">📍</div>
+          <div><div>Activations &amp; group training</div><div class="desc">Log field sessions and track targets</div></div>
+        </div>
+        <div class="more-menu-item admin" id="offMenuItem">
+          <div class="more-menu-icon">🏖</div>
+          <div><div>Days off</div><div class="desc">Leave and holidays are not zero-activity days</div></div>
+        </div>
         <div class="more-menu-item admin" id="goalsMenuItem">
           <div class="more-menu-icon">🎯</div>
           <div><div>Goals &amp; Targets</div><div class="desc">Daily contacts and monthly closes</div></div>
@@ -3362,6 +3426,10 @@
       showToast(isIOS() ? 'On iPhone: tap the Share icon, then "Add to Home Screen"' : 'Use your browser menu → "Install app" / "Add to Home Screen"');
     });
     overlay.querySelector('#goalsMenuItem').addEventListener('click', ()=>{ close(); openGoalsSheet(); });
+    overlay.querySelector('#inboxMenuItem').addEventListener('click', ()=>{ close(); openInbox(); });
+    overlay.querySelector('#scoreMenuItem').addEventListener('click', ()=>{ close(); openScorecard(); });
+    overlay.querySelector('#actMenuItem').addEventListener('click', ()=>{ close(); openActivities('activation'); });
+    overlay.querySelector('#offMenuItem').addEventListener('click', ()=>{ close(); openDayOffSheet(); });
     overlay.querySelector('#planMenuItem').addEventListener('click', ()=>{ close(); openPlanSheet(); });
     overlay.querySelector('#numCheckMenuItem').addEventListener('click', ()=>{ close(); openNumberCheck(); });
     overlay.querySelector('#checkUpdateMenuItem').addEventListener('click', ()=>{
@@ -3430,27 +3498,6 @@
     return contacts;
   }
 
-  function importParsedContacts(list){
-    let added=0, skippedDup=0, skippedNoPhone=0;
-    list.forEach(c=>{
-      const phone = (c.phone||'').trim();
-      if(!phone){ skippedNoPhone++; return; }
-      if(findDuplicatePhone(phone, null)){ skippedDup++; return; }
-      const now = new Date().toISOString();
-      const p = {
-        id: uid(), leadType:'Individual', name: c.name || phone, phone, email: (c.email||'').trim(),
-        location:'', sector:'', sectorOther:'', county:'',
-        product:'', premiumAmount:'', premiumFrequency:'',
-        category:'Unsorted', closedAt:null, stage: STAGES_BY_TYPE.Individual[0],
-        createdAt: now, history:[{id:uid(), date:now, note:'Imported from phone contacts — not yet reviewed.'}]
-      };
-      prospects.push(p);
-      added++;
-    });
-    if(added>0){ scheduleSave(); render(); }
-    return {added, skippedDup, skippedNoPhone};
-  }
-
   async function pickFromPhoneContacts(){
     if(!('contacts' in navigator && 'ContactsManager' in window)){
       showToast('Contact picker not supported in this browser — use Import from file below');
@@ -3496,7 +3543,7 @@
     overlay.innerHTML = `
       <div class="sheet">
         <div class="sheet-head"><h2>Phone Book</h2><button class="close-x">&times;</button></div>
-        <div class="field-note">Imported contacts land as <b>Unsorted</b> (🟡) so they stay separate from clients you're already working — open any of them and update the Category/Stage once you've reached out.</div>
+        <div class="field-note">Imported contacts go to your <b>Contact inbox</b> — they are <b>not prospects</b> and never appear in reports or charts until you qualify them (New, Promising…) after speaking to them.</div>
 
         <label>Pick from phone contacts</label>
         <button class="btn btn-ghost" id="pickContactsBtn" style="width:100%;" ${pickerSupported?'':'disabled'}>${pickerSupported ? '📇 Choose contacts to import' : 'Not supported in this browser'}</button>
@@ -3533,7 +3580,7 @@
       `;
       preview.querySelector('#confirmImportBtn').addEventListener('click', ()=>{
         const result = importParsedContacts(pendingContacts);
-        let msg = result.added+' imported as Unsorted.';
+        let msg = result.added+' added to your Contact inbox.';
         if(result.skippedDup) msg += ' '+result.skippedDup+' skipped (already in your ledger).';
         if(result.skippedNoPhone) msg += ' '+result.skippedNoPhone+' skipped (no phone number).';
         showToast(msg);
@@ -4281,7 +4328,6 @@
     const amt = Number(p.premiumAmount)||0;
     return amt * (FREQ_MULTIPLIER[p.premiumFrequency] || 1);
   }
-  function goals(){ return Object.assign({ daily:10, monthlyCloses:5 }, settings.goals||{}); }
   function dayKey(d){ const x = new Date(d); return x.getFullYear()+'-'+x.getMonth()+'-'+x.getDate(); }
 
   function updateGoalRing(n){
@@ -4290,7 +4336,8 @@
     const ring = document.getElementById('ringVal');
     if(ring) ring.style.strokeDashoffset = String(RING_LEN*(1-pct));
     const line = document.getElementById('goalLine');
-    if(line) line.innerHTML = (n>=g ? '🎉 Daily goal reached!' : (g-n)+' more to hit your goal of '+g)+' · <button class="goal-link" type="button" id="editGoalLink">Edit goal</button>';
+    const offToday = n===0 && isOffDay(new Date());
+    if(line) line.innerHTML = (offToday ? '🏖 Rest day — not counted against you' : n>=g ? '🎉 Daily goal reached!' : (g-n)+' more to hit your goal of '+g)+' · <button class="goal-link" type="button" id="editGoalLink">Edit goal</button>';
   }
   document.addEventListener('click', (e)=>{ if(e.target && e.target.id==='editGoalLink') openGoalsSheet(); });
 
@@ -4319,12 +4366,12 @@
     // streak
     let streak = 0, d = new Date(now);
     if(count(d)===0) d.setDate(d.getDate()-1);
-    while(count(d)>0 && streak<3650){ streak++; d.setDate(d.getDate()-1); }
+    while(streak<3650){ if(count(d)>0) streak++; else if(!isOffDay(d)) break; d.setDate(d.getDate()-1); }
     document.getElementById('streakChip').textContent = '🔥 '+streak+'-day streak';
     // 7-day bars
     const days = []; for(let i=6;i>=0;i--){ const x=new Date(now); x.setDate(x.getDate()-i); days.push({d:x, n:count(x)}); }
     const max = Math.max(...days.map(x=>x.n), 3);
-    document.getElementById('weekBars').innerHTML = days.map((x,i)=>'<div class="wb'+(i===6?' today':'')+'"><i style="height:'+Math.max(6, x.n/max*100)+'%" title="'+x.n+' contacts"></i><span>'+'SMTWTFS'[x.d.getDay()]+'</span></div>').join('');
+    document.getElementById('weekBars').innerHTML = days.map((x,i)=>'<div class="wb'+(i===6?' today':'')+(x.n===0&&isOffDay(x.d)?' off':'')+'"><i style="height:'+Math.max(6, x.n/max*100)+'%" title="'+x.n+' contacts"></i><span>'+'SMTWTFS'[x.d.getDay()]+'</span></div>').join('');
     // category distribution
     const tot = prospects.length || 1;
     const counts = {}; CAT_ORDER.forEach(c=>counts[c]=prospects.filter(p=>p.category===c).length);
@@ -4346,6 +4393,7 @@
       }).join('');
       ag.querySelectorAll('.ag-item').forEach(el=>el.addEventListener('click', (e)=>{ if(e.target.closest('.ag-done')){ e.stopPropagation(); const pp = prospects.find(x=>x.id===el.dataset.id); if(pp) openDoneSheet(pp); return; } openDetail(el.dataset.id); }));
     }
+    renderProduction(); renderField(); renderInboxAlert();
     updatePhoneAlert();
     updatePlanUI();
   }
@@ -4385,22 +4433,6 @@
     const x = overlay.querySelector('.close-x'); if(x) x.addEventListener('click', close);
     if(onReady) onReady(overlay, close);
     return close;
-  }
-
-  // ----- goals -----
-  function openGoalsSheet(){
-    const g = goals();
-    openSheet('<div class="sheet-head"><h2>🎯 Goals &amp; Targets</h2><button class="close-x">&times;</button></div>'+
-      '<div class="field-note" style="margin:0 0 4px;">Top performers set targets. These power your daily ring and monthly progress bar.</div>'+
-      '<label>Contacts per day</label><input type="number" id="gDaily" min="1" value="'+g.daily+'">'+
-      '<label>Deals to close per month</label><input type="number" id="gClose" min="0" value="'+g.monthlyCloses+'">'+
-      '<div class="sheet-actions"><button class="btn btn-primary" id="gSave">Save goals</button></div>',
-    (ov, close)=>{
-      ov.querySelector('#gSave').addEventListener('click', async ()=>{
-        settings.goals = { daily: Math.max(1, parseInt(ov.querySelector('#gDaily').value,10)||10), monthlyCloses: Math.max(0, parseInt(ov.querySelector('#gClose').value,10)||0) };
-        await persistSettings(); render(); close(); showToast('Goals saved');
-      });
-    });
   }
 
   // ----- sample data -----
@@ -4886,9 +4918,347 @@
   });
   document.getElementById('deskAdd').addEventListener('click', ()=>$('#addFab').click());
 
+  // ================= v2.2: production (API/NOPs), activations & trainings, days off, contact inbox, scorecard =================
+  const ISOD = (d)=>{ const x = new Date(d); return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0'); };
+  const lst = (k)=>settings[k] || [];
+  const workDays = ()=> (settings.workDays && settings.workDays.length ? settings.workDays : [1,2,3,4,5,6]);
+  const GOAL_DEFAULTS = { daily:10, weeklyApi:0, monthlyApi:0, yearlyApi:0, weeklyNops:0, monthlyCloses:5, yearlyNops:0, weeklyActivations:0, monthlyActivations:0, weeklyTrainings:0, monthlyTrainings:0 };
+  function goals(){ return Object.assign({}, GOAL_DEFAULTS, settings.goals||{}); }
+  function isLoggedOff(d){ const k = ISOD(d); return lst('daysOff').some(x=>x.date===k); }
+  function isOffDay(d){ return isLoggedOff(d) || !workDays().includes(new Date(d).getDay()); }
+  function startOfWeek(d){ const x = new Date(d); x.setHours(0,0,0,0); x.setDate(x.getDate()-((x.getDay()+6)%7)); return x; }
+  function getPeriod(key, now){
+    now = now || new Date(); const y = now.getFullYear(), m = now.getMonth(), dn = now.getDate();
+    const clampDay = (yy,mm)=>Math.min(dn, new Date(yy,mm+1,0).getDate());
+    const at = (yy,mm,dd)=>new Date(yy,mm,dd,now.getHours(),now.getMinutes(),now.getSeconds());
+    let o;
+    if(key==='week'){ const s = startOfWeek(now), fe = new Date(s); fe.setDate(fe.getDate()+7); const ps = new Date(s); ps.setDate(ps.getDate()-7); const pe = new Date(now); pe.setDate(pe.getDate()-7); o = { s, e:now, ps, pe, fe, label:'Week to date', plabel:'same point last week', cls:'week' }; }
+    else if(key==='lastWeek'){ const s = startOfWeek(now); s.setDate(s.getDate()-7); const fe = new Date(s); fe.setDate(fe.getDate()+7); const ps = new Date(s); ps.setDate(ps.getDate()-7); o = { s, e:new Date(fe-1), ps, pe:new Date(s-1), fe, label:'Last week', plabel:'the week before', cls:'week' }; }
+    else if(key==='month'){ o = { s:new Date(y,m,1), e:now, ps:new Date(y,m-1,1), pe:at(y,m-1,clampDay(y,m-1)), fe:new Date(y,m+1,1), label:'Month to date', plabel:'same point last month', cls:'month' }; }
+    else if(key==='lastMonth'){ o = { s:new Date(y,m-1,1), e:new Date(new Date(y,m,1)-1), ps:new Date(y,m-2,1), pe:new Date(new Date(y,m-1,1)-1), fe:new Date(y,m,1), label:'Last month', plabel:'the month before', cls:'month' }; }
+    else { o = { s:new Date(y,0,1), e:now, ps:new Date(y-1,0,1), pe:at(y-1,m,clampDay(y-1,m)), fe:new Date(y+1,0,1), label:'Year to date', plabel:'same point last year', cls:'year' }; }
+    o.frac = Math.max(0.02, Math.min(1, (Math.min(now, o.e) - o.s) / (o.fe - o.s)));
+    return o;
+  }
+  function periodProduction(s, e){
+    const closed = prospects.filter(p=>p.category==='Closed' && p.closedAt && new Date(p.closedAt)>=s && new Date(p.closedAt)<=e);
+    return { nops: closed.length, api: closed.reduce((a,p)=>a+annualizedPremium(p),0) };
+  }
+  function actsIn(kind, s, e){
+    const a = ISOD(s), b = ISOD(e);
+    const list = lst('activities').filter(x=>x.kind===kind && x.date>=a && x.date<=b);
+    return { n:list.length, people:list.reduce((t,x)=>t+(Number(x.people)||0),0), leads:list.reduce((t,x)=>t+(Number(x.leads)||0),0) };
+  }
+  function workingDaysIn(s, e){
+    let n = 0, off = 0; const d = new Date(s); d.setHours(0,0,0,0); const end = new Date(Math.min(e, Date.now()));
+    while(d<=end){ if(isLoggedOff(d)) off++; else if(isOffDay(d)){ /* weekly rest day */ } else n++; d.setDate(d.getDate()+1); }
+    return { working:n, off };
+  }
+  function pctDelta(cur, prev, label){
+    if(!prev && !cur) return '<span class="prod-delta flat">— vs '+label+'</span>';
+    if(!prev) return '<span class="prod-delta up">▲ new vs '+label+'</span>';
+    const p = Math.round((cur-prev)/prev*100);
+    return '<span class="prod-delta '+(p>0?'up':p<0?'down':'flat')+'">'+(p>0?'▲ +':p<0?'▼ ':'● ')+p+'% vs '+label+'</span>';
+  }
+
+  function renderProduction(){
+    const el = document.getElementById('prodGrid'); if(!el) return;
+    const g = goals();
+    el.innerHTML = [['week','weekly'],['month','monthly'],['year','yearly']].map(([key,pre])=>{
+      const per = getPeriod(key), cur = periodProduction(per.s, per.e), prev = periodProduction(per.ps, per.pe);
+      const tApi = g[pre+'Api'], tN = g[pre==='monthly'?'monthlyCloses':pre+'Nops'];
+      const pct = tApi ? cur.api/tApi : tN ? cur.nops/tN : null;
+      return '<div class="prod '+key+'"><div class="prod-label">'+per.label.replace(' to date','')+'<br><small>to date</small></div>'+
+        '<div class="prod-line"><span>API</span><b title="'+fmtMoney(Math.round(cur.api))+'">'+compactMoney(cur.api)+'</b></div>'+
+        '<div class="prod-line"><span>NOPs</span><b>'+cur.nops+'</b></div>'+
+        pctDelta(cur.api, prev.api, per.plabel)+
+        (pct!==null ? '<div class="bar-mini"><i style="width:'+Math.min(100,pct*100)+'%"></i></div><div class="prod-target">'+Math.round(pct*100)+'% of target'+(tApi?' · API '+compactMoney(tApi):'')+(tN?' · '+tN+' NOPs':'')+'</div>' : '<div class="prod-target"><a class="goal-link" data-go-goals="1">Set a target</a></div>')+
+        '</div>';
+    }).join('');
+  }
+  document.addEventListener('click', (e)=>{ if(e.target && e.target.dataset && e.target.dataset.goGoals) openGoalsSheet(); });
+
+  function renderField(){
+    const el = document.getElementById('fieldCard'); if(!el) return;
+    const g = goals(), w = getPeriod('week'), m = getPeriod('month');
+    const row = (label, cur, tgt)=>'<div class="fa-row"><span>'+label+'</span><b>'+cur+(tgt?' <i>/ '+tgt+'</i>':'')+'</b></div>'+(tgt?'<div class="bar-mini"><i style="width:'+Math.min(100,cur/tgt*100)+'%"></i></div>':'');
+    const aw = actsIn('activation', w.s, w.e), am = actsIn('activation', m.s, m.e), tw = actsIn('training', w.s, w.e), tm = actsIn('training', m.s, m.e);
+    const wd = workingDaysIn(m.s, m.e);
+    el.innerHTML = '<div class="insights-head"><h3>Field activity</h3><span class="streak" style="background:#E6F0FF;color:var(--brand)">'+wd.working+' working day'+(wd.working===1?'':'s')+' this month'+(wd.off?' · '+wd.off+' off':'')+'</span></div>'+
+      '<div class="fa-cols"><div class="fa-col"><h4>📍 Activations</h4>'+row('This week', aw.n, g.weeklyActivations)+row('This month', am.n, g.monthlyActivations)+'<div class="ag-sub">'+am.people+' people engaged · '+am.leads+' leads captured this month</div><button type="button" class="btn btn-ghost fa-btn" data-act-open="activation">+ Log activation</button></div>'+
+      '<div class="fa-col"><h4>🏢 Group trainings <span class="t-tag">Corporate</span></h4>'+row('This week', tw.n, g.weeklyTrainings)+row('This month', tm.n, g.monthlyTrainings)+'<div class="ag-sub">'+tm.people+' attendees · '+tm.leads+' leads this month</div><button type="button" class="btn btn-ghost fa-btn" data-act-open="training">+ Log group training</button></div>'+
+      '<div class="fa-col"><h4>🏖 Days off</h4><div class="ag-sub" style="margin:4px 0 8px;">Logged days off are never counted as zero-activity days, and your streak carries through them.</div><div class="ag-sub">Next rest day: '+(isOffDay(new Date())?'<b>today</b>':'—')+'</div><button type="button" class="btn btn-ghost fa-btn" data-act-open="dayoff">+ Log day off</button></div></div>';
+  }
+  document.getElementById('fieldCard').addEventListener('click', (e)=>{
+    const b = e.target.closest('[data-act-open]'); if(!b) return;
+    if(b.dataset.actOpen==='dayoff') openDayOffSheet(); else openActivities(b.dataset.actOpen);
+  });
+
+  // ----- Activations & group trainings -----
+  const ACT_TYPES = ['Market / trading centre','Roadshow','Church / Mosque','Estate / residential','School / College','Transport stage','Hospital / clinic','Office park / corporate','Other'];
+  function openActivities(kind){
+    kind = kind || 'activation';
+    const corp = prospects.filter(p=>p.leadType==='Corporate').map(p=>p.name);
+    const draw = ()=>{
+      const isAct = kind==='activation';
+      const list = lst('activities').filter(x=>x.kind===kind).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,15);
+      const m = getPeriod('month'), tot = actsIn(kind, m.s, m.e);
+      return '<div class="sheet-head"><h2>'+(isAct?'📍 Activations':'🏢 Group trainings')+'</h2><button class="close-x">&times;</button></div>'+
+        '<div class="segmented" id="actTabs"><button data-k="activation" class="'+(isAct?'active':'')+'">Activations</button><button data-k="training" class="'+(!isAct?'active':'')+'">Group training</button></div>'+
+        '<div class="field-note">'+(isAct ? 'An activation is a field session (market, roadshow, estate…) where you engage people and capture leads. Captured leads should go to your <b>Contact inbox</b> or be logged as prospects.' : 'Group trainings are sessions delivered to a company or group. They belong to the <b>Corporate</b> side of your pipeline.')+'</div>'+
+        '<div class="field-grid"><div><label>Date</label><input type="date" id="aDate" value="'+ISOD(new Date())+'"></div><div><label>Hours</label><input type="number" id="aHours" min="0" step="0.5" placeholder="e.g. 3"></div></div>'+
+        (isAct ? '<label>Venue / location</label><input type="text" id="aVenue" placeholder="e.g. Gikomba market"><label>Type</label><select id="aType">'+ACT_TYPES.map(t=>'<option>'+t+'</option>').join('')+'</select>'
+               : '<label>Company / group</label><input type="text" id="aVenue" list="corpList" placeholder="Company name"><datalist id="corpList">'+corp.map(c=>'<option value="'+escapeHtml(c)+'">').join('')+'</datalist><label>Topic</label><input type="text" id="aType" placeholder="e.g. Financial planning for staff">')+
+        '<div class="field-grid"><div><label>'+(isAct?'People engaged':'Attendees')+'</label><input type="number" id="aPeople" min="0" placeholder="0"></div><div><label>Leads / quotes</label><input type="number" id="aLeads" min="0" placeholder="0"></div></div>'+
+        '<label>Notes (optional)</label><textarea id="aNotes" style="min-height:60px;"></textarea>'+
+        '<div class="sheet-actions"><button class="btn btn-primary" id="aSave">Save '+(isAct?'activation':'training')+'</button></div>'+
+        '<h3 class="nc-h">This month: '+tot.n+' · '+tot.people+(isAct?' people':' attendees')+' · '+tot.leads+' leads</h3>'+
+        (list.length ? list.map(x=>'<div class="nc-item"><div class="nc-main"><div class="ag-name">'+escapeHtml(x.venue||'—')+'</div><div class="ag-sub">'+fmtLong(x.date)+(x.type?' · '+escapeHtml(x.type):'')+' · '+(x.people||0)+' people · '+(x.leads||0)+' leads'+(x.hours?' · '+x.hours+'h':'')+'</div></div><button type="button" class="mini-action delete" data-del="'+x.id+'" style="flex:none;min-width:0;">✕</button></div>').join('') : '<div class="ag-empty">Nothing logged yet.</div>');
+    };
+    let close;
+    const bind = (ov)=>{
+      ov.querySelector('.close-x').onclick = ()=>ov.remove();
+      ov.querySelector('#actTabs').addEventListener('click', (e)=>{ const b = e.target.closest('button[data-k]'); if(!b) return; kind = b.dataset.k; ov.querySelector('.sheet').innerHTML = draw(); bind(ov); });
+      ov.querySelector('#aSave').onclick = async ()=>{
+        const venue = ov.querySelector('#aVenue').value.trim();
+        if(!venue){ showToast(kind==='activation' ? 'Enter the venue or location' : 'Enter the company or group'); return; }
+        const rec = { id:uid(), kind, date: ov.querySelector('#aDate').value || ISOD(new Date()), venue, type: ov.querySelector('#aType').value.trim(), hours: Number(ov.querySelector('#aHours').value)||0, people: Number(ov.querySelector('#aPeople').value)||0, leads: Number(ov.querySelector('#aLeads').value)||0, notes: ov.querySelector('#aNotes').value.trim(), createdAt:new Date().toISOString() };
+        settings.activities = lst('activities').concat([rec]);
+        await persistSettings(); render(); ov.querySelector('.sheet').innerHTML = draw(); bind(ov); showToast('Saved ✓');
+      };
+      ov.querySelectorAll('[data-del]').forEach(b=>b.onclick = async ()=>{
+        if(!confirm('Delete this entry?')) return;
+        settings.activities = lst('activities').filter(x=>x.id!==b.dataset.del); await persistSettings(); render(); ov.querySelector('.sheet').innerHTML = draw(); bind(ov);
+      });
+    };
+    close = openSheet(draw(), (ov)=>bind(ov));
+  }
+
+  // ----- Days off -----
+  const OFF_REASONS = ['Annual leave','Public holiday','Sick','Training / meeting','Personal','Other'];
+  function openDayOffSheet(){
+    let reason = OFF_REASONS[0];
+    const draw = ()=>{
+      const list = lst('daysOff').slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,20);
+      return '<div class="sheet-head"><h2>🏖 Days off</h2><button class="close-x">&times;</button></div>'+
+        '<div class="field-note">Run yourself like a company: log leave and holidays here. These days are <b>not</b> counted as zero-activity days in your reports, and your streak continues through them.</div>'+
+        '<div class="field-grid"><div><label>From</label><input type="date" id="dFrom" value="'+ISOD(new Date())+'"></div><div><label>To (optional)</label><input type="date" id="dTo"></div></div>'+
+        '<label>Reason</label><div class="chip-row" id="dReasons">'+OFF_REASONS.map(r=>'<button type="button" class="out-chip'+(r===reason?' on':'')+'">'+r+'</button>').join('')+'</div>'+
+        '<label>Note (optional)</label><input type="text" id="dNote" placeholder="e.g. Family wedding">'+
+        '<div class="sheet-actions"><button class="btn btn-primary" id="dSave">Log day off</button></div>'+
+        '<h3 class="nc-h">Recent days off</h3>'+
+        (list.length ? list.map(x=>'<div class="nc-item"><div class="nc-main"><div class="ag-name">'+fmtLong(x.date)+' <span class="ag-sub">('+WD3(x.date)+')</span></div><div class="ag-sub">'+escapeHtml(x.reason)+(x.note?' — '+escapeHtml(x.note):'')+'</div></div><button type="button" class="mini-action delete" data-del="'+x.id+'" style="flex:none;min-width:0;">✕</button></div>').join('') : '<div class="ag-empty">No days off logged.</div>');
+    };
+    const WD3 = (d)=>['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][new Date(d+'T00:00:00').getDay()];
+    const bind = (ov)=>{
+      ov.querySelector('.close-x').onclick = ()=>ov.remove();
+      ov.querySelector('#dReasons').addEventListener('click', (e)=>{ const b = e.target.closest('.out-chip'); if(!b) return; reason = b.textContent; ov.querySelectorAll('#dReasons .out-chip').forEach(x=>x.classList.toggle('on', x===b)); });
+      ov.querySelector('#dSave').onclick = async ()=>{
+        const from = ov.querySelector('#dFrom').value, to = ov.querySelector('#dTo').value || from;
+        if(!from || to<from){ showToast('Check the dates'); return; }
+        const have = new Set(lst('daysOff').map(x=>x.date)), add = [], d = new Date(from+'T00:00:00'), end = new Date(to+'T00:00:00');
+        for(let i=0;i<62 && d<=end;i++){ const k = ISOD(d); if(!have.has(k)) add.push({ id:uid(), date:k, reason, note: ov.querySelector('#dNote').value.trim() }); d.setDate(d.getDate()+1); }
+        settings.daysOff = lst('daysOff').concat(add); await persistSettings(); render();
+        ov.querySelector('.sheet').innerHTML = draw(); bind(ov); showToast(add.length+' day'+(add.length===1?'':'s')+' off logged');
+      };
+      ov.querySelectorAll('[data-del]').forEach(b=>b.onclick = async ()=>{ settings.daysOff = lst('daysOff').filter(x=>x.id!==b.dataset.del); await persistSettings(); render(); ov.querySelector('.sheet').innerHTML = draw(); bind(ov); });
+    };
+    openSheet(draw(), (ov)=>bind(ov));
+  }
+
+  // ----- Contact inbox (imported phone-book contacts are NOT prospects until qualified) -----
+  function legacyImports(){ return prospects.filter(p=>p.category==='Unsorted' && p.history && p.history.length===1 && /^Imported from phone contacts/.test(p.history[0].note||'')); }
+  function renderInboxAlert(){
+    const el = document.getElementById('inboxAlert'); if(!el) return;
+    const n = lst('inbox').length + legacyImports().length;
+    const sb = document.getElementById('sbInboxBadge'); if(sb){ sb.textContent = n; sb.style.display = n ? 'inline-block' : 'none'; }
+    if(!n){ el.style.display = 'none'; return; }
+    el.style.display = 'flex'; el.className = 'phone-alert inbox-alert';
+    el.innerHTML = '<span>📇 <b>'+n+'</b> imported contact'+(n===1?'':'s')+' waiting to be qualified (not counted in your reports)</span><button type="button" id="inboxAlertBtn">Open inbox</button>';
+    document.getElementById('inboxAlertBtn').onclick = openInbox;
+  }
+  function qualifyContacts(ids, cat){
+    let list = lst('inbox').filter(c=>ids.includes(c.id));
+    if(!planState().active){ const room = Math.max(0, SAAS.freeProspectLimit - prospects.length); if(list.length>room){ list = list.slice(0, room); if(!room){ openPlanSheet('You have reached the free limit of '+SAAS.freeProspectLimit+' prospects.'); return 0; } } }
+    const now = new Date().toISOString();
+    list.forEach(c=>{
+      prospects.push(migrateRecord({ id:uid(), leadType:'Individual', name:c.name||c.phone, phone:c.phone, email:c.email||'', location:'', sector:'', sectorOther:'', county:'', product:'', premiumAmount:'', premiumFrequency:'', category:cat, closedAt:null, stage:STAGES_BY_TYPE.Individual[0], createdAt:now, importedAt:c.importedAt, history:[{ id:uid(), date:now, note:'Qualified from phone book as '+cat+(c.importedAt?' (imported '+fmtShort(c.importedAt)+')':'') }] }));
+    });
+    const done = new Set(list.map(c=>c.id));
+    settings.inbox = lst('inbox').filter(c=>!done.has(c.id));
+    scheduleSave(); persistSettings(); render();
+    return list.length;
+  }
+  function openInbox(){
+    const sel = new Set(); let q = '', shown = 50;
+    const filtered = ()=>{ const s = q.toLowerCase(); return lst('inbox').filter(c=>!s || (c.name||'').toLowerCase().includes(s) || (c.phone||'').includes(s)); };
+    const body = ()=>{
+      const all = filtered(), vis = all.slice(0, shown), legacy = legacyImports().length;
+      return (legacy ? '<div class="status-box warn">'+legacy+' earlier import'+(legacy===1?'':'s')+' still sit in your prospect list and inflate your reports. <button type="button" class="goal-link" id="moveLegacy">Move to inbox</button></div>' : '')+
+        '<div class="field-note">'+lst('inbox').length+' contact'+(lst('inbox').length===1?'':'s')+' in your inbox. They are <b>not prospects</b> and never appear in reports or charts until you qualify them.</div>'+
+        '<input type="text" id="inbSearch" placeholder="Search name or number" value="'+escapeHtml(q)+'" style="margin-bottom:8px;">'+
+        '<div class="inb-bar"><label class="inb-all"><input type="checkbox" id="inbAll" '+(vis.length && vis.every(c=>sel.has(c.id))?'checked':'')+'> Select shown</label><span class="ag-sub">'+sel.size+' selected</span></div>'+
+        (sel.size ? '<div class="chip-row inb-actions"><button type="button" class="out-chip" data-q="New">→ New</button><button type="button" class="out-chip" data-q="Promising">→ Promising</button><button type="button" class="out-chip" data-q="Difficult">→ Difficult</button><button type="button" class="out-chip" data-q="__del" style="color:var(--red);">Delete</button></div>' : '')+
+        (vis.length ? vis.map(c=>'<div class="nc-item" data-id="'+c.id+'"><input type="checkbox" class="inb-chk" '+(sel.has(c.id)?'checked':'')+'><div class="nc-main"><div class="ag-name">'+escapeHtml(c.name||'—')+'</div><div class="ag-sub">'+escapeHtml(c.phone)+phoneFlagHtml({phone:c.phone})+'</div></div><button type="button" class="mini-action call" data-one="'+c.id+'" style="flex:none;min-width:0;padding:8px 12px;">Qualify</button></div>').join('') : '<div class="ag-empty">'+(lst('inbox').length ? 'No matches.' : 'Your inbox is empty. Imported phone contacts will appear here.')+'</div>')+
+        (all.length>shown ? '<button type="button" class="btn btn-ghost" id="inbMore" style="width:100%;margin-top:8px;">Show more ('+(all.length-shown)+' left)</button>' : '');
+    };
+    openSheet('<div class="sheet-head"><h2>📇 Contact inbox</h2><button class="close-x">&times;</button></div><div id="inbBody">'+body()+'</div>', (ov)=>{
+      const host = ov.querySelector('#inbBody'); const redraw = ()=>{ const focus = document.activeElement && document.activeElement.id==='inbSearch'; host.innerHTML = body(); if(focus){ const i = host.querySelector('#inbSearch'); i.focus(); i.setSelectionRange(i.value.length, i.value.length); } };
+      host.addEventListener('input', (e)=>{ if(e.target.id==='inbSearch'){ q = e.target.value.trim(); shown = 50; redraw(); } });
+      host.addEventListener('change', (e)=>{
+        if(e.target.id==='inbAll'){ filtered().slice(0,shown).forEach(c=>e.target.checked ? sel.add(c.id) : sel.delete(c.id)); redraw(); }
+        else if(e.target.classList.contains('inb-chk')){ const id = e.target.closest('[data-id]').dataset.id; e.target.checked ? sel.add(id) : sel.delete(id); redraw(); }
+      });
+      host.addEventListener('click', async (e)=>{
+        const one = e.target.closest('[data-one]'), qb = e.target.closest('[data-q]');
+        if(e.target.id==='inbMore'){ shown += 50; redraw(); }
+        else if(e.target.id==='moveLegacy'){
+          const leg = legacyImports(), ids = new Set(leg.map(p=>p.id));
+          settings.inbox = lst('inbox').concat(leg.map(p=>({ id:uid(), name:p.name, phone:p.phone, email:p.email||'', importedAt:p.createdAt })));
+          prospects = prospects.filter(p=>!ids.has(p.id)); scheduleSave(); await persistSettings(); render(); redraw(); showToast(leg.length+' moved to inbox');
+        }
+        else if(one){
+          const id = one.dataset.one, c = lst('inbox').find(x=>x.id===id); if(!c) return;
+          openSheet('<div class="sheet-head"><h2>Qualify contact</h2><button class="close-x">&times;</button></div><div class="field-note"><b>'+escapeHtml(c.name||c.phone)+'</b> · '+escapeHtml(c.phone)+'<br>Make this a prospect only after you have spoken to them. Choose how warm they are:</div><div class="chip-row" id="qcats"><button class="out-chip on">New</button><button class="out-chip">Promising</button><button class="out-chip">Difficult</button></div><div class="sheet-actions"><button class="btn btn-primary" id="qGo">Add to my prospects</button></div>', (ov2, close2)=>{
+            let cat = 'New'; ov2.querySelector('#qcats').addEventListener('click', (ev)=>{ const b = ev.target.closest('.out-chip'); if(!b) return; cat = b.textContent; ov2.querySelectorAll('#qcats .out-chip').forEach(x=>x.classList.toggle('on', x===b)); });
+            ov2.querySelector('#qGo').addEventListener('click', ()=>{ const n = qualifyContacts([id], cat); close2(); sel.delete(id); redraw(); if(n) showToast('Added as '+cat+' prospect'); });
+          });
+        }
+        else if(qb){
+          const ids = [...sel];
+          if(qb.dataset.q==='__del'){ if(!confirm('Delete '+ids.length+' contact(s) from the inbox?')) return; settings.inbox = lst('inbox').filter(c=>!sel.has(c.id)); sel.clear(); await persistSettings(); render(); redraw(); }
+          else { const n = qualifyContacts(ids, qb.dataset.q); ids.forEach(i=>sel.delete(i)); redraw(); if(n) showToast(n+' added as '+qb.dataset.q+' prospects'); }
+        }
+      });
+    });
+  }
+  function importParsedContacts(list){
+    let added=0, skippedDup=0, skippedNoPhone=0;
+    const seen = new Set(lst('inbox').map(c=>normalizeForLink(c.phone)));
+    const inbox = lst('inbox').slice(), now = new Date().toISOString();
+    list.forEach(c=>{
+      const phone = (c.phone||'').trim();
+      if(!phone){ skippedNoPhone++; return; }
+      const key = normalizeForLink(phone);
+      if(findDuplicatePhone(phone, null) || seen.has(key)){ skippedDup++; return; }
+      seen.add(key); inbox.push({ id:uid(), name:c.name||'', phone, email:(c.email||'').trim(), importedAt:now }); added++;
+    });
+    if(added>0){ settings.inbox = inbox; persistSettings(); render(); }
+    return {added, skippedDup, skippedNoPhone};
+  }
+
+  // ----- Goals & targets -----
+  function openGoalsSheet(){
+    const g = goals(), wd = workDays();
+    const f = (id, label, v)=>'<div><label>'+label+'</label><input type="number" id="'+id+'" min="0" value="'+(v||'')+'" placeholder="none"></div>';
+    openSheet('<div class="sheet-head"><h2>🎯 Goals &amp; Targets</h2><button class="close-x">&times;</button></div>'+
+      '<div class="field-note">Leave a target blank if you do not want one. <b>API</b> = annualised premium income; <b>NOPs</b> = number of policies.</div>'+
+      '<h3 class="nc-h">Daily</h3><label>Contacts per working day</label><input type="number" id="gDaily" min="1" value="'+g.daily+'">'+
+      '<h3 class="nc-h">Production</h3><div class="field-grid">'+f('gWApi','Weekly API',g.weeklyApi)+f('gWN','Weekly NOPs',g.weeklyNops)+f('gMApi','Monthly API',g.monthlyApi)+f('gMN','Monthly NOPs',g.monthlyCloses)+f('gYApi','Yearly API',g.yearlyApi)+f('gYN','Yearly NOPs',g.yearlyNops)+'</div>'+
+      '<h3 class="nc-h">Field work</h3><div class="field-grid">'+f('gWA','Weekly activations',g.weeklyActivations)+f('gMA','Monthly activations',g.monthlyActivations)+f('gWT','Weekly group trainings',g.weeklyTrainings)+f('gMT','Monthly group trainings',g.monthlyTrainings)+'</div>'+
+      '<h3 class="nc-h">My working week</h3><div class="chip-row" id="gDays">'+[1,2,3,4,5,6,0].map(d=>'<button type="button" class="out-chip'+(wd.includes(d)?' on':'')+'" data-d="'+d+'">'+['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d]+'</button>').join('')+'</div><div class="field-note">Rest days are not counted against you.</div>'+
+      '<div class="sheet-actions"><button class="btn btn-primary" id="gSave">Save</button></div>',
+    (ov, close)=>{
+      ov.querySelector('#gDays').addEventListener('click', (e)=>{ const b = e.target.closest('.out-chip'); if(b) b.classList.toggle('on'); });
+      const n = (id)=>Math.max(0, parseInt(ov.querySelector(id).value,10)||0);
+      ov.querySelector('#gSave').addEventListener('click', async ()=>{
+        settings.goals = { daily: Math.max(1, parseInt(ov.querySelector('#gDaily').value,10)||10), weeklyApi:n('#gWApi'), weeklyNops:n('#gWN'), monthlyApi:n('#gMApi'), monthlyCloses:n('#gMN'), yearlyApi:n('#gYApi'), yearlyNops:n('#gYN'), weeklyActivations:n('#gWA'), monthlyActivations:n('#gMA'), weeklyTrainings:n('#gWT'), monthlyTrainings:n('#gMT') };
+        const days = [...ov.querySelectorAll('#gDays .out-chip.on')].map(b=>parseInt(b.dataset.d,10)); settings.workDays = days.length ? days : [1,2,3,4,5,6];
+        await persistSettings(); render(); close(); showToast('Goals saved');
+      });
+    });
+  }
+
+  // ----- Performance scorecard (Pro) -----
+  function scorecardData(key){
+    const per = getPeriod(key), g = goals(), pre = per.cls==='week'?'weekly':per.cls==='month'?'monthly':'yearly';
+    const prod = periodProduction(per.s, per.e), pprod = periodProduction(per.ps, per.pe);
+    const act = actsIn('activation', per.s, per.e), pact = actsIn('activation', per.ps, per.pe), tr = actsIn('training', per.s, per.e), ptr = actsIn('training', per.ps, per.pe);
+    const touched = (s,e)=>prospects.filter(p=>p.history.some(h=>{ const t = new Date(h.date); return t>=s && t<=e; })).length;
+    const created = (s,e)=>prospects.filter(p=>{ const t = new Date(p.createdAt); return t>=s && t<=e; }).length;
+    const done = (s,e)=>prospects.reduce((a,p)=>a+p.history.filter(h=>/^✅ Follow-up done/.test(h.note||'') && new Date(h.date)>=s && new Date(h.date)<=e).length,0);
+    const wd = workingDaysIn(per.s, per.e), pwd = workingDaysIn(per.ps, per.pe);
+    const cT = touched(per.s, per.e), pT = touched(per.ps, per.pe);
+    const tg = (k)=>g[k]||0, frac = per.frac;
+    const rows = [
+      { k:'API (annualised premium)', cur:prod.api, prev:pprod.api, target:tg(pre+'Api')*frac, full:tg(pre+'Api'), money:true },
+      { k:'NOPs (policies)', cur:prod.nops, prev:pprod.nops, target:tg(pre==='monthly'?'monthlyCloses':pre+'Nops')*frac, full:tg(pre==='monthly'?'monthlyCloses':pre+'Nops') },
+      { k:'Activations', cur:act.n, prev:pact.n, target:tg(pre+'Activations')*frac, full:tg(pre+'Activations') },
+      { k:'Group trainings', cur:tr.n, prev:ptr.n, target:tg(pre+'Trainings')*frac, full:tg(pre+'Trainings') },
+      { k:'Prospects contacted', cur:cT, prev:pT, target:g.daily*wd.working, full:g.daily*wd.working },
+      { k:'New prospects added', cur:created(per.s,per.e), prev:created(per.ps,per.pe), target:0, full:0 },
+      { k:'Follow-ups completed', cur:done(per.s,per.e), prev:done(per.ps,per.pe), target:0, full:0 }
+    ];
+    rows.forEach(r=>{ r.pct = r.target>0 ? r.cur/r.target : null; r.status = r.pct===null ? '—' : r.pct>=1 ? 'On track' : r.pct>=0.7 ? 'Slightly behind' : 'Behind'; });
+    const insights = [];
+    rows.filter(r=>r.pct!==null).forEach(r=>{
+      if(r.pct>=1) insights.push('✅ <b>'+r.k+'</b> is ahead of pace.');
+      else if(r.pct<0.7) insights.push('⚠️ <b>'+r.k+'</b> is behind: '+(r.money?compactMoney(r.cur):Math.round(r.cur))+' against about '+(r.money?compactMoney(r.target):Math.round(r.target))+' expected by now.');
+    });
+    const overdue = prospects.filter(p=>reminderStatus(p.nextFollowUp)==='overdue').length;
+    if(overdue) insights.push('⏰ <b>'+overdue+'</b> follow-up'+(overdue===1?' is':'s are')+' overdue — clear them first.');
+    const waiting = lst('inbox').length + legacyImports().length;
+    if(waiting) insights.push('📇 <b>'+waiting+'</b> contacts in your inbox are not yet qualified — call the warmest ones.');
+    if(!rows.some(r=>r.pct!==null)) insights.push('🎯 Set targets in Goals &amp; Targets to see how your pace compares.');
+    return { per, rows, insights, wd, pwd, perDay: wd.working ? cT/wd.working : 0, conv: created(per.s,per.e) ? prod.nops/created(per.s,per.e) : null };
+  }
+  function openScorecard(){
+    if(!requirePro('Performance scorecard')) return;
+    let key = 'month';
+    const fmt = (r,v)=>r.money ? fmtMoney(Math.round(v)) : Math.round(v*10)/10;
+    const draw = ()=>{
+      const d = scorecardData(key);
+      return '<div class="sheet-head"><h2>📈 Performance</h2><button class="close-x">&times;</button></div>'+
+        '<div class="chip-row" id="scKeys">'+[['week','This week'],['lastWeek','Last week'],['month','This month'],['lastMonth','Last month'],['year','This year']].map(([k,l])=>'<button type="button" class="out-chip'+(k===key?' on':'')+'" data-k="'+k+'">'+l+'</button>').join('')+'</div>'+
+        '<div class="status-box" style="margin-top:12px;">'+d.wd.working+' working day'+(d.wd.working===1?'':'s')+' · <b>'+d.wd.off+'</b> day'+(d.wd.off===1?'':'s')+' off (not counted as zero activity) · <b>'+(Math.round(d.perDay*10)/10)+'</b> prospects contacted per working day'+(d.conv!==null?' · conversion <b>'+Math.round(d.conv*100)+'%</b> (NOPs ÷ new prospects)':'')+'</div>'+
+        '<div class="tbl-wrap" style="margin:8px 0;"><table class="pl-table"><thead><tr><th>Measure</th><th class="num">Actual</th><th class="num">Target so far</th><th class="num">Before*</th><th>Status</th></tr></thead><tbody>'+
+        d.rows.map(r=>'<tr style="cursor:default"><td><b>'+r.k+'</b></td><td class="num">'+fmt(r,r.cur)+'</td><td class="num">'+(r.target>0?fmt(r,r.target):'—')+'</td><td class="num">'+fmt(r,r.prev)+'</td><td><span class="sc-st '+(r.pct===null?'':r.pct>=1?'ok':r.pct>=0.7?'mid':'low')+'">'+r.status+'</span></td></tr>').join('')+
+        '</tbody></table></div><div class="ag-sub">*Compared with '+d.per.plabel+'.</div>'+
+        '<h3 class="nc-h">What the numbers say</h3>'+d.insights.map(t=>'<div class="sc-ins">'+t+'</div>').join('')+
+        '<div class="sheet-actions"><button class="btn btn-ghost" id="scDl">⬇ Download scorecard (.xlsx)</button></div>';
+    };
+    openSheet(draw(), (ov)=>{
+      const bind = ()=>{
+        ov.querySelector('.close-x').onclick = ()=>ov.remove();
+        ov.querySelector('#scKeys').addEventListener('click', (e)=>{ const b = e.target.closest('[data-k]'); if(!b) return; key = b.dataset.k; ov.querySelector('.sheet').innerHTML = draw(); bind(); });
+        ov.querySelector('#scDl').onclick = ()=>{
+          const d = scorecardData(key), a = settings.agent||{}, head = {bold:true,color:'FFFFFF',fill:'0B1F4D',border:true};
+          const rows = [{cells:[{v:'Prospect Ledger — Performance scorecard',s:{bold:true,size:15,color:'0B1F4D'}}],ht:24},{cells:[{v:d.per.label+' · '+ISOD(d.per.s)+' to '+ISOD(d.per.e)}]},{cells:[{v:[a.name,a.agentCode].filter(Boolean).join(' · ')}]},{cells:[{v:'Working days: '+d.wd.working+' · Days off: '+d.wd.off}]},{cells:[{}]},
+            {cells:['Measure','Actual','Target so far','Before ('+d.per.plabel+')','Status'].map(v=>({v,s:head})),ht:20}]
+            .concat(d.rows.map(r=>({cells:[{v:r.k,s:{border:true,bold:true}},{v:Math.round(r.cur*10)/10,s:{border:true,num:true}},{v:r.target>0?Math.round(r.target*10)/10:'—',s:{border:true,num:true}},{v:Math.round(r.prev*10)/10,s:{border:true,num:true}},{v:r.status,s:{border:true,fill:r.pct===null?'FFFFFF':r.pct>=1?'DCF3E8':r.pct>=0.7?'FFF1D2':'FDE7E5'}}]})));
+          const blob = buildXlsx('Scorecard', rows, [30,16,16,22,18], []), url = URL.createObjectURL(blob), l = document.createElement('a');
+          l.href = url; l.download = 'prospect-ledger-scorecard-'+ISOD(new Date())+'.xlsx'; document.body.appendChild(l); l.click(); l.remove(); setTimeout(()=>URL.revokeObjectURL(url),2000);
+        };
+      };
+      bind();
+    });
+  }
+
+  // ----- Collapsing identity header -----
+  (function(){
+    const h = document.querySelector('.agent-header'); if(!h) return;
+    let compact = false, compactH = 56;
+    const measure = ()=>{
+      const was = h.classList.contains('compact'), tr = h.style.transition;
+      h.style.transition = 'none'; h.classList.add('compact'); compactH = h.offsetHeight;
+      if(!was) h.classList.remove('compact'); void h.offsetHeight; h.style.transition = tr;
+      document.documentElement.style.setProperty('--hdr-c', compactH+'px');
+    };
+    const onScroll = ()=>{
+      const y = window.scrollY;
+      if(!compact && y > 90){ const H = h.offsetHeight; h.style.setProperty('--hdr-delta', Math.max(0, H-compactH)+'px'); h.classList.add('compact'); compact = true; }
+      else if(compact && y < 30){ h.classList.remove('compact'); h.style.removeProperty('--hdr-delta'); compact = false; }
+    };
+    window.addEventListener('scroll', onScroll, {passive:true}); window.addEventListener('resize', ()=>{ if(!compact) measure(); });
+    measure(); onScroll();
+  })();
+
+  // sidebar / menu wiring for the new modules
+  Object.assign(SB_ACTIONS, { inbox: ()=>openInbox(), activities: ()=>openActivities('activation'), dayoff: ()=>openDayOffSheet(), scorecard: ()=>openScorecard() });
+
   // ---------- PWA: install prompt + service worker + update detection ----------
   // Keep in sync with sw.js and version.json (use tools/bump-version.js).
-  const APP_VERSION = '2.1.0';
+  const APP_VERSION = '2.2.0';
   let deferredInstallPrompt = null;
   let swRegistration = null;
   let hadController = !!(navigator.serviceWorker && navigator.serviceWorker.controller);
