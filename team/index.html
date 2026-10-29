@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta name="robots" content="noindex"><title>Prospect Ledger — Team dashboard</title><link rel="stylesheet" href="./team.css"></head>
+<body>
+<header><div><h1>Prospect Ledger · Team dashboard</h1><small id="teamName">Manager sign-in</small></div><div><button class="ghost" id="logout" style="display:none">Log out</button></div></header>
+<main>
+  <div id="loginBox" class="card login"><h2 style="margin-top:0">Manager log in</h2><label>Email</label><input id="email" type="email" autocomplete="username"><label>Password</label><input id="pw" type="password" autocomplete="current-password"><div class="msg" id="loginMsg"></div><button id="loginBtn" style="width:100%">Log in</button><p class="k" style="margin-top:16px;text-transform:none;letter-spacing:0">For branch and unit managers. Create your branch or unit in the Prospect Ledger app: More → Team.</p></div>
+  <div id="app" style="display:none">
+    <div class="card"><div class="grid g4" id="totals"></div></div>
+    <div class="card"><h2 style="margin-top:0">Reports</h2>
+      <p class="k" style="text-transform:none;letter-spacing:0">Reports only: managers see performance trends, never client names, phone numbers or notes. Agent email and phone are masked. Agents who switch sharing off are excluded.</p>
+      <div class="two"><div><label>Period</label><select id="rKind"><option value="month">Monthly</option><option value="year">Yearly</option><option value="range">Custom range</option></select></div><div id="rPick"></div></div>
+      <div id="rUnitRow" style="display:none"><label>Unit</label><select id="rUnit"></select></div>
+      <button id="unitReport">Unit report (selected agents, or everyone shown)</button> <span class="msg" id="rMsg"></span>
+    </div>
+    <div id="units"></div>
+    <div class="grid g2">
+      <div class="card"><h2 style="margin-top:0">Shared targets</h2><div id="tUnitRow" style="display:none"><label>Unit</label><select id="tUnit"></select></div><p class="k" style="text-transform:none;letter-spacing:0">Leave 0 for none. Targets reach each agent's app on their next sync.</p><div class="two" id="targetForm"></div><div class="msg" id="tMsg"></div><button id="saveTargets">Save targets</button></div>
+      <div class="card"><h2 style="margin-top:0">Assign a lead</h2><label>Agent</label><select id="agent"></select><label>Lead name</label><input id="lname"><label>Phone</label><input id="lphone" placeholder="07XXXXXXXX"><label>Note (optional)</label><input id="lnote" maxlength="200"><div class="msg" id="aMsg"></div><button id="assignBtn">Send to agent's Lead Pool</button>
+        <hr style="border:none;border-top:1px solid var(--line);margin:18px 0"><div id="codes"></div></div>
+    </div>
+  </div>
+</main>
+<script src="../reportkit.js"></script><script src="./team.js"></script></body></html>

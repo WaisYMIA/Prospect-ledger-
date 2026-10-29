@@ -1,12 +1,15 @@
 {
   "name": "Prospect Ledger",
-  "version": "2.2.0",
-  "released": "2026-10-26",
+  "version": "2.3.0",
+  "released": "2026-10-28",
   "notes": [
-    "Identity header stays visible and shrinks as you scroll (phone and PC)",
-    "Dashboard shows API and NOPs for week, month and year to date with comparison and targets",
-    "Activations and group trainings with weekly/monthly targets; days off and working week",
-    "Imported phone contacts go to a Contact inbox and stay out of every report until qualified",
-    "Performance scorecard with pace vs target and plain-language insights"
+    "Dark mode choice (Light is the default)",
+    "Month/year grouped prospect view with summaries and collapsible groups; category-coloured alternating rows",
+    "Lead Pool (renamed) with full qualify form and appointments",
+    "Working-day model with Kenya public holidays; extra-day production reporting",
+    "Analyst reports with charts for agents and unit managers",
+    "Branch / unit / agent hierarchy with privacy controls and masked contacts",
+    "Finance, weekly review, planner & calendar, quotes tracker, app lock",
+    "Strict CSP, server-side licence checks, cPanel and GitHub release packages"
   ]
 }

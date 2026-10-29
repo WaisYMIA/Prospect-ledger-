@@ -2,9 +2,24 @@
 
 A mobile-first, offline-capable, **installable** prospecting and client-management tool built for a life insurance agent's day-to-day workflow — capturing leads, tracking them through a full sales pipeline, and reporting on performance. It's a Progressive Web App (PWA): open it once from its hosted link, and it behaves like a real app from then on — an icon on your home screen, its own window, and offline access, with no app store involved.
 
-**Current version: 2.2.0**
+**Current version: 2.3.0**
 
 **Developed by Walter Jungah** · 0798 511 366 · walterjungah9@outlook.com
+
+---
+
+## What's new in 2.3.0
+
+- **Appearance:** light by default; each agent chooses Light or Dark (More → Appearance).
+- **Security:** strict content-security policy (scripts and styles in external files), optional **App lock (PIN)**, server-side licence checks (revocation, device limits) in the cPanel edition. See `SECURITY_GUIDE.md`.
+- **Prospect list:** *Group by month / year* with per-group summaries (closed, pending, difficult, NOPs, API), collapsible groups ("one open at a time", collapse/expand all); alternating row shades tinted by category.
+- **Lead Pool** (was Contact inbox) with a full **Qualify** form (all details, category, stage, appointment).
+- **Working-day model:** weekends, Kenya public holidays and logged days off are not zero-activity days; activity on them is reported separately as extra-day production.
+- **Analyst report:** charts and tables for month → week → day (or year → month → week), activity, working days, gender, age groups and products.
+- **Birthdays:** next birthday shown on every profile, reminder 3 days ahead, shown in the planner.
+- **Agent-as-a-company tools:** Finance (commission and expenses), Weekly review, Planner & calendar, Quotes & proposals.
+- **Team (server edition):** Branch manager → Unit managers → Agents; reports only, masked contacts, agent privacy switch, shared targets, lead assignment, unit and individual reports.
+- **Releases:** `node tools/build-release.js` builds the GitHub and cPanel packages for every version.
 
 ---
 
@@ -41,75 +56,69 @@ A mobile-first, offline-capable, **installable** prospecting and client-manageme
 
 ```
 prospect-ledger/
-├── index.html                          ← the entire app (open this in a browser)
-├── manifest.json                       ← PWA metadata (name, icons, colors)
-├── version.json                        ← current version number (read by the update checker)
-├── tools/bump-version.js               ← one command to bump the version everywhere
-├── sw.js                               ← service worker (offline app-shell caching)
-├── icons/
-│   ├── icon-192.png
-│   ├── icon-512.png
-│   ├── icon-maskable-512.png
-│   └── apple-touch-icon.png
-├── google-apps-script/
-│   └── ProspectLedgerSync.gs           ← optional Google Sheets sync backend
-├── LICENSE.md
-└── README.md                           ← this file
+├── index.html, app.css, app.js     ← the app (HTML, styles, logic — external files so a strict CSP can be used)
+├── reportkit.js                    ← analyst-report engine (charts, tables) shared by the app and the manager dashboard
+├── theme.js                        ← applies Light/Dark before first paint
+├── manifest.json, sw.js            ← PWA metadata and service worker (offline, updates)
+├── version.json, package.json      ← current version (read by the update checker)
+├── icons/                          ← app icons generated from the logo
+├── api/                            ← server edition: licence server + Team backend (PHP 8 + SQLite)
+│   ├── config.sample.php           ← copy to config.php on the server (never committed)
+│   └── health.php                  ← setup self-check
+├── team/                           ← manager dashboard and licence admin pages
+├── deploy/cpanel/                  ← .htaccess and INSTALL-CPANEL.txt used by the cPanel package
+├── google-apps-script/             ← optional Google Sheets sync backend
+├── tools/bump-version.js           ← bump the version everywhere
+├── tools/build-release.js          ← builds the GitHub zip AND the cPanel zip
+├── SECURITY_GUIDE.md, SAAS_GUIDE.md, CHANGELOG.md, PENDING.md, LICENSE.md
+└── .github/workflows/deploy-pages.yml   ← optional Actions deployment (manual)
 ```
 
-`index.html` still holds the entire application — HTML, CSS, and JavaScript in one file, using the browser's built-in IndexedDB for storage. The manifest, service worker, and icons are what turn it from "a web page" into "an installable app."
+The app code lives in `app.js`/`app.css` and uses the browser's IndexedDB for storage. The manifest, service worker and icons turn it into an installable app.
+
+**Never commit your license-signing private key.** It lives only in the separate seller kit, and `.gitignore` blocks `*.pem` files as a safety net.
 
 ---
 
 ## 2. Deploying to GitHub Pages
 
-1. **Create a new repository** on GitHub (public or private — Pages works with both, though private repos need GitHub Pro/Team/Enterprise for Pages).
-2. **Upload every file above, keeping the folder structure intact** — `index.html`, `manifest.json`, and `sw.js` must sit at the repo **root**, and `icons/` must stay a subfolder named exactly `icons`, since the app references them as `./manifest.json`, `./sw.js`, and `./icons/...`.
-   - Easiest way: **Add file → Upload files**, drag in everything (including the `icons` folder), commit.
-   - Or via git on a computer:
-     ```
-     git init
-     git add .
-     git commit -m "Initial deploy of Prospect Ledger (PWA)"
-     git branch -M main
-     git remote add origin https://github.com/<your-username>/<your-repo>.git
-     git push -u origin main
-     ```
-3. **Turn on GitHub Pages**: repo **Settings → Pages** → Source: **Deploy from a branch** → Branch: `main`, folder `/ (root)` → **Save**.
-4. GitHub gives you a live URL shortly after, typically:
+**Option A — deploy from a branch (simplest)**
+1. Create a new repository on GitHub.
+2. Push this folder's contents so `index.html`, `manifest.json` and `sw.js` sit at the repository **root**:
    ```
-   https://<your-username>.github.io/<your-repo>/
+   git init
+   git add .
+   git commit -m "Prospect Ledger v2.2.0"
+   git branch -M main
+   git remote add origin https://github.com/<your-username>/<your-repo>.git
+   git push -u origin main
    ```
-5. **This must be served over HTTPS** for installability to work — GitHub Pages does this automatically, so no extra setup is needed there.
+3. **Settings → Pages → Source: Deploy from a branch → Branch `main`, folder `/ (root)` → Save.**
+4. After a minute your app is live at `https://<your-username>.github.io/<your-repo>/` (HTTPS is automatic, which installation requires).
 
-### Releasing a new version (v1.2.0 onward)
+**Option B — GitHub Actions:** set **Settings → Pages → Source: GitHub Actions**, then run **Actions → Deploy to GitHub Pages → Run workflow**. This publishes the app without `tools/`, `.github/` and `SAAS_GUIDE.md`.
+
+### Two editions, built together
+
+| Package | Use it for |
+|---|---|
+| `prospect-ledger-github-vX.Y.Z.zip` | Source repository. Deploys to GitHub Pages (**no** Team/online licence features — they need PHP). |
+| `prospect-ledger-cpanel-vX.Y.Z.zip` | **Production.** Upload to cPanel `public_html`; includes the PHP backend, manager dashboard, hardened `.htaccess` and `INSTALL-CPANEL.txt`. |
+
+Build both with `node tools/build-release.js` (output in `dist/`, which is git-ignored).
+
+### Releasing a new version
 
 1. Make your changes.
-2. Run `node tools/bump-version.js 1.3.0 "What changed"` — this updates `version.json`, `sw.js`, `index.html` (footer + menu) and this README together. (No Node? Edit those four spots by hand: `VERSION` in sw.js, `APP_VERSION` in index.html, `version` in version.json, and the line above.)
-3. Zip the folder as `prospect-ledger-repo-v1.3.0.zip` for your records, and upload the files to your host.
-4. Devices detect the change, show **"Version 1.3.0 is ready — Update now / Later"**, and reload after confirmation.
+2. Run `node tools/bump-version.js 2.3.0 "What changed"` (or `npm run bump -- 2.3.0 "What changed"`). It updates `version.json`, `sw.js`, `index.html`, `package.json` and the line at the top of this README.
+3. Run `node tools/build-release.js` — it writes `dist/prospect-ledger-github-vX.Y.Z.zip` and `dist/prospect-ledger-cpanel-vX.Y.Z.zip`. Add a short entry to `CHANGELOG.md`, commit and push (`git tag v2.3.0` is a good habit).
+4. Devices detect the new service worker and show **"Version 2.3.0 is ready — Update now / Later"**. Users can also tap **Check for updates** in the footer.
 
-**Install prompt:** on first open, Chrome/Edge (Android & desktop) show an in-app **Install** bar; iPhone Safari shows Add-to-Home-Screen steps. If dismissed, it returns after 3 days. The footer shows the version with a **Check for updates** link.
+Updates never touch prospects, settings or backups, which live in IndexedDB separately from the cached app files.
 
-**Install not offered?** It requires an `https://` address (or `http://localhost`) — opening `index.html` as a file, or over `http://192.168…`, can never install or update.
+**Install not offered?** It needs an `https://` address (or `http://localhost`). Opening `index.html` as a file, or over `http://192.168…`, can never install or update.
 
-### Updating the app later (and how devices find out)
-
-**The two-step release checklist** — do both, every time you deploy a change:
-1. Upload the new `index.html` (and any other changed files) to GitHub.
-2. **Bump `CACHE_NAME` in `sw.js`** (e.g. `prospect-ledger-shell-v2` → `v3`), and bump `APP_VERSION` near the bottom of `index.html` to match (e.g. `1.1.0` → `1.2.0`) so the version number users see in *⋯ More → Check for Updates* is accurate.
-
-Skipping step 2 is the one easy mistake: the browser decides "is there an update?" by comparing `sw.js` byte-for-byte against what it has cached, so if that file hasn't changed, devices will keep serving their old cached copy of `index.html` indefinitely, even though GitHub has the new one.
-
-**What happens on the user's device once you've deployed:**
-- Each time the app is opened (and each time it's brought back to the foreground), it asks the browser to check `sw.js` for changes right away — it doesn't wait for the browser's own slow, once-a-day schedule.
-- If a newer version is found, it downloads quietly in the background, then a bar appears at the bottom: **"🔄 A new version is ready — Update now / Later."** Nothing swaps out mid-task without permission.
-- Tapping **Update now** activates the new version and reloads once. Tapping **Later** dismisses the bar; it will be offered again next time the app is opened.
-- Users can also check manually anytime via **⋯ More → 🔄 Check for Updates**, which also shows the version they're currently on.
-
-**What updates never touch:** your prospects, agent profile, and settings live in IndexedDB, completely separate from the cached app files — updating the app doesn't erase, migrate, or reset any client data.
-
-**A note on why it works this way rather than polling GitHub's API directly:** a request to GitHub's API could tell the app "a new commit exists," but it couldn't actually replace the app's cached files — only the service worker's own install/activate process does that, which is why the update flow is built on it instead.
+**Test locally:** run `npm run serve` (or `python3 -m http.server 8080`) and open `http://localhost:8080`.
 
 ---
 
@@ -226,3 +235,18 @@ Practical implications: treat your device's own security (lock screen, etc.) as 
 
 © 2026 Walter Jungah. All rights reserved.
 Developed by Walter Jungah · 0798 511 366 · walterjungah9@outlook.com
+
+
+---
+
+## Two editions, one code base
+
+| | GitHub Pages edition | cPanel server edition |
+|---|---|---|
+| Package | `prospect-ledger-github-vX.Y.Z.zip` (this repository) | `prospect-ledger-cpanel-vX.Y.Z.zip` |
+| Hosting | GitHub Pages (static) | Your cPanel hosting (PHP 8 + SQLite) |
+| Licence check | Offline signature | Offline signature + registry, revocation, device limits |
+| Team / unit dashboards | Off | On (`/team/`) |
+| Security headers | Meta CSP | Full headers via `.htaccess` |
+
+Follow `INSTALL-CPANEL.txt` inside the cPanel package, and run the checklist in `SECURITY_GUIDE.md` before every release.

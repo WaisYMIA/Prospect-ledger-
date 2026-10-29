@@ -7,11 +7,15 @@
 // background but waits (no skipWaiting) until the page sends 'SKIP_WAITING'
 // when you tap "Update now", so nothing changes under you mid-task.
 
-const VERSION = '2.2.0';
+const VERSION = '2.3.0';
 const CACHE_NAME = 'prospect-ledger-shell-' + VERSION;
 const ASSETS = [
   './',
   './index.html',
+  './app.css',
+  './app.js',
+  './theme.js',
+  './reportkit.js',
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png',
@@ -59,6 +63,7 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
   if (url.pathname.endsWith('/version.json')) return;
+  if (url.pathname.includes('/api/') || url.pathname.includes('/team/')) return;   // server edition: never cache API or manager pages
 
   event.respondWith(
     caches.match(req, { ignoreSearch: true }).then((cached) => {

@@ -16,6 +16,7 @@ j.version = v; j.released = today;
 if (note) j.notes = [note];
 wr('version.json', JSON.stringify(j, null, 2) + '\n');
 sub('sw.js', /const VERSION = '[^']+';/, `const VERSION = '${v}';`);
-sub('index.html', /const APP_VERSION = '[^']+';/, `const APP_VERSION = '${v}';`);
+sub('app.js', /const APP_VERSION = '[^']+';/, `const APP_VERSION = '${v}';`);
+if (fs.existsSync(path.join(root,'package.json'))) sub('package.json', /"version": "[^"]+"/, `"version": "${v}"`);
 sub('README.md', /\*\*Current version: [^*]+\*\*/, `**Current version: ${v}**`);
 console.log(`Bumped to ${v} (${today}). Zip the folder as prospect-ledger-repo-v${v}.zip and deploy.`);

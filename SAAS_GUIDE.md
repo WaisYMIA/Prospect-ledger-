@@ -36,3 +36,14 @@ Edit the `SAAS` object in `index.html`: `proPrice` (e.g. `'KES 1,500 / month'`; 
 | Admin & compliance | Keeps clean records | Number check, Contact inbox, backups | Data-protection tools |
 
 Suggested plans: **Starter (free)** pipeline, reminders, basic dashboard; **Pro** everything above plus scorecard, reports and exports; **Team / Agency (later, needs backend)** manager dashboards, shared targets, lead assignment.
+
+## Server edition (v2.3.0)
+Team / Agency features and online licence checks run on the PHP backend in `api/` (cPanel). Branch managers need a `team` plan licence (`node make-license.js "Branch" 12 team`), registered in `team/admin.html`. See `SECURITY_GUIDE.md` for protecting keys and the server.
+
+## Team / Agency plan (built in v2.3.0, server edition)
+- **Roles:** branch manager → unit managers → agents. A branch is created with a *Team* licence key; unit managers join with the branch code; agents join with a unit code.
+- **Managers see reports only.** Agent email and phone are masked. Client names, numbers and notes never leave the agent's device.
+- **Agent privacy:** an agent can switch sharing off; the server deletes their stored report and the manager sees "Hidden by agent".
+- **Reports:** managers generate an individual-agent report or a whole-unit report (month, year or custom) with charts.
+- **Shared targets and lead assignment** reach agents on their next sync (assigned leads land in the agent's Lead Pool).
+- **Billing** is still manual: issue a licence with `make-license.js` (plan `team`), register it in `team/admin.html`.

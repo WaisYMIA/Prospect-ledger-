@@ -1,0 +1,43 @@
+PROSPECT LEDGER — cPanel (server edition) install guide
+Version {{VERSION}}
+
+WHAT THIS PACKAGE IS
+  The complete app, ready to host live, plus the optional server parts:
+    api/   license server (revocation, device limits) and Team / Agency backend (PHP 8 + SQLite)
+    team/  manager dashboard and license admin pages
+    .htaccess  HTTPS redirect, security headers and caching rules
+
+BEFORE YOU START
+  - A domain or sub-domain on cPanel hosting with PHP 8.0 or newer (MultiPHP Manager) and the pdo_sqlite extension.
+  - Turn on AutoSSL / Let's Encrypt so the site opens on https:// (apps cannot install without it).
+
+FIRST-TIME INSTALL (about 10 minutes)
+  1. cPanel -> File Manager -> open public_html (or the folder of your sub-domain).
+  2. Upload prospect-ledger-cpanel-v{{VERSION}}.zip and choose Extract. Delete the zip afterwards.
+  3. Open  api/config.sample.php, make a copy named  api/config.php  and edit the copy:
+       - admin_token : paste a long random string (40+ characters). Keep it secret.
+       - leave the other values unless you know you need to change them.
+  4. Visit  https://YOUR-DOMAIN/api/health.php  — every line must be true and "ok": true.
+     If pdo_sqlite is false, enable it in cPanel -> Select PHP Version -> Extensions.
+  5. Visit  https://YOUR-DOMAIN/  — the app opens and offers to install.
+  6. Register licence keys you sell:  https://YOUR-DOMAIN/team/admin.html
+       (admin token from step 3 -> paste each key issued with make-license.js -> set device limit).
+     Only keys registered here are accepted by the server edition; revoke any key at any time.
+
+UPGRADING TO A NEW VERSION
+  1. Upload the new zip and Extract with "overwrite existing files".
+  2. Your settings and data are kept because they are NOT in the zip:
+       api/config.php   (you created it)      api/data/team.sqlite  (created at first use)
+  3. Open the app: users see "Version X is ready — Update now".
+
+BACKUPS
+  - Download api/data/team.sqlite regularly (cPanel Backup or a cron job). It holds accounts, units and licence registrations.
+  - Agents back up their own prospect data inside the app (Settings -> Backup).
+
+IF YOUR HOST HAS NO PHP
+  The app still works fully on its own (offline licence check, no Team features). Delete the api/ and team/ folders and, in app.js, leave licenseServer and teamServer as they are — the app simply cannot reach them and carries on.
+
+SECURITY CHECKLIST (details in SECURITY_GUIDE.md)
+  [ ] https works and http redirects      [ ] api/health.php shows ok:true
+  [ ] admin_token changed                  [ ] api/data is NOT downloadable (try https://YOUR-DOMAIN/api/data/team.sqlite -> must be 403/404)
+  [ ] securityheaders.com grade A          [ ] private licence-signing key stays offline

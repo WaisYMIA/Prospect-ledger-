@@ -1,0 +1,15 @@
+:root{--ink:#0F2350;--soft:#556796;--brand:#1F6FFF;--line:#DDE4F2;--bg:#F2F5FB}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:linear-gradient(145deg,#0B1F4D,#1F6FFF 160%);color:#fff;padding:18px 28px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+header h1{margin:0;font-size:20px} header small{color:#B7C8F0}
+main{max-width:1180px;margin:0 auto;padding:22px 20px 60px}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:18px;box-shadow:0 8px 24px rgba(15,35,80,.07)}
+.grid{display:grid;gap:14px}.g4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}.g2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.k{font-size:12px;color:var(--soft);font-weight:700;text-transform:uppercase;letter-spacing:.05em}.v{font-size:28px;font-weight:800;margin-top:4px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}th,td{padding:10px 8px;border-bottom:1px solid #EEF2FA;text-align:left}th{font-size:11px;text-transform:uppercase;color:var(--soft);letter-spacing:.05em}td.n{text-align:right;white-space:nowrap}
+input,select,textarea{width:100%;padding:11px 12px;border:1px solid #D3DCEE;border-radius:10px;font:inherit;margin:4px 0 10px}
+label{font-size:12px;font-weight:700;color:var(--soft)}button{border:none;border-radius:10px;padding:11px 18px;font:inherit;font-weight:700;background:var(--brand);color:#fff;cursor:pointer}button.ghost{background:#E6ECF8;color:var(--ink)}
+.msg{font-size:13px;margin:6px 0;color:#C0392B}.ok{color:#14804F}.tag{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:800;background:#EEF2FA;color:var(--soft)}.tag.warn{background:#FFF1D2;color:#B46F00}.tag.good{background:#DCF3E8;color:#14804F}
+.bar{height:8px;background:#E7EDF8;border-radius:99px;overflow:hidden;margin-top:4px}.bar i{display:block;height:100%;background:linear-gradient(90deg,#1F6FFF,#2BB0FF)}
+.login{max-width:380px;margin:60px auto}.code{font-size:22px;letter-spacing:.2em;font-weight:800}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
