@@ -7,7 +7,7 @@
 // background but waits (no skipWaiting) until the page sends 'SKIP_WAITING'
 // when you tap "Update now", so nothing changes under you mid-task.
 
-const VERSION = '2.3.0';
+const VERSION = '2.4.0';
 const CACHE_NAME = 'prospect-ledger-shell-' + VERSION;
 const ASSETS = [
   './',
@@ -79,4 +79,44 @@ self.addEventListener('fetch', (event) => {
       return cached || networkFetch;
     })
   );
+});
+
+// ---------- Reminders & alarms (v2.4) ----------
+// The page keeps an alarm queue in IndexedDB; this worker shows due alarms even when the app is closed,
+// where the browser allows it (periodic background sync, push, or after the user opens the app).
+const DB_NAME = 'prospect_ledger_db';
+function readSettings(){
+  return new Promise((resolve)=>{
+    const r = indexedDB.open(DB_NAME);
+    r.onerror = ()=>resolve(null);
+    r.onsuccess = ()=>{ try{ const g = r.result.transaction('settings','readonly').objectStore('settings').get('app-settings'); g.onsuccess = ()=>resolve(g.result && g.result.value); g.onerror = ()=>resolve(null); }catch(e){ resolve(null); } };
+  });
+}
+async function showDueAlarms(){
+  const s = await readSettings();
+  if(!s || !s.alerts || !s.alerts.enabled) return 0;
+  const now = Date.now(), c = await caches.open('pl-fired'); let n = 0;
+  for(const a of (s.alarmQueue || [])){
+    if(a.at > now || a.at < now - 24*3600*1000) continue;
+    const key = new Request(self.location.origin + '/__fired/' + encodeURIComponent(a.id));
+    if(await c.match(key)) continue;
+    await c.put(key, new Response('1'));
+    await self.registration.showNotification(a.title, { body:a.body, tag:a.id, icon:'./icons/icon-192.png', badge:'./icons/icon-192.png', data:{ url:a.url }, vibrate:[250,120,250], requireInteraction:!!a.sticky });
+    if(++n >= 5) break;
+  }
+  return n;
+}
+self.addEventListener('periodicsync', (event)=>{ if(event.tag === 'pl-reminders') event.waitUntil(showDueAlarms()); });
+self.addEventListener('message', (event)=>{ if(event.data === 'CHECK_ALARMS') event.waitUntil(showDueAlarms()); });
+self.addEventListener('push', (event)=>{
+  let d = {}; try{ d = event.data ? event.data.json() : {}; }catch(e){ d = { title:'Prospect Ledger', body:event.data ? event.data.text() : '' }; }
+  event.waitUntil(self.registration.showNotification(d.title || 'Prospect Ledger', { body:d.body || '', icon:'./icons/icon-192.png', badge:'./icons/icon-192.png', data:{ url:d.url || './index.html' } }));
+});
+self.addEventListener('notificationclick', (event)=>{
+  event.notification.close();
+  const url = (event.notification.data && event.notification.data.url) || './index.html';
+  event.waitUntil(self.clients.matchAll({ type:'window', includeUncontrolled:true }).then((list)=>{
+    for(const c of list){ if('focus' in c){ c.postMessage({ type:'OPEN', url }); return c.focus(); } }
+    return self.clients.openWindow(url);
+  }));
 });

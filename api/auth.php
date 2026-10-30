@@ -35,12 +35,13 @@ if ($action === 'register') {
             $unitId = (int)$p->lastInsertId(); $unit = unit_of($unitId); $role = 'unit';
         } elseif ($mode === 'branch') {
             $bn = str($b, 'branchName', 80); if ($bn === '') { $p->rollBack(); fail('Enter a branch name'); }
-            $lic = find_license(str($b, 'licenseKey', 2000));
+            $lic = license_for_branch(str($b, 'licenseKey', 2000));
             if (!$lic || (int)$lic['revoked'] || $lic['plan'] !== 'team' || $lic['exp'] < date('Y-m-d')) { $p->rollBack(); fail('A valid Team license key is required to create a branch'); }
             $s = $p->prepare('SELECT 1 FROM branches WHERE license_id = ?'); $s->execute([$lic['id']]);
             if ($s->fetch()) { $p->rollBack(); fail('This license already runs a branch'); }
             do { $c = invite_code(); $s = $p->prepare('SELECT 1 FROM branches WHERE invite_code = ?'); $s->execute([$c]); } while ($s->fetch());
             $p->prepare('INSERT INTO branches(name, invite_code, license_id, created_at) VALUES(?,?,?,?)')->execute([$bn, $c, $lic['id'], time()]);
+            if (!empty($lic['unused'])) mark_code_redeemed((int)$lic['code_id'], (int)$lic['days']);
             $branch = branch_of((int)$p->lastInsertId()); $unit = []; $role = 'branch';
         } else { $p->rollBack(); fail('Choose how you are joining'); }
         $p->prepare('INSERT INTO users(email, pass_hash, name, phone, role, branch_id, unit_id, created_at) VALUES(?,?,?,?,?,?,?,?)')

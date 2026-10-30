@@ -90,3 +90,12 @@ Run these in order; tick each one before you ship.
 - Agent emails and phones are **masked** on the manager side (for example `j***@g***.com`, `0724***57`).
 - Agents can **switch sharing off** at any time (More -> Team); this also deletes what was stored.
 - Leads a manager assigns arrive in the agent's **Lead Pool** and only become prospects when the agent qualifies them.
+
+## 8. Added in v2.4.0
+**Activation codes.** Codes look like `PL-XXXX-XXXX-XXXX`, are generated only in `team/admin.html` (admin token required), are stored only as SHA-256 hashes (the plain code is shown once at creation), can be revoked, are limited per device, and the clock starts when the customer redeems. Treat generated codes like cash: send them privately.
+
+**Online billing.** Payment confirmation comes only from the provider's server-to-server callback: Stripe webhooks are verified with the signing secret and a 5-minute timestamp window; M-Pesa callbacks are matched to an order you created. The app never decides a payment succeeded. Always test with the **sandbox** first and keep keys only in `api/config.php`.
+
+**Notifications.** Alert content is built on the device from the agent's own data and stored only in the device's IndexedDB. Nothing about reminders is sent to the server. Lock-screen previews can reveal client names; advise agents to hide notification previews in phone settings if they share a device.
+
+**Extra checks before release:** generate a code, redeem it on two devices (the third must say *device limit*), revoke it and confirm the app drops to Free; replay a Stripe webhook with a wrong signature (must be rejected); open `api/billing.php?hook=mpesa` with junk (must do nothing).

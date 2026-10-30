@@ -5,6 +5,11 @@
 <body><header><div><h1>License admin</h1><small>Seller only — register issued keys, revoke, set device limits</small></div></header>
 <main>
 <div class="card"><label>Admin token (from api/config.php)</label><input id="tok" type="password" autocomplete="off"><button id="load">Load licenses</button><div class="msg" id="msg"></div></div>
+<div class="card"><h2 style="margin-top:0">Generate activation codes</h2><p class="k" style="text-transform:none;letter-spacing:0">Create Pro or Team codes for accounts you approve. The time starts when the customer redeems the code in the app.</p>
+<div class="two"><div><label>Plan</label><select id="gPlan"><option value="pro">Pro</option><option value="team">Team (create a branch)</option></select></div><div><label>Duration</label><select id="gDays"><option value="3">3 days</option><option value="7">1 week</option><option value="14">2 weeks</option><option value="30" selected>1 month</option><option value="60">2 months</option><option value="90">3 months</option><option value="182">6 months</option><option value="273">9 months</option><option value="365">1 year</option><option value="730">2 years</option><option value="1095">3 years</option><option value="36500">100 years (eternity)</option></select></div></div>
+<div class="two"><div><label>How many codes</label><input id="gCount" type="number" min="1" max="100" value="1"></div><div><label>Devices per code</label><input id="gDev" type="number" min="1" max="50" value="2"></div></div>
+<label>Note (customer or account)</label><input id="gNote" maxlength="120" placeholder="e.g. Jane W. — Westlands unit"><button id="gGo">Generate</button><div class="msg" id="gMsg"></div><textarea id="gOut" rows="4" readonly style="display:none"></textarea></div>
+<div class="card" style="overflow-x:auto"><h2 style="margin-top:0">Activation codes</h2><table id="codeList"></table></div>
 <div class="card"><h2 style="margin-top:0">Register an issued key</h2><label>License key (from make-license.js)</label><textarea id="key" rows="3"></textarea><label>Max devices</label><input id="max" type="number" min="1" max="50" value="2"><button id="add">Register key</button></div>
 <div class="card" style="overflow-x:auto"><h2 style="margin-top:0">Registered licenses</h2><table id="list"></table></div>
 </main><script src="./admin.js"></script></body></html>

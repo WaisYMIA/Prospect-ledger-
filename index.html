@@ -23,13 +23,14 @@
   <div class="sb-group">Workspace</div>
   <button data-go="home" class="active"><i>🏠</i>Dashboard</button>
   <button data-go="prospects"><i>👥</i>Prospects</button>
+  <button data-go="calendar"><i>🗓</i>Ratiba calendar</button>
   <button data-go="inbox"><i>📇</i>Lead Pool<span class="sb-badge" id="sbInboxBadge"></span></button>
   <button data-go="reminders"><i>🔔</i>Reminders<span class="sb-badge" id="sbRemBadge"></span></button>
   <button data-go="quotes"><i>📄</i>Quotes</button>
   <div class="sb-group">My business</div>
   <button data-go="scorecard"><i>📈</i>Performance</button>
   <button data-go="analyst"><i>📊</i>Analyst report</button>
-  <button data-go="planner"><i>🗓</i>Planner</button>
+  <button data-go="planner"><i>📋</i>Planner</button>
   <button data-go="activities"><i>📍</i>Activations &amp; training</button>
   <button data-go="finance"><i>💰</i>Finance</button>
   <button data-go="review"><i>📝</i>Weekly review</button>
@@ -47,6 +48,8 @@
   <button data-go="theme"><i>🌓</i>Appearance</button>
   <button data-go="lock"><i>🔒</i>App lock</button>
   <button data-go="settings"><i>⚙️</i>Settings</button>
+  <button data-go="alerts"><i>🔔</i>Reminders &amp; alarms</button>
+  <button data-go="install" id="sbInstall"><i>📲</i>Install app</button>
   <button data-go="updates"><i>🔄</i>Check for updates</button>
   <div class="sb-foot"><span class="plan-pill" id="sbPlan">Free</span> &nbsp;<span id="sbVersion"></span></div>
 </aside>
@@ -56,6 +59,7 @@
       <div class="brand"><img class="brand-logo" src="./icons/logo-256.png" alt=""><div><div class="brand-name">Prospect Ledger<span class="plan-pill" id="planPill">Free</span></div><div class="brand-tag">Sell smarter. Follow up faster.</div></div></div>
       <div class="header-actions">
         <button class="icon-btn" id="dateFilterBtn" title="Filters">🔍</button>
+        <button class="install-btn" id="installBtn" type="button" title="Install Prospect Ledger on this device">📲 Install app</button>
         <button class="desk-add" id="deskAdd" type="button">＋ New prospect</button>
         <button class="icon-btn" id="remindersBtn" title="Reminders" style="position:relative;">🔔<span id="reminderBadge" style="display:none; position:absolute; top:-4px; right:-4px; background:var(--red); color:#fff; font-size:9px; font-weight:700; border-radius:999px; min-width:15px; height:15px; line-height:15px; text-align:center; padding:0 3px;"></span></button>
         <button class="icon-btn" id="moreBtn" title="More" style="display:none;">⋯</button>

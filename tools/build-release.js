@@ -45,8 +45,8 @@ for(const f of appFiles){
   let data = rd(f);
   if(f==='app.js'){
     let t = data.toString('utf8'); const before = t;
-    t = t.replace("licenseServer: '',","licenseServer: './api/license.php',").replace("teamServer: '',","teamServer: './api',");
-    if(t===before || !t.includes("teamServer: './api'")) throw new Error('Could not enable server features in app.js — check the SAAS block');
+    t = t.replace("licenseServer: '',","licenseServer: './api/license.php',").replace("teamServer: '',","teamServer: './api',").replace("billingServer: '',","billingServer: './api/billing.php',");
+    if(t===before || !t.includes("teamServer: './api'") || !t.includes("billingServer: './api/billing.php'")) throw new Error('Could not enable server features in app.js — check the SAAS block');
     data = Buffer.from(t, 'utf8');
   }
   cp.push({ name:f, data });
@@ -57,6 +57,7 @@ walk(root,'api').filter(r=>!skipRepo('api/'+r.replace(/^api\//,'')) && r!=='api/
 cp.push({ name:'.htaccess', data:rd('deploy/cpanel/.htaccess') });
 cp.push({ name:'INSTALL-CPANEL.txt', data:Buffer.from(rd('deploy/cpanel/INSTALL-CPANEL.txt').toString('utf8').replace(/\{\{VERSION\}\}/g, ver)) });
 cp.push({ name:'SECURITY_GUIDE.md', data:rd('SECURITY_GUIDE.md') });
+cp.push({ name:'TESTING.md', data:rd('TESTING.md') });
 const cpFile = path.join(dist, `prospect-ledger-cpanel-v${ver}.zip`), cpHash = zip(cp, cpFile);
 
 const note = `Prospect Ledger v${ver}\n\n${path.basename(ghFile)}\n  sha256 ${ghHash}\n  ${gh.length} files\n\n${path.basename(cpFile)}\n  sha256 ${cpHash}\n  ${cp.length} files\n`;

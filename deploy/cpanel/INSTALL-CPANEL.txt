@@ -24,6 +24,19 @@ FIRST-TIME INSTALL (about 10 minutes)
        (admin token from step 3 -> paste each key issued with make-license.js -> set device limit).
      Only keys registered here are accepted by the server edition; revoke any key at any time.
 
+ONLINE BILLING (optional — M-Pesa and cards)
+  1. In api/config.php fill the 'billing' section: your REAL prices (a plan with price 0 is hidden) and your provider keys.
+  2. M-Pesa (Safaricom Daraja): create an app in the Daraja portal, put the consumer key/secret, shortcode and passkey in the config,
+     set callback_url to  https://YOUR-DOMAIN/api/billing.php?hook=mpesa . Start with env = 'sandbox', then switch to 'production'.
+  3. Cards (Stripe): put the secret key in the config. In Stripe -> Developers -> Webhooks add the endpoint
+     https://YOUR-DOMAIN/api/billing.php?hook=stripe  for the event  checkout.session.completed  and paste its signing secret in the config.
+  4. Test one purchase in sandbox/test mode end to end: the buyer's Pro must switch on by itself and a code appears in team/admin.html.
+  Until you fill the keys and prices, the "Buy Pro online" button simply stays hidden.
+
+ADMIN-GENERATED CODES (no payment needed)
+  team/admin.html -> enter the admin token -> "Generate activation codes": choose Pro or Team, the duration
+  (3 days ... 1 year, or 100 years = eternity), how many, devices per code and a note. Send each code to the approved account.
+
 UPGRADING TO A NEW VERSION
   1. Upload the new zip and Extract with "overwrite existing files".
   2. Your settings and data are kept because they are NOT in the zip:

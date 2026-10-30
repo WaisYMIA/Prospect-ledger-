@@ -67,8 +67,8 @@
   ];
 
   const PRODUCTS_BY_TYPE = {
-    Individual: ["Smart Scholar","Smart Save","Faida Elimu","Faida Maisha","Faida Elite","Fanaka Plan Layer 1"],
-    Corporate: ["Group Life","Group Medical / WIBA","Group Pension","Group Personal Accident"]
+    Individual: ["Smart Scholar","Smart Save","Faida Elimu","Faida Maisha","Faida Elite","Fanaka Plan Layer 1","Term Life","Investment-Linked","Annuity / Pension","Individual Medical","Family Medical","Motor Private","Motor Commercial","Home & Contents","Travel Insurance","Personal Accident","Fire & Burglary"],
+    Corporate: ["Group Life","Group Medical / WIBA","Group Pension","Group Personal Accident","Commercial Fire & Perils","Fleet Motor","Marine Cargo","Professional Indemnity","Public Liability"]
   };
 
   const STAGES_BY_TYPE = {
@@ -723,6 +723,7 @@
     if(newCat === 'Closed' && p.category !== 'Closed') p.closedAt = new Date().toISOString();
     if(newCat !== 'Closed') p.closedAt = null;
     p.category = newCat;
+    if(newCat === 'Closed' && oldCat !== 'Closed' && !p.renewalDate && coverClassOf(p.product) !== 'Life'){ const r = new Date(); r.setFullYear(r.getFullYear()+1); p.renewalDate = ISOD(r); }
     if(oldCat !== newCat) logActivity(p, 'Status changed: '+oldCat+' → '+newCat);
     if(newCat === 'Closed' && oldCat !== 'Closed') setTimeout(()=>{ celebrate(); showToast('🎉 Deal closed — congratulations!'); }, 250);
   }
@@ -1296,6 +1297,9 @@
           <div><label>Frequency</label><select id="f_premiumFrequency" class="tint-financial">${optionsHtml(FREQUENCIES, v.premiumFrequency||'Annually')}</select></div>
         </div>
         <div class="field-err" id="premiumErr"></div>
+        <label>Policy renewal date (medical &amp; general covers)</label>
+        <input type="date" id="f_renewalDate" class="tint-reminder" value="${escapeHtml(v.renewalDate||'')}">
+        <div class="field-note">Appears in ${CAL_NAME} and alerts you 30, 7 and 1 day before.</div>
         <label>Next follow-up (optional)</label>
         <input type="date" id="f_nextFollowUp" class="tint-reminder" value="${escapeHtml(v.nextFollowUp||'')}">
         <div class="field-note">Sets a reminder — shows up under 🔔 Reminders when it's due.</div>
@@ -1331,6 +1335,9 @@
         <div><label>Frequency</label><select id="f_premiumFrequency" class="tint-financial">${optionsHtml(FREQUENCIES, v.premiumFrequency||'Monthly')}</select></div>
       </div>
       <div class="field-err" id="premiumErr"></div>
+        <label>Policy renewal date (medical &amp; general covers)</label>
+        <input type="date" id="f_renewalDate" class="tint-reminder" value="${escapeHtml(v.renewalDate||'')}">
+        <div class="field-note">Appears in ${CAL_NAME} and alerts you 30, 7 and 1 day before.</div>
       <label>Next follow-up (optional)</label>
       <input type="date" id="f_nextFollowUp" class="tint-reminder" value="${escapeHtml(v.nextFollowUp||'')}">
       <div class="field-note">Sets a reminder — shows up under 🔔 Reminders when it's due.</div>
@@ -1355,7 +1362,8 @@
       premiumAmount: q('f_premiumAmount').value,
       premiumFrequency: q('f_premiumFrequency').value,
       nextFollowUp: q('f_nextFollowUp').value || null,
-      dateOfBirth: q('f_dateOfBirth').value || null
+      dateOfBirth: q('f_dateOfBirth').value || null,
+      renewalDate: (q('f_renewalDate') || {}).value || null
     };
   }
 
@@ -1767,6 +1775,8 @@
           <div><span class="fk">Gender</span>${escapeHtml(p.gender || '—')}</div>
           <div><span class="fk">Date of birth</span>${p.dateOfBirth ? new Date(p.dateOfBirth+'T00:00:00').toLocaleDateString(undefined,{day:'numeric',month:'long',year:'numeric'}) + ' (birthday in '+daysUntilNextBirthday(p.dateOfBirth)+' day'+(daysUntilNextBirthday(p.dateOfBirth)===1?'':'s')+')' : '—'}</div>
           <div><span class="fk">Next birthday</span>${(()=>{ const nb = p.dateOfBirth ? nextBirthdayInfo(p.dateOfBirth) : null; return nb ? escapeHtml(nb.date.toLocaleDateString(undefined,{weekday:'short',day:'numeric',month:'long',year:'numeric'}))+' · turns '+nb.turns+(nb.days===0?' · today 🎂':' · in '+nb.days+' day'+(nb.days===1?'':'s')) : '—'; })()}</div>
+          <div><span class="fk">Cover</span>${escapeHtml(p.product ? coverClassOf(p.product)+' · '+p.product : '—')}</div>
+          <div><span class="fk">Renewal</span>${p.renewalDate ? escapeHtml(fmtLong(p.renewalDate))+(Math.ceil((new Date(p.renewalDate+'T00:00:00')-new Date().setHours(0,0,0,0))/864e5)>=0 ? ' · in '+Math.ceil((new Date(p.renewalDate+'T00:00:00')-new Date().setHours(0,0,0,0))/864e5)+' days' : '') : '—'}</div>
           <div><span class="fk">Email</span>${escapeHtml(p.email || '—')}</div>
           <div><span class="fk">Sector</span>${escapeHtml(sectorDisplay(p) || '—')}</div>
           <div><span class="fk">County</span>${escapeHtml(p.county || '—')}</div>
@@ -2541,8 +2551,10 @@
         </div>
 
         <div class="more-menu-section">Help &amp; Settings</div>
+        <div class="more-menu-item data" id="ratibaMenuItem"><div class="more-menu-icon">🗓</div><div><div>Ratiba calendar</div><div class="desc">Follow-ups, meetings, birthdays, renewals and holidays</div></div></div>
+        <div class="more-menu-item admin" id="alertsMenuItem"><div class="more-menu-icon">🔔</div><div><div>Reminders &amp; alarms</div><div class="desc">Pop-up alerts on your phone and computer</div></div></div>
         <div class="more-menu-item data" id="analystMenuItem"><div class="more-menu-icon">📊</div><div><div>Analyst report</div><div class="desc">Charts by month, week, day, gender, age and product</div></div></div>
-        <div class="more-menu-item admin" id="planMenuItem2"><div class="more-menu-icon">🗓</div><div><div>Planner &amp; calendar</div><div class="desc">Plan your week and see follow-ups</div></div></div>
+        <div class="more-menu-item admin" id="planMenuItem2"><div class="more-menu-icon">🗓</div><div><div>Planner (weekly checklist)</div><div class="desc">Plan your week and see follow-ups</div></div></div>
         <div class="more-menu-item admin" id="quotesMenuItem"><div class="more-menu-icon">📄</div><div><div>Quotes &amp; proposals</div><div class="desc">Track quotes from draft to accepted</div></div></div>
         <div class="more-menu-item admin" id="finMenuItem"><div class="more-menu-icon">💰</div><div><div>Finance</div><div class="desc">Commission received and expenses</div></div></div>
         <div class="more-menu-item admin" id="reviewMenuItem"><div class="more-menu-icon">📝</div><div><div>Weekly review</div><div class="desc">Wins, lessons and next week's priorities</div></div></div>
@@ -2625,6 +2637,8 @@
     });
     overlay.querySelector('#goalsMenuItem').addEventListener('click', ()=>{ close(); openGoalsSheet(); });
     overlay.querySelector('#inboxMenuItem').addEventListener('click', ()=>{ close(); openInbox(); });
+    overlay.querySelector('#ratibaMenuItem').addEventListener('click', ()=>{ close(); openRatiba(); });
+    overlay.querySelector('#alertsMenuItem').addEventListener('click', ()=>{ close(); openAlerts(); });
     overlay.querySelector('#analystMenuItem').addEventListener('click', ()=>{ close(); openReportBuilder(); });
     overlay.querySelector('#planMenuItem2').addEventListener('click', ()=>{ close(); openPlanner(); });
     overlay.querySelector('#quotesMenuItem').addEventListener('click', ()=>{ close(); openQuotes(); });
@@ -3511,6 +3525,7 @@
     // Edit prices/contact here (shown on the upgrade screen). Leave price '' to show "Contact us".
     seller: { name: 'Walter Jungah', phone: '0798 511 366', whatsapp: '254798511366', email: 'walterjungah9@outlook.com' },
     proPrice: '',
+    billingServer: '',   // e.g. './api/billing.php' -> buy Pro online with M-Pesa or card (server edition)
     // Server edition only: the cPanel build fills these in automatically (see tools/build-release.js).
     licenseServer: '',   // e.g. './api/license.php'  -> revocation + device limits
     teamServer: '',      // e.g. './api'              -> Team / Agency features
@@ -3602,7 +3617,7 @@
       }).join('');
       ag.querySelectorAll('.ag-item').forEach(el=>el.addEventListener('click', (e)=>{ if(e.target.closest('.ag-done')){ e.stopPropagation(); const pp = prospects.find(x=>x.id===el.dataset.id); if(pp) openDoneSheet(pp); return; } openDetail(el.dataset.id); }));
     }
-    renderProduction(); renderField(); renderInboxAlert(); renderNudges();
+    renderProduction(); renderField(); renderInboxAlert(); renderNudges(); scheduleAlarmRebuild(); updateInstallUI();
     updatePhoneAlert();
     updatePlanUI();
   }
@@ -3632,10 +3647,10 @@
   }
 
   // ----- generic sheet helper -----
-  function openSheet(html, onReady){
+  function openSheet(html, onReady, cls){
     const overlay = document.createElement('div');
     overlay.className = 'overlay';
-    overlay.innerHTML = '<div class="sheet">'+html+'</div>';
+    overlay.innerHTML = '<div class="sheet'+(cls?' '+cls:'')+'">'+html+'</div>';
     document.body.appendChild(overlay);
     const close = ()=>overlay.remove();
     overlay.addEventListener('click', (e)=>{ if(e.target===overlay) close(); });
@@ -3722,13 +3737,15 @@
         '<div class="plan-card pro"><h4>Pro</h4><div class="price">'+escapeHtml(price)+'</div><ul><li><b>Unlimited</b> prospects</li><li>Reports &amp; PDF/Excel export</li><li>Broadcast messaging</li><li>Phone book import/export</li><li>Priority updates</li></ul></div>'+
       '</div>'+
       '<div class="cta-row"><a href="https://wa.me/'+SAAS.seller.whatsapp+'?text='+msg+'" target="_blank" rel="noopener">💬 WhatsApp</a><a href="mailto:'+SAAS.seller.email+'?subject=Prospect%20Ledger%20Pro">✉️ Email</a><a href="tel:'+SAAS.seller.phone.replace(/\s+/g,'')+'">📞 Call</a></div>'+
-      '<label>Have a license key?</label><textarea id="licKey" placeholder="Paste your license key here" style="min-height:70px;font-size:12px;"></textarea>'+
+      (SAAS.billingServer ? '<div class="sheet-actions"><button class="btn btn-primary" id="buyOnline">💳 Buy Pro online (M-Pesa or card)</button></div>' : '')+
+      '<label>Have a license key or activation code?</label><textarea id="licKey" placeholder="Paste your license key here" style="min-height:70px;font-size:12px;"></textarea>'+
       '<div class="field-err" id="licErr"></div>'+
       '<div class="sheet-actions"><button class="btn btn-primary" id="licActivate">Activate license</button></div>'+
       (prospects.some(p=>p.demo) ? '<div class="sheet-actions"><button class="btn btn-ghost" id="rmDemo">Remove sample data</button></div>' : ''),
     (ov, close)=>{
       ov.querySelector('#licActivate').addEventListener('click', async ()=>{
         const key = ov.querySelector('#licKey').value.trim();
+        if(/^PL-/i.test(key)){ const r0 = await redeemCode(key); if(!r0.ok){ ov.querySelector('#licErr').textContent = r0.msg; return; } close(); showToast('✅ Pro is active until '+r0.exp+' — thank you!'); return; }
         const payload = await verifyLicense(key);
         const err = ov.querySelector('#licErr');
         if(!payload){ err.textContent = 'That key is not valid. Check for missing characters and try again.'; return; }
@@ -3736,6 +3753,7 @@
         settings.license = { key }; verifiedLicense = payload;
         await persistSettings(); updatePlanUI(); close(); showToast('✅ Pro activated — thank you!');
       });
+      const bo = ov.querySelector('#buyOnline'); if(bo) bo.onclick = ()=>{ close(); openBuy(); };
       const rm = ov.querySelector('#rmDemo'); if(rm) rm.addEventListener('click', ()=>{ close(); removeDemoData(); });
     });
   }
@@ -3801,14 +3819,16 @@
     if(!settings.trialStart){ settings.trialStart = new Date().toISOString(); dirty = true; }
     if(settings.onboarded === undefined && prospects.length > 0){ settings.onboarded = true; dirty = true; }
     if(dirty) await persistSettings();
-    applyTheme();
+    applyTheme(); updateInstallUI();
     if(settings.appLock){ setLockedFlag(true); showLock(); } else setLockedFlag(false);
     if(settings.license && settings.license.key){
-      verifiedLicense = await verifyLicense(settings.license.key);
+      verifiedLicense = settings.license.code ? { n:settings.license.holder||'Pro member', p:settings.license.plan, exp:settings.license.exp } : await verifyLicense(settings.license.key);
     }
     updatePlanUI(); renderDashboard();
     checkLicenseOnline();
     if(settings.team && settings.team.token){ const lastT = settings.team.lastSync ? new Date(settings.team.lastSync).getTime() : 0; if(Date.now()-lastT > 6*3600e3) teamSync(true); }
+    if(new URLSearchParams(location.search).get('open')) setTimeout(()=>openFromUrl(location.href), 600);
+    if(notifState()==='granted' && alertsCfg().enabled){ tickAlarms().catch(()=>{}); scheduleAlarmRebuild(); }
     if(!settings.onboarded) openOnboarding();
     else if(new URLSearchParams(location.search).get('action')==='add'){
       history.replaceState(null, '', location.pathname); setTimeout(()=>$('#addFab').click(), 300);
@@ -4000,39 +4020,6 @@
     const end = new DataView(new ArrayBuffer(22)); end.setUint32(0,0x06054b50,true); end.setUint16(8,files.length,true); end.setUint16(10,files.length,true); end.setUint32(12,cdSize,true); end.setUint32(16,offset,true);
     return new Blob([...parts, ...central, new Uint8Array(end.buffer)], { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
   }
-  function buildXlsx(sheetName, rows, widths, merges){
-    const fonts = ['<font><sz val="11"/><name val="Calibri"/></font>'], fills = ['<fill><patternFill patternType="none"/></fill>','<fill><patternFill patternType="gray125"/></fill>'], xfs = ['<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'];
-    const fMap = {}, fillMap = {}, xMap = {};
-    const style = (d)=>{
-      if(!d) return 0; const key = JSON.stringify(d); if(xMap[key]!==undefined) return xMap[key];
-      const fk = JSON.stringify([d.bold,d.italic,d.color,d.size]);
-      if(fMap[fk]===undefined){ fMap[fk] = fonts.length; fonts.push('<font>'+(d.bold?'<b/>':'')+(d.italic?'<i/>':'')+'<sz val="'+(d.size||11)+'"/><color rgb="FF'+(d.color||'000000')+'"/><name val="Calibri"/></font>'); }
-      let fi = 0; if(d.fill){ if(fillMap[d.fill]===undefined){ fillMap[d.fill] = fills.length; fills.push('<fill><patternFill patternType="solid"><fgColor rgb="FF'+d.fill+'"/><bgColor indexed="64"/></patternFill></fill>'); } fi = fillMap[d.fill]; }
-      xfs.push('<xf numFmtId="'+(d.num?3:0)+'" fontId="'+fMap[fk]+'" fillId="'+fi+'" borderId="'+(d.border?1:0)+'" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"'+(d.num?' applyNumberFormat="1"':'')+'><alignment vertical="center"'+(d.wrap?' wrapText="1"':'')+(d.align?' horizontal="'+d.align+'"':'')+'/></xf>');
-      return xMap[key] = xfs.length-1;
-    };
-    const sheetRows = rows.map((r,ri)=>{
-      const cells = r.cells.map((c,ci)=>{
-        const ref = colRef(ci)+(ri+1), s = style(c.s), sAttr = s ? ' s="'+s+'"' : '';
-        if(c.v===undefined || c.v==='' || c.v===null) return '<c r="'+ref+'"'+sAttr+'/>';
-        if(typeof c.v==='number') return '<c r="'+ref+'"'+sAttr+'><v>'+c.v+'</v></c>';
-        return '<c r="'+ref+'"'+sAttr+' t="inlineStr"><is><t xml:space="preserve">'+xmlEsc(c.v)+'</t></is></c>';
-      }).join('');
-      return '<row r="'+(ri+1)+'"'+(r.ht?' ht="'+r.ht+'" customHeight="1"':'')+'>'+cells+'</row>';
-    }).join('');
-    const NS = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main', RNS = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
-    const sheet = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="'+NS+'"><sheetViews><sheetView workbookViewId="0" showGridLines="0"/></sheetViews><sheetFormatPr defaultRowHeight="16"/><cols>'+widths.map((w,i)=>'<col min="'+(i+1)+'" max="'+(i+1)+'" width="'+w+'" customWidth="1"/>').join('')+'</cols><sheetData>'+sheetRows+'</sheetData>'+(merges.length?'<mergeCells count="'+merges.length+'">'+merges.map(m=>'<mergeCell ref="'+m+'"/>').join('')+'</mergeCells>':'')+'<pageMargins left="0.5" right="0.5" top="0.6" bottom="0.6" header="0.3" footer="0.3"/></worksheet>';
-    const border = '<border><left style="thin"><color rgb="FFD0D7E5"/></left><right style="thin"><color rgb="FFD0D7E5"/></right><top style="thin"><color rgb="FFD0D7E5"/></top><bottom style="thin"><color rgb="FFD0D7E5"/></bottom><diagonal/></border>';
-    const styles = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="'+NS+'"><fonts count="'+fonts.length+'">'+fonts.join('')+'</fonts><fills count="'+fills.length+'">'+fills.join('')+'</fills><borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border>'+border+'</borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="'+xfs.length+'">'+xfs.join('')+'</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
-    return zipStore([
-      { name:'[Content_Types].xml', data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>' },
-      { name:'_rels/.rels', data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>' },
-      { name:'xl/workbook.xml', data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="'+NS+'" xmlns:r="'+RNS+'"><sheets><sheet name="'+xmlEsc(sheetName)+'" sheetId="1" r:id="rId1"/></sheets></workbook>' },
-      { name:'xl/_rels/workbook.xml.rels', data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>' },
-      { name:'xl/styles.xml', data:styles },
-      { name:'xl/worksheets/sheet1.xml', data:sheet }
-    ]);
-  }
   function exportXlsxReport(colIds, items, from, to, maskContacts){
     const a = settings.agent || {};
     const cols = EXPORT_COLUMNS.filter(c=>colIds.includes(c.id)), n = cols.length;
@@ -4075,7 +4062,7 @@
     rows.push({ cells: blank() });
     full(DISCLAIMER, {italic:true,color:'666666',wrap:true,size:9}, 54);
     const widths = cols.map(c=>/note|email|referred|sector|location/i.test(c.id) ? 28 : /name|contact|product|stage/i.test(c.id) ? 24 : 16);
-    const blob = buildXlsx('Report', rows, widths, merges);
+    const blob = buildXlsxBook([{ name:'Report', rows, widths, merges }, chartsSheet(items, from, to, groups)]);
     const url = URL.createObjectURL(blob), link = document.createElement('a');
     link.href = url; link.download = 'prospect-ledger-report-'+new Date().toISOString().slice(0,10)+'.xlsx';
     document.body.appendChild(link); link.click(); link.remove(); setTimeout(()=>URL.revokeObjectURL(url), 2000);
@@ -4544,6 +4531,7 @@
       const j = await r.json();
       settings.licenseStatus = j.ok ? 'ok' : (j.reason||'unknown');
       if(j.ok) settings.licenseCheckedAt = new Date().toISOString();
+      if(j.ok && settings.license.code && j.exp){ settings.license.exp = j.exp; verifiedLicense = { n:settings.license.holder||'Pro member', p:j.plan||'pro', exp:j.exp }; }
       await persistSettings(); updatePlanUI();
       if(!j.ok) showToast('License check: '+({revoked:'this license was revoked',device_limit:'device limit reached for this license',unknown:'license not recognised by the server',expired:'license expired'}[j.reason]||'not accepted'));
     }catch(e){ /* offline — keep working within the grace period */ }
@@ -4647,11 +4635,16 @@
   }
   function renderNudges(){
     const el = document.getElementById('nudgeAlert'); if(!el) return;
-    const due = reviewDue();
-    if(!due){ el.style.display = 'none'; return; }
-    el.style.display = 'flex'; el.className = 'phone-alert inbox-alert';
-    el.innerHTML = '<span>📝 Your <b>weekly review</b> for last week is due — 5 minutes now makes this week better.</span><button type="button" id="nudgeBtn">Review</button>';
-    document.getElementById('nudgeBtn').onclick = ()=>openReview();
+    const dismissed = Number(localStorage.getItem('pl_alerts_dismiss')||0), st = notifState();
+    const soon = prospects.filter(p=>{ if(!p.renewalDate) return false; const d = Math.ceil((new Date(p.renewalDate+'T00:00:00')-new Date().setHours(0,0,0,0))/864e5); return d>=0 && d<=30; }).length;
+    let html = '', act = null;
+    if(st!=='unsupported' && st!=='denied' && !(st==='granted' && alertsCfg().enabled) && Date.now()-dismissed > 3*864e5){ html = '<span>🔔 Turn on <b>reminders &amp; alarms</b> so '+CAL_NAME+' alerts you about follow-ups, meetings, birthdays and renewals — even when the app is closed.</span><button type="button" id="nudgeBtn">Turn on</button><button type="button" id="nudgeX" style="background:transparent;color:inherit;">Later</button>'; act = ()=>enableAlerts().then(()=>render()); }
+    else if(soon){ html = '<span>🔁 <b>'+soon+'</b> policy renewal'+(soon===1?'':'s')+' due in the next 30 days.</span><button type="button" id="nudgeBtn">Open '+CAL_NAME+'</button>'; act = ()=>openRatiba('agenda'); }
+    else if(reviewDue()){ html = '<span>📝 Your <b>weekly review</b> for last week is due — 5 minutes now makes this week better.</span><button type="button" id="nudgeBtn">Review</button>'; act = ()=>openReview(); }
+    if(!html){ el.style.display = 'none'; return; }
+    el.style.display = 'flex'; el.className = 'phone-alert inbox-alert'; el.innerHTML = html;
+    document.getElementById('nudgeBtn').onclick = act;
+    const x = document.getElementById('nudgeX'); if(x) x.onclick = ()=>{ localStorage.setItem('pl_alerts_dismiss', String(Date.now())); renderNudges(); };
   }
 
   // ----- Planner & calendar -----
@@ -4853,7 +4846,7 @@
   // ================= v2.3 (part 2): holidays & day types, month/year grouping, analyst-report data, appearance =================
   // ----- Kenya public holidays (Public Holidays Act; Sunday holidays move to Monday, Saturday holidays do not) -----
   const KE_FIXED = [[0,1,"New Year's Day"],[4,1,'Labour Day'],[5,1,'Madaraka Day'],[9,10,'Mazingira Day'],[9,20,'Mashujaa Day'],[11,12,'Jamhuri Day'],[11,25,'Christmas Day'],[11,26,'Utamaduni Day']];
-  const KE_EID = { 2026:[['2026-03-20','Idd-ul-Fitr'],['2026-05-27','Idd-ul-Azha']] };   // gazetted by moon sighting; add other years in Days off → Public holidays
+  const KE_EID = {};   // Idd dates move with the moon — add them under Days off → Public holidays (or Ratiba) when gazetted
   const _holCache = {};
   function easterSunday(y){
     const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451),mo=Math.floor((h+l-7*m+114)/31),da=((h+l-7*m+114)%31)+1;
@@ -4879,7 +4872,7 @@
   function openHolidays(){
     const y = new Date().getFullYear();
     const draw = ()=>{ const list = [...holidayMap(y).entries()].sort((a,b)=>a[0].localeCompare(b[0]));
-      return '<div class="sheet-head"><h2>🇰🇪 Public holidays '+y+'</h2><button class="close-x">&times;</button></div><div class="field-note">Built in: the fixed national holidays, Good Friday and Easter Monday (calculated), and the Idd dates gazetted for 2026. Idd dates move with the moon, so add them yourself for other years when gazetted. A holiday on a Sunday moves to Monday.</div>'+
+      return '<div class="sheet-head"><h2>🇰🇪 Public holidays '+y+'</h2><button class="close-x">&times;</button></div><div class="field-note">Built in: all fixed national holidays plus Good Friday and Easter Monday (calculated). Idd-ul-Fitr and other moon-dependent holidays are not built in — add them here when gazetted. A holiday on a Sunday moves to Monday.</div>'+
         list.map(([iso,n])=>'<div class="nc-item"><div class="nc-main"><div class="ag-name">'+escapeHtml(n)+'</div><div class="ag-sub">'+fmtLong(iso)+' · '+['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][new Date(iso+'T00:00:00').getDay()]+'</div></div></div>').join('')+
         '<h3 class="nc-h">Add a holiday</h3><div class="field-grid"><div><label>Date</label><input type="date" id="chDate"></div><div><label>Name</label><input type="text" id="chName" placeholder="e.g. Idd-ul-Fitr"></div></div><div class="sheet-actions"><button class="btn btn-primary" id="chAdd">Add holiday</button></div>'+
         (lst('customHolidays').length ? '<h3 class="nc-h">Your added holidays</h3>'+lst('customHolidays').map(h=>'<div class="nc-item"><div class="nc-main"><div class="ag-name">'+escapeHtml(h.name)+'</div><div class="ag-sub">'+fmtLong(h.date)+'</div></div><button type="button" class="mini-action delete" data-rm="'+h.date+'" style="flex:none;min-width:0;">✕</button></div>').join('') : '');
@@ -5008,9 +5001,499 @@
   }
   Object.assign(SB_ACTIONS, { theme: ()=>openAppearance(), analyst: ()=>openReportBuilder(), holidays: ()=>openHolidays() });
 
+  // ================= v2.4: Ratiba calendar, renewals, alarms & notifications, install button, device check =================
+  const CAL_NAME = 'Ratiba';                       // our calendar's name (Swahili for "schedule"); change here to rename everywhere
+  const EV_KINDS = {
+    followup:{ label:'Follow-up', color:'#E39B0B' }, appointment:{ label:'Appointment', color:'#1F6FFF' }, birthday:{ label:'Birthday', color:'#E91E8C' },
+    renewal:{ label:'Policy renewal', color:'#7C4DFF' }, holiday:{ label:'Public holiday', color:'#D64545' }, off:{ label:'Day off', color:'#8396C2' },
+    activation:{ label:'Activation', color:'#2FA578' }, training:{ label:'Group training', color:'#00A3A3' }, plan:{ label:'My event', color:'#546E7A' }, quote:{ label:'Quote expires', color:'#B46F00' }
+  };
+  const addMin = (hhmm, m)=>{ const [h,mi] = hhmm.split(':').map(Number), t = h*60+mi+m; return String(Math.floor(t/60)%24).padStart(2,'0')+':'+String(t%60).padStart(2,'0'); };
+  const toTs = (iso, hhmm)=>new Date(iso+'T'+(hhmm||'00:00')+':00');
+  function coverClassOf(product){ const t = String(product||''); return /medical|wiba|inpatient|outpatient/i.test(t) ? 'Medical' : /motor|fleet|home|property|travel|accident|fire|burglary|marine|indemnity|perils|liability/i.test(t) ? 'General' : 'Life'; }
+  function leapSafe(iso){ return /-02-29$/.test(iso) && !(new Date(Number(iso.slice(0,4)),1,29).getMonth()===1) ? iso.slice(0,8)+'28' : iso; }
+
+  // ----- every date-based thing in the app becomes a calendar event automatically -----
+  function calEvents(from, to){
+    const fi = ISOD(from), ti = ISOD(to), out = [], inR = (iso)=>iso>=fi && iso<=ti, y0 = from.getFullYear(), y1 = to.getFullYear();
+    prospects.forEach(p=>{
+      if(p.appointmentAt){ const d = p.appointmentAt.slice(0,10); if(inR(d)){ const t = p.appointmentAt.slice(11,16); out.push({ id:'appt:'+p.id, date:d, time:t, end:addMin(t,60), kind:'appointment', title:'Meeting: '+p.name, pid:p.id }); } }
+      if(p.nextFollowUp && inR(p.nextFollowUp) && !(p.appointmentAt && p.appointmentAt.slice(0,10)===p.nextFollowUp)) out.push({ id:'fu:'+p.id, date:p.nextFollowUp, allDay:true, kind:'followup', title:'Follow up: '+p.name+(p.stage?' ('+p.stage+')':''), pid:p.id });
+      if(p.dateOfBirth){ const by = Number(p.dateOfBirth.slice(0,4)); for(let y=y0; y<=y1; y++){ const iso = leapSafe(y+p.dateOfBirth.slice(4)); if(inR(iso) && y>by) out.push({ id:'bd:'+p.id+':'+y, date:iso, allDay:true, kind:'birthday', title:'🎂 '+p.name+' turns '+(y-by), pid:p.id }); } }
+      if(p.renewalDate){ const ry = Number(p.renewalDate.slice(0,4)); for(let y=y0; y<=y1; y++){ const iso = leapSafe(y+p.renewalDate.slice(4)); if(y>=ry && inR(iso)) out.push({ id:'rn:'+p.id+':'+y, date:iso, allDay:true, kind:'renewal', title:'🔁 Renewal: '+p.name+(p.product?' — '+p.product:''), pid:p.id }); } }
+    });
+    lst('quotes').forEach(q=>{ if(q.valid && inR(q.valid) && ['Draft','Sent','Follow-up'].includes(q.status)) out.push({ id:'qt:'+q.id, date:q.valid, allDay:true, kind:'quote', title:'Quote expires: '+q.name, pid:q.prospectId }); });
+    lst('activities').forEach(a=>{ if(inR(a.date)) out.push({ id:'act:'+a.id, date:a.date, allDay:true, kind:a.kind==='training'?'training':'activation', title:(a.kind==='training'?'Group training: ':'Activation: ')+a.venue }); });
+    lst('daysOff').forEach(d=>{ if(inR(d.date)) out.push({ id:'off:'+d.id, date:d.date, allDay:true, kind:'off', title:'Day off — '+d.reason, offId:d.id }); });
+    for(let y=y0; y<=y1; y++) holidayMap(y).forEach((name,iso)=>{ if(inR(iso)) out.push({ id:'hol:'+iso, date:iso, allDay:true, kind:'holiday', title:'🇰🇪 '+name }); });
+    lst('plan').forEach(x=>{
+      if(x.pid) return;                                           // appointments created from a prospect are already shown above
+      const rep = x.repeat || 'none', start = x.date, until = x.until || ti, d = new Date(x.date+'T00:00:00'), last = new Date(Math.min(new Date(to).getTime(), new Date(until+'T00:00:00').getTime()));
+      for(let n=0; n<800; n++){
+        const iso = ISOD(d);
+        if(iso>ti || d>last) break;
+        const wd = d.getDay(), hit = rep==='none' ? iso===start : rep==='daily' ? true : rep==='weekdays' ? (wd>=1&&wd<=5) : rep==='weekly' ? wd===new Date(start+'T00:00:00').getDay() : rep==='monthly' ? d.getDate()===new Date(start+'T00:00:00').getDate() : false;
+        if(hit && iso>=fi && iso>=start) out.push({ id:'pl:'+x.id+'@'+iso, planId:x.id, date:iso, time:x.time||'', end:x.time ? (x.endTime||addMin(x.time,60)) : '', allDay:!x.time, kind:'plan', pk:x.kind, title:x.title, location:x.location||'', notes:x.notes||'', remind:x.remind, repeat:rep, done:x.done });
+        if(rep==='none') break; d.setDate(d.getDate()+1);
+      }
+    });
+    return out.sort((a,b)=>a.date.localeCompare(b.date) || (a.allDay?0:1)-(b.allDay?0:1) || (a.time||'').localeCompare(b.time||''));
+  }
+
+  // ----- Ratiba UI (month / week / day / agenda) -----
+  const rt = { view:(window.innerWidth<700?'agenda':'month'), cur:new Date() };
+  let rtEvents = new Map();
+  const HOUR0 = 6, HOUR1 = 21, HPX = 48;
+  function rtTitle(){
+    const c = rt.cur;
+    if(rt.view==='month') return MONTH_NAMES[c.getMonth()]+' '+c.getFullYear();
+    if(rt.view==='day') return c.toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    const s = startOfWeek(c), e = new Date(s); e.setDate(e.getDate()+6);
+    return rt.view==='week' ? s.getDate()+' '+MONTH_NAMES[s.getMonth()].slice(0,3)+' – '+e.getDate()+' '+MONTH_NAMES[e.getMonth()].slice(0,3)+' '+e.getFullYear() : 'Next 60 days from '+fmtLong(ISOD(c));
+  }
+  function chipHtml(e){ const k = EV_KINDS[e.kind]; return '<div class="rt-chip'+(e.done?' done':'')+'" data-ev="'+escapeHtml(e.id)+'" style="--c:'+k.color+'" title="'+escapeHtml(e.title)+'">'+(e.time?'<b>'+e.time+'</b> ':'')+escapeHtml(e.title)+'</div>'; }
+  function rtMonth(){
+    const c = rt.cur, first = new Date(c.getFullYear(), c.getMonth(), 1), start = new Date(first); start.setDate(1-((first.getDay()+6)%7));
+    const end = new Date(start); end.setDate(start.getDate()+41); const evs = calEvents(start,end), by = {}; evs.forEach(e=>{ rtEvents.set(e.id,e); (by[e.date] = by[e.date]||[]).push(e); });
+    let h = '<div class="rt-month"><div class="rt-dow">'+['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(x=>'<div>'+x+'</div>').join('')+'</div><div class="rt-mgrid">';
+    for(let i=0;i<42;i++){ const d = new Date(start); d.setDate(start.getDate()+i); const iso = ISOD(d), list = by[iso]||[], info = dayInfo(d);
+      h += '<div class="rt-cell'+(d.getMonth()!==c.getMonth()?' other':'')+(iso===ISOD(new Date())?' today':'')+(info.t!=='work'?' rest':'')+'" data-day="'+iso+'"><span class="rt-num">'+d.getDate()+'</span>'+list.slice(0,3).map(chipHtml).join('')+(list.length>3?'<div class="rt-more" data-day="'+iso+'">+'+(list.length-3)+' more</div>':'')+'</div>'; }
+    return h+'</div></div>';
+  }
+  function rtColumns(days){
+    const first = days[0], last = days[days.length-1], evs = calEvents(first,last); evs.forEach(e=>rtEvents.set(e.id,e));
+    let h = '<div class="rt-week" style="--cols:'+days.length+'"><div class="rt-wk-head"><div class="rt-gutter"></div>'+days.map(d=>{ const iso = ISOD(d), info = dayInfo(d); return '<div class="rt-wk-day'+(iso===ISOD(new Date())?' today':'')+(info.t!=='work'?' rest':'')+'" data-day="'+iso+'"><span>'+['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]+'</span><b>'+d.getDate()+'</b></div>'; }).join('')+'</div>';
+    h += '<div class="rt-allday"><div class="rt-gutter">all-day</div>'+days.map(d=>'<div class="rt-ad-col" data-day="'+ISOD(d)+'">'+evs.filter(e=>e.date===ISOD(d) && (e.allDay||!e.time)).map(chipHtml).join('')+'</div>').join('')+'</div>';
+    h += '<div class="rt-grid" style="height:'+((HOUR1-HOUR0)*HPX)+'px"><div class="rt-gutter rt-hours">'+Array.from({length:HOUR1-HOUR0},(_,i)=>'<div style="height:'+HPX+'px">'+String(HOUR0+i).padStart(2,'0')+':00</div>').join('')+'</div>';
+    days.forEach(d=>{
+      const iso = ISOD(d), timed = evs.filter(e=>e.date===iso && e.time && !e.allDay).sort((a,b)=>a.time.localeCompare(b.time));
+      const lanes = []; timed.forEach(e=>{ let l = 0; while(lanes[l] && lanes[l] > e.time) l++; lanes[l] = e.end || addMin(e.time,60); e._lane = l; }); const nl = Math.max(1, lanes.length);
+      h += '<div class="rt-col" data-day="'+iso+'">'+timed.map(e=>{ const [sh,sm] = e.time.split(':').map(Number), [eh,em] = (e.end||addMin(e.time,60)).split(':').map(Number); const top = Math.max(0,((sh+sm/60)-HOUR0)*HPX), ht = Math.max(22, ((eh+em/60)-(sh+sm/60))*HPX-2);
+        return '<div class="rt-ev" data-ev="'+escapeHtml(e.id)+'" style="top:'+top+'px;height:'+ht+'px;left:'+(e._lane*100/nl)+'%;width:'+(100/nl-2)+'%;--c:'+EV_KINDS[e.kind].color+'"><b>'+e.time+'</b> '+escapeHtml(e.title)+'</div>'; }).join('')+(iso===ISOD(new Date()) ? '<div class="rt-now" style="top:'+(((new Date().getHours()+new Date().getMinutes()/60)-HOUR0)*HPX)+'px"></div>' : '')+'</div>';
+    });
+    return h+'</div></div>';
+  }
+  function rtAgenda(){
+    const s = new Date(rt.cur); s.setHours(0,0,0,0); const e = new Date(s); e.setDate(e.getDate()+59), evs = calEvents(s,e);
+    evs.forEach(x=>rtEvents.set(x.id,x)); if(!evs.length) return '<div class="ag-empty">Nothing scheduled in the next 60 days.</div>';
+    let h = '', last = '';
+    evs.forEach(x=>{ if(x.date!==last){ last = x.date; const d = new Date(x.date+'T00:00:00'), info = dayInfo(d); h += '<div class="rt-ag-day'+(x.date===ISOD(new Date())?' today':'')+'">'+d.toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'})+(x.date===ISOD(new Date())?' · Today':'')+(info.t!=='work'&&info.label?' <span class="ag-sub">'+escapeHtml(info.label)+'</span>':'')+'</div>'; }
+      const k = EV_KINDS[x.kind]; h += '<div class="rt-ag-ev" data-ev="'+escapeHtml(x.id)+'" style="--c:'+k.color+'"><span class="rt-ag-time">'+(x.time?x.time+(x.end?'–'+x.end:''):'All day')+'</span><span class="rt-ag-title">'+escapeHtml(x.title)+'</span><span class="rt-ag-kind">'+k.label+'</span></div>'; });
+    return h;
+  }
+  function openRatiba(view, date){
+    if(view) rt.view = view; if(date) rt.cur = new Date(date);
+    const draw = ()=>{
+      rtEvents = new Map();
+      const body = rt.view==='month' ? rtMonth() : rt.view==='week' ? rtColumns(Array.from({length:7},(_,i)=>{ const d = startOfWeek(rt.cur); d.setDate(d.getDate()+i); return d; })) : rt.view==='day' ? rtColumns([new Date(new Date(rt.cur).setHours(0,0,0,0))]) : rtAgenda();
+      return '<div class="rt-head"><div class="rt-title"><span class="rt-logo">🗓</span><div><b>'+CAL_NAME+'</b><span>'+escapeHtml(rtTitle())+'</span></div></div><button class="close-x">&times;</button></div>'+
+        '<div class="rt-bar"><div class="rt-nav"><button type="button" class="out-chip" id="rtToday">Today</button><button type="button" class="out-chip" id="rtPrev">‹</button><button type="button" class="out-chip" id="rtNext">›</button><input type="date" id="rtGo" value="'+ISOD(rt.cur)+'" title="Go to date"></div>'+
+        '<div class="segmented rt-views" id="rtViews">'+[['month','Month'],['week','Week'],['day','Day'],['agenda','Agenda']].map(([k,l])=>'<button data-v="'+k+'" class="'+(rt.view===k?'active':'')+'">'+l+'</button>').join('')+'</div>'+
+        '<div class="rt-actions"><button class="btn btn-primary" id="rtAdd">+ Event</button><button class="btn btn-ghost" id="rtIcs" title="Add everything to your phone or computer calendar with alarms">⬇ .ics</button><button class="btn btn-ghost" id="rtAlerts" title="Reminders and alarms">🔔</button></div></div>'+
+        '<div class="rt-legend">'+Object.entries(EV_KINDS).map(([k,v])=>'<span><i style="background:'+v.color+'"></i>'+v.label+'</span>').join('')+'</div><div class="rt-body" id="rtBody">'+body+'</div>';
+    };
+    openSheet(draw(), (ov, close)=>{
+      const redraw = ()=>{ ov.querySelector('.sheet').innerHTML = draw(); bind(); const b = ov.querySelector('.rt-grid'); if(b){ const body = ov.querySelector('#rtBody'); body.scrollTop = Math.max(0,(new Date().getHours()-HOUR0-1)*HPX); } };
+      const step = (n)=>{ const c = new Date(rt.cur); if(rt.view==='month') c.setMonth(c.getMonth()+n); else if(rt.view==='week') c.setDate(c.getDate()+7*n); else if(rt.view==='day') c.setDate(c.getDate()+n); else c.setDate(c.getDate()+30*n); rt.cur = c; redraw(); };
+      const bind = ()=>{
+        ov.querySelector('.close-x').onclick = close;
+        ov.querySelector('#rtToday').onclick = ()=>{ rt.cur = new Date(); redraw(); };
+        ov.querySelector('#rtPrev').onclick = ()=>step(-1); ov.querySelector('#rtNext').onclick = ()=>step(1);
+        ov.querySelector('#rtGo').onchange = (e)=>{ if(e.target.value){ rt.cur = new Date(e.target.value+'T00:00:00'); redraw(); } };
+        ov.querySelector('#rtViews').addEventListener('click', (e)=>{ const b = e.target.closest('[data-v]'); if(b){ rt.view = b.dataset.v; redraw(); } });
+        ov.querySelector('#rtAdd').onclick = ()=>openEventForm(null, { date:ISOD(rt.cur) }, redraw);
+        ov.querySelector('#rtIcs').onclick = ()=>exportIcs();
+        ov.querySelector('#rtAlerts').onclick = ()=>openAlerts();
+        ov.querySelector('#rtBody').addEventListener('click', (e)=>{
+          const ev = e.target.closest('[data-ev]'); if(ev){ const x = rtEvents.get(ev.dataset.ev); if(x) openEventSheet(x, redraw); return; }
+          const more = e.target.closest('.rt-more'); if(more){ rt.cur = new Date(more.dataset.day+'T00:00:00'); rt.view = 'day'; redraw(); return; }
+          const col = e.target.closest('.rt-col'); if(col){ const r = col.getBoundingClientRect(), hr = Math.floor((e.clientY - r.top)/HPX) + HOUR0; openEventForm(null, { date:col.dataset.day, time:String(Math.min(hr,22)).padStart(2,'0')+':00' }, redraw); return; }
+          const cell = e.target.closest('.rt-cell,.rt-wk-day'); if(cell){ rt.cur = new Date(cell.dataset.day+'T00:00:00'); rt.view = 'day'; redraw(); }
+        });
+      };
+      bind(); redraw();
+    }, 'ratiba-sheet');
+  }
+  const REPEATS = [['none','Does not repeat'],['daily','Every day'],['weekdays','Every weekday'],['weekly','Every week'],['monthly','Every month']];
+  const REMIND_OPTS = [[0,'At time'],[10,'10 min before'],[30,'30 min before'],[60,'1 hour before'],[1440,'1 day before']];
+  function openEventForm(ev, prefill, done){
+    const x = ev && ev.planId ? lst('plan').find(i=>i.id===ev.planId) : null, v = x || prefill || {};
+    let kind = v.kind || PLAN_KINDS[2], remind = new Set(v.remind || [10]), repeat = v.repeat || 'none';
+    openSheet('<div class="sheet-head"><h2>'+(x?'Edit event':'New event')+'</h2><button class="close-x">&times;</button></div><label>Title</label><input type="text" id="evTitle" value="'+escapeHtml(v.title||'')+'" placeholder="e.g. Estate activation — Kileleshwa">'+
+      '<label>Type</label><div class="chip-row" id="evKind">'+PLAN_KINDS.map(k=>'<button type="button" class="out-chip'+(k===kind?' on':'')+'">'+k+'</button>').join('')+'</div>'+
+      '<div class="field-grid"><div><label>Date</label><input type="date" id="evDate" value="'+(v.date||ISOD(new Date()))+'"></div><div><label>Repeats</label><select id="evRep">'+REPEATS.map(([k,l])=>'<option value="'+k+'"'+(k===repeat?' selected':'')+'>'+l+'</option>').join('')+'</select></div></div>'+
+      '<div class="field-grid"><div><label>Start (leave empty for all-day)</label><input type="time" id="evStart" value="'+(v.time||'')+'"></div><div><label>End</label><input type="time" id="evEnd" value="'+(v.endTime||'')+'"></div></div>'+
+      '<label>Location</label><input type="text" id="evLoc" value="'+escapeHtml(v.location||'')+'"><label>Notes</label><textarea id="evNotes" style="min-height:56px;">'+escapeHtml(v.notes||'')+'</textarea>'+
+      '<label>Alert me</label><div class="chip-row" id="evRem">'+REMIND_OPTS.map(([m,l])=>'<button type="button" class="out-chip'+(remind.has(m)?' on':'')+'" data-m="'+m+'">'+l+'</button>').join('')+'</div>'+
+      '<div class="sheet-actions"><button class="btn btn-primary" id="evSave">Save</button></div>'+(x?'<div class="sheet-actions"><button class="btn btn-ghost" id="evDel" style="color:var(--red)">Delete event</button></div>':''),
+    (ov, close)=>{
+      ov.querySelector('#evKind').addEventListener('click', (e)=>{ const b = e.target.closest('.out-chip'); if(!b) return; kind = b.textContent; ov.querySelectorAll('#evKind .out-chip').forEach(y=>y.classList.toggle('on', y===b)); });
+      ov.querySelector('#evRem').addEventListener('click', (e)=>{ const b = e.target.closest('.out-chip'); if(!b) return; const m = Number(b.dataset.m); remind.has(m) ? remind.delete(m) : remind.add(m); b.classList.toggle('on'); });
+      ov.querySelector('#evSave').onclick = async ()=>{
+        const t = ov.querySelector('#evTitle').value.trim(); if(!t){ showToast('Give the event a title'); return; }
+        const rec = { id:x?x.id:uid(), title:t, kind, date:ov.querySelector('#evDate').value, time:ov.querySelector('#evStart').value, endTime:ov.querySelector('#evEnd').value, location:ov.querySelector('#evLoc').value.trim(), notes:ov.querySelector('#evNotes').value.trim(), remind:[...remind].sort((a,b)=>a-b), repeat:ov.querySelector('#evRep').value, done:x?x.done:false };
+        settings.plan = lst('plan').filter(i=>!x || i.id!==x.id).concat([rec]); await persistSettings(); render(); close(); if(done) done(); showToast('Saved to '+CAL_NAME+' ✓');
+      };
+      const del = ov.querySelector('#evDel'); if(del) del.onclick = async ()=>{ if(!confirm('Delete this event'+(x.repeat&&x.repeat!=='none'?' and all its repeats':'')+'?')) return; settings.plan = lst('plan').filter(i=>i.id!==x.id); await persistSettings(); render(); close(); if(done) done(); };
+    });
+  }
+  function openEventSheet(e, done){
+    const k = EV_KINDS[e.kind], p = e.pid ? prospects.find(y=>y.id===e.pid) : null;
+    const when = e.time ? fmtLong(e.date)+' · '+e.time+(e.end?'–'+e.end:'') : fmtLong(e.date)+' · all day';
+    openSheet('<div class="sheet-head"><h2>'+escapeHtml(e.title)+'</h2><button class="close-x">&times;</button></div><div class="status-box" style="border-left:5px solid '+k.color+'"><b>'+k.label+'</b><br>'+when+(e.location?'<br>📍 '+escapeHtml(e.location):'')+(e.notes?'<br>'+escapeHtml(e.notes):'')+(e.repeat&&e.repeat!=='none'?'<br>🔁 '+REPEATS.find(r=>r[0]===e.repeat)[1]:'')+'</div>'+
+      '<div class="sheet-actions" id="evAct"></div>',
+    (ov, close)=>{
+      const act = ov.querySelector('#evAct'), add = (label, fn, cls)=>{ const b = document.createElement('button'); b.className = 'btn '+(cls||'btn-ghost'); b.style.marginBottom = '8px'; b.style.width = '100%'; b.textContent = label; b.onclick = fn; act.appendChild(b); };
+      if(p){ if(e.kind==='followup') add('✓ Mark follow-up done', ()=>{ close(); openDoneSheet(p, done); }, 'btn-primary'); if(e.kind==='followup') add('⏰ Snooze 1 day', ()=>{ snoozeReminder(p,1); close(); if(done) done(); }); add('Open prospect', ()=>{ close(); openDetail(p.id); }); }
+      if(e.kind==='quote') add('Open quotes', ()=>{ close(); openQuotes(); });
+      if(e.planId) add('Edit event', ()=>{ close(); openEventForm(e, null, done); }, 'btn-primary');
+      if(e.offId) add('Remove this day off', async ()=>{ settings.daysOff = lst('daysOff').filter(d=>d.id!==e.offId); await persistSettings(); render(); close(); if(done) done(); });
+      if(e.kind!=='holiday') add('📲 Add to my phone / computer calendar', ()=>exportIcs([e]));
+    });
+  }
+
+  // ----- .ics export: real alarms in the phone's own calendar, even when the app is closed -----
+  const icsEsc = (s)=>String(s||'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\r?\n/g,'\\n');
+  const icsFold = (l)=>{ const o = []; while(l.length>73){ o.push(l.slice(0,73)); l = ' '+l.slice(73); } o.push(l); return o.join('\r\n'); };
+  const icsDt = (iso, t)=>iso.replace(/-/g,'')+'T'+(t||'0000').replace(':','')+'00';
+  function alarmMinutesFor(e){
+    const A = alertsCfg();
+    if(e.kind==='appointment') return A.apptLead;
+    if(e.kind==='plan') return e.remind || [10];
+    if(e.kind==='followup') return [0];
+    if(e.kind==='birthday') return A.birthdayDays.map(d=>d*1440);
+    if(e.kind==='renewal') return A.renewalDays.map(d=>d*1440);
+    return [];
+  }
+  function exportIcs(only){
+    const from = new Date(); from.setHours(0,0,0,0); const to = new Date(from); to.setDate(to.getDate()+120);
+    const evs = (only || calEvents(from, to)).filter(e=>e.kind!=='holiday' || !only);
+    const L = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Prospect Ledger//'+CAL_NAME+'//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH','X-WR-CALNAME:'+CAL_NAME+' — Prospect Ledger'];
+    const stamp = new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d+/,'');
+    evs.forEach(e=>{
+      L.push('BEGIN:VEVENT','UID:'+e.id.replace(/[^\w@:.-]/g,'_')+'@prospectledger','DTSTAMP:'+stamp);
+      if(e.time && !e.allDay){ L.push('DTSTART:'+icsDt(e.date,e.time),'DTEND:'+icsDt(e.date,e.end||addMin(e.time,60))); }
+      else { const n = new Date(e.date+'T00:00:00'); n.setDate(n.getDate()+1); L.push('DTSTART;VALUE=DATE:'+e.date.replace(/-/g,''),'DTEND;VALUE=DATE:'+ISOD(n).replace(/-/g,'')); }
+      L.push('SUMMARY:'+icsEsc(e.title)); if(e.location) L.push('LOCATION:'+icsEsc(e.location)); L.push('DESCRIPTION:'+icsEsc((EV_KINDS[e.kind].label)+(e.notes?' — '+e.notes:'')+' (from Prospect Ledger)'));
+      if(e.kind==='holiday') L.push('TRANSP:TRANSPARENT');
+      alarmMinutesFor(e).forEach(m=>{ L.push('BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:'+icsEsc(e.title),'TRIGGER:'+(e.allDay||!e.time ? ((480-m)>=0 ? 'PT'+(480-m)+'M' : '-PT'+(m-480)+'M') : (m===0?'PT0M':'-PT'+m+'M')),'END:VALARM'); });
+      L.push('END:VEVENT');
+    });
+    L.push('END:VCALENDAR');
+    downloadBlob(new Blob([L.map(icsFold).join('\r\n')+'\r\n'], { type:'text/calendar' }), only ? 'ratiba-event.ics' : 'ratiba-'+ISOD(new Date())+'.ics');
+    showToast(only ? 'Open the downloaded file to add it to your calendar' : evs.length+' events exported — open the file to add them with alarms');
+  }
+
+  // ----- Reminders, alarms and pop-up notifications -----
+  const ALERT_DEFAULTS = { enabled:false, briefing:'08:00', apptLead:[60,10], birthdayDays:[3,0], renewalDays:[30,7,1], dailyBriefing:true };
+  function alertsCfg(){ return Object.assign({}, ALERT_DEFAULTS, settings.alerts||{}); }
+  const notifSupported = ()=>('Notification' in window) && ('serviceWorker' in navigator);
+  const notifState = ()=>!notifSupported() ? 'unsupported' : Notification.permission;      // granted | denied | default
+  function buildAlarms(){
+    const A = alertsCfg(), now = Date.now(), from = new Date(); from.setHours(0,0,0,0); from.setDate(from.getDate()-1); const to = new Date(from); to.setDate(to.getDate()+22);
+    const evs = calEvents(from, to), out = [], briefAt = (iso, daysBefore)=>{ const d = toTs(iso, A.briefing); d.setDate(d.getDate()-(daysBefore||0)); return d.getTime(); };
+    const add = (id, at, title, body, e, sticky)=>{ if(at > now-24*3600e3 && at < now+22*864e5) out.push({ id, at, title, body, kind:e.kind, sticky:!!sticky, url:'./index.html?open='+(e.pid?'p:'+e.pid:'cal:'+e.date) }); };
+    evs.forEach(e=>{
+      if(e.kind==='appointment') A.apptLead.forEach(m=>add(e.id+'@'+m, toTs(e.date,e.time).getTime()-m*60000, '📅 '+(m?'In '+(m>=60?(m/60)+' hour'+(m>=120?'s':''):m+' min')+': ':'Now: ')+e.title.replace('Meeting: ',''), fmtLong(e.date)+' at '+e.time, e, true));
+      else if(e.kind==='plan'){ (e.remind||[10]).forEach(m=>{ if(e.time) add(e.id+'@'+m, toTs(e.date,e.time).getTime()-m*60000, '🗓 '+(m?'In '+(m>=60?(m/60)+'h':m+' min')+': ':'Now: ')+e.title, (e.location?e.location+' · ':'')+e.time, e, true); else add(e.id+'@d', briefAt(e.date,0), '🗓 Today: '+e.title, e.location||'', e); }); }
+      else if(e.kind==='followup') add(e.id+'@d', briefAt(e.date,0), '⏰ Follow-up today', e.title.replace('Follow up: ',''), e);
+      else if(e.kind==='birthday') A.birthdayDays.forEach(d=>add(e.id+'@'+d, briefAt(e.date,d), d===0 ? e.title+' today' : e.title+' in '+d+' day'+(d===1?'':'s'), 'Send a warm message', e));
+      else if(e.kind==='renewal') A.renewalDays.forEach(d=>add(e.id+'@'+d, briefAt(e.date,d), '🔁 Renewal '+(d===0?'today':'in '+d+' day'+(d===1?'':'s')), e.title.replace('🔁 Renewal: ',''), e));
+      else if(e.kind==='quote') add(e.id+'@d', briefAt(e.date,0), '📄 Quote expires today', e.title.replace('Quote expires: ',''), e);
+    });
+    if(A.dailyBriefing){ for(let i=0;i<8;i++){ const d = new Date(); d.setDate(d.getDate()+i); const iso = ISOD(d); if(isOffDay(d)) continue;
+      const day = evs.filter(e=>e.date===iso), n = (k)=>day.filter(e=>e.kind===k).length, parts = [];
+      if(n('followup')) parts.push(n('followup')+' follow-up'+(n('followup')>1?'s':'')); if(n('appointment')) parts.push(n('appointment')+' meeting'+(n('appointment')>1?'s':'')); if(n('birthday')) parts.push(n('birthday')+' birthday'+(n('birthday')>1?'s':'')); if(n('renewal')) parts.push(n('renewal')+' renewal'+(n('renewal')>1?'s':''));
+      if(parts.length) add('brief:'+iso, briefAt(iso,0)-60000, '☀️ Your day on '+CAL_NAME, parts.join(' · '), { kind:'brief', date:iso }); } }
+    return out.sort((a,b)=>a.at-b.at);
+  }
+  let alarmTimer = null;
+  function scheduleAlarmRebuild(){
+    clearTimeout(alarmTimer);
+    alarmTimer = setTimeout(async ()=>{
+      const q = buildAlarms(), sig = JSON.stringify(q.map(a=>[a.id,a.at,a.title]));
+      if(sig !== settings.alarmSig){ settings.alarmQueue = q; settings.alarmSig = sig; await persistSettings(); }
+      if(notifState()==='granted' && alertsCfg().enabled) scheduleTriggers(q);
+      updateBadge();
+    }, 1500);
+  }
+  const firedKey = (id)=>new Request(location.origin+'/__fired/'+encodeURIComponent(id));
+  async function fireAlarm(a){
+    const reg = await navigator.serviceWorker.getRegistration();
+    const opts = { body:a.body, tag:a.id, icon:'./icons/icon-192.png', badge:'./icons/icon-192.png', data:{ url:a.url }, vibrate:[250,120,250], requireInteraction:!!a.sticky, renotify:false };
+    if(reg) await reg.showNotification(a.title, opts); else new Notification(a.title, opts);
+  }
+  async function tickAlarms(){
+    if(notifState()!=='granted' || !alertsCfg().enabled) return;
+    const now = Date.now(), c = await caches.open('pl-fired'); let n = 0;
+    for(const a of (settings.alarmQueue||[])){
+      if(a.at>now || a.at<now-24*3600e3) continue;
+      if(await c.match(firedKey(a.id))) continue;
+      await c.put(firedKey(a.id), new Response('1')); await fireAlarm(a); if(++n>=5) break;
+    }
+  }
+  function scheduleTriggers(q){ // exact alarms while the app is closed — only where the browser supports notification triggers
+    if(!('showTrigger' in Notification.prototype) || typeof TimestampTrigger==='undefined') return;
+    navigator.serviceWorker.ready.then(reg=>{ q.filter(a=>a.at>Date.now()+5000 && a.at<Date.now()+7*864e5).slice(0,60).forEach(a=>{ try{ reg.showNotification(a.title, { body:a.body, tag:a.id, icon:'./icons/icon-192.png', badge:'./icons/icon-192.png', data:{ url:a.url }, showTrigger:new TimestampTrigger(a.at) }); }catch(e){} }); });
+  }
+  function updateBadge(){
+    if(!navigator.setAppBadge) return;
+    const n = prospects.filter(p=>{ const s = reminderStatus(p.nextFollowUp); return s==='overdue'||s==='today'; }).length;
+    (n ? navigator.setAppBadge(n) : navigator.clearAppBadge()).catch(()=>{});
+  }
+  async function enableAlerts(){
+    if(!notifSupported()){ showToast('This browser cannot show notifications. Try Chrome, Edge or Safari (installed app).'); return false; }
+    if(isIOS() && !isStandalone()){ showToast('On iPhone, first install the app: Share → Add to Home Screen, then turn alerts on.'); openInstallHelp(); return false; }
+    let perm = Notification.permission; if(perm==='default') perm = await Notification.requestPermission();
+    if(perm!=='granted'){ settings.alerts = Object.assign(alertsCfg(), { enabled:false }); await persistSettings(); showToast(perm==='denied' ? 'Notifications are blocked. Allow them in your browser or phone settings for this site.' : 'Permission was not given.'); return false; }
+    settings.alerts = Object.assign(alertsCfg(), { enabled:true }); await persistSettings();
+    try{ if(navigator.storage && navigator.storage.persist) await navigator.storage.persist(); }catch(e){}
+    try{ const reg = await navigator.serviceWorker.ready; if(reg.periodicSync){ await reg.periodicSync.register('pl-reminders', { minInterval:15*60*1000 }); } }catch(e){}
+    scheduleAlarmRebuild(); render();
+    const reg = await navigator.serviceWorker.getRegistration(); if(reg) reg.showNotification('Reminders are on 🔔', { body:'You will be alerted about follow-ups, meetings, birthdays and renewals — even without opening the app.', icon:'./icons/icon-192.png', badge:'./icons/icon-192.png', tag:'pl-welcome', data:{ url:'./index.html' } });
+    return true;
+  }
+  function openAlerts(){
+    const A = alertsCfg(), st = notifState(), on = st==='granted' && A.enabled;
+    const chips = (id, opts, sel)=>'<div class="chip-row" id="'+id+'">'+opts.map(([v,l])=>'<button type="button" class="out-chip'+(sel.includes(v)?' on':'')+'" data-v="'+v+'">'+l+'</button>').join('')+'</div>';
+    openSheet('<div class="sheet-head"><h2>🔔 Reminders &amp; alarms</h2><button class="close-x">&times;</button></div>'+
+      '<div class="status-box '+(on?'ok':st==='denied'?'warn':'')+'">'+(on ? '<b>On.</b> '+CAL_NAME+' will pop up alerts like any other app.' : st==='denied' ? '<b>Blocked.</b> Allow notifications for this site in your browser or phone settings, then come back.' : st==='unsupported' ? 'This browser does not support notifications.' : 'Alerts are off.')+'</div>'+
+      (on ? '' : '<div class="sheet-actions"><button class="btn btn-primary" id="alOn">Turn on alerts &amp; ask permission</button></div>')+
+      '<h3 class="nc-h">What to alert me about</h3><label>Daily briefing time (follow-ups, birthdays, renewals show at this time)</label><input type="time" id="alBrief" value="'+A.briefing+'">'+
+      '<label>Meetings: remind me before</label>'+chips('alAppt',[[0,'At time'],[10,'10 min'],[30,'30 min'],[60,'1 hour'],[1440,'1 day']],A.apptLead)+
+      '<label>Birthdays: days before</label>'+chips('alBd',[[0,'On the day'],[1,'1 day'],[3,'3 days'],[7,'7 days']],A.birthdayDays)+
+      '<label>Policy renewals: days before</label>'+chips('alRn',[[0,'On the day'],[1,'1 day'],[7,'7 days'],[14,'14 days'],[30,'30 days'],[60,'60 days']],A.renewalDays)+
+      '<label class="inb-all" style="margin-top:10px"><input type="checkbox" id="alDaily" '+(A.dailyBriefing?'checked':'')+'> Morning summary of my day</label>'+
+      '<div class="sheet-actions"><button class="btn btn-primary" id="alSave">Save</button></div>'+
+      '<div class="field-note"><b>How alerts reach you:</b> while the app is open or running in the background you get pop-ups like other apps. With the installed app on Android and desktop Chrome/Edge, alerts can also arrive when the app is closed (the browser decides the timing). iPhone and iPad show alerts only for the installed app. For alarms that must ring on time even if everything is closed, tap <b>⬇ .ics</b> in '+CAL_NAME+' to put them in your phone’s own calendar.</div>'+
+      '<div class="two-btns"><button class="btn btn-ghost" id="alTest">Send test alert</button><button class="btn btn-ghost" id="alCheck">Device check</button></div>',
+    (ov, close)=>{
+      const pick = (id)=>[...ov.querySelectorAll('#'+id+' .out-chip.on')].map(b=>Number(b.dataset.v));
+      ['alAppt','alBd','alRn'].forEach(id=>ov.querySelector('#'+id).addEventListener('click', (e)=>{ const b = e.target.closest('.out-chip'); if(b) b.classList.toggle('on'); }));
+      const o = ov.querySelector('#alOn'); if(o) o.onclick = async ()=>{ if(await enableAlerts()){ close(); openAlerts(); } };
+      ov.querySelector('#alSave').onclick = async ()=>{ settings.alerts = Object.assign(alertsCfg(), { briefing:ov.querySelector('#alBrief').value||'08:00', apptLead:pick('alAppt'), birthdayDays:pick('alBd'), renewalDays:pick('alRn'), dailyBriefing:ov.querySelector('#alDaily').checked }); await persistSettings(); scheduleAlarmRebuild(); close(); showToast('Alert settings saved'); };
+      ov.querySelector('#alTest').onclick = async ()=>{ if(notifState()!=='granted'){ showToast('Turn on alerts first'); return; } await fireAlarm({ id:'test'+Date.now(), title:'Test alert 🔔', body:CAL_NAME+' alerts are working on this device.', url:'./index.html' }); showToast('Test alert sent'); };
+      ov.querySelector('#alCheck').onclick = ()=>{ close(); openDeviceCheck(); };
+    });
+  }
+
+  // ----- Install button (shown whenever the app is not installed) and help -----
+  function openInstallHelp(){
+    const ua = navigator.userAgent, ios = isIOS(), android = /Android/i.test(ua), mac = /Macintosh/.test(ua) && navigator.maxTouchPoints===0, firefox = /Firefox/i.test(ua), safari = /Safari/i.test(ua) && !/Chrome|Chromium|Edg/i.test(ua);
+    const steps = ios ? ['Open this page in <b>Safari</b>.','Tap the <b>Share</b> icon (square with an arrow).','Choose <b>Add to Home Screen</b>, then <b>Add</b>.','Open Prospect Ledger from your home screen. Notifications work only from there.']
+      : android ? (firefox ? ['Tap the browser <b>⋮ menu</b>.','Choose <b>Install</b> (or Add to Home screen).'] : ['Tap the browser <b>⋮ menu</b>.','Choose <b>Install app</b> (or Add to Home screen).','Confirm. The app appears in your app list.'])
+      : (mac && safari) ? ['In Safari choose <b>File → Add to Dock</b>.','Open it from the Dock.']
+      : firefox ? ['Firefox on computers cannot install web apps. Open this page in <b>Chrome</b> or <b>Edge</b>, then click the install icon in the address bar.']
+      : ['Look for the <b>install icon</b> ⊕ at the right of the address bar and click it.','Or open the browser menu and choose <b>Install Prospect Ledger</b> / <b>Apps → Install this site as an app</b>.','Confirm. It opens in its own window and appears in your Start menu / Applications.'];
+    openSheet('<div class="sheet-head"><h2>📲 Install Prospect Ledger</h2><button class="close-x">&times;</button></div><div class="field-note">Installing gives you a home-screen or desktop icon, works offline, and enables pop-up reminders like other apps.</div><ol class="install-steps">'+steps.map(s=>'<li>'+s+'</li>').join('')+'</ol>'+(window.isSecureContext?'':'<div class="status-box warn">This page is not on a secure (https) address, so browsers will not offer installation.</div>'));
+  }
+  function updateInstallUI(){
+    const show = !isStandalone();
+    document.querySelectorAll('.install-btn, #sbInstall').forEach(el=>{ el.style.display = show ? '' : 'none'; });
+  }
+  async function installNow(){
+    if(deferredInstallPrompt){ const p = deferredInstallPrompt; deferredInstallPrompt = null; const b = document.getElementById('installBar'); if(b) b.remove(); try{ p.prompt(); await p.userChoice; }catch(e){} updateInstallUI(); }
+    else openInstallHelp();
+  }
+  window.addEventListener('appinstalled', ()=>setTimeout(updateInstallUI, 300));
+  window.matchMedia('(display-mode: standalone)').addEventListener && window.matchMedia('(display-mode: standalone)').addEventListener('change', updateInstallUI);
+
+  // ----- Device check (use on a real phone or PC) -----
+  async function openDeviceCheck(){
+    const est = (navigator.storage && navigator.storage.estimate) ? await navigator.storage.estimate().catch(()=>null) : null;
+    const persisted = (navigator.storage && navigator.storage.persisted) ? await navigator.storage.persisted().catch(()=>false) : false;
+    const reg = await (navigator.serviceWorker ? navigator.serviceWorker.getRegistration() : Promise.resolve(null));
+    const rows = [
+      ['Secure (https) address', window.isSecureContext], ['Service worker active (works offline)', !!(reg && reg.active)], ['Installed as an app', isStandalone()],
+      ['Notifications permission', notifState()==='granted' ? true : notifState()], ['Alerts switched on', alertsCfg().enabled], ['Storage protected from clean-up', persisted],
+      ['Background alerts (periodic sync)', !!(reg && reg.periodicSync)], ['Exact scheduled alerts (triggers)', 'showTrigger' in (window.Notification ? Notification.prototype : {})], ['Online now', navigator.onLine], ['App badge supported', !!navigator.setAppBadge]
+    ];
+    openSheet('<div class="sheet-head"><h2>🧪 Device check</h2><button class="close-x">&times;</button></div><div class="field-note">Version <b>'+APP_VERSION+'</b> · '+escapeHtml(navigator.userAgent.slice(0,90))+(est?'<br>Storage used: '+Math.round((est.usage||0)/1024)+' KB of '+Math.round((est.quota||0)/1048576)+' MB':'')+'</div>'+
+      rows.map(([k,v])=>'<div class="nc-item"><div class="nc-main"><div class="ag-name">'+k+'</div></div><span class="sc-st '+(v===true?'ok':v===false?'low':'mid')+'">'+(v===true?'Yes':v===false?'No':String(v))+'</span></div>').join('')+
+      '<div class="two-btns"><button class="btn btn-ghost" id="dcAlert">Test alert</button><button class="btn btn-ghost" id="dcStore">Protect storage</button></div><div class="two-btns"><button class="btn btn-ghost" id="dcXlsx">Test Excel file</button><button class="btn btn-ghost" id="dcIcs">Test calendar file</button></div>'+
+      '<div class="field-note">Open the Excel test file in Microsoft Excel and the calendar file on your phone: you should see charts in the workbook and an event with an alarm in your calendar.</div>',
+    (ov)=>{
+      ov.querySelector('#dcAlert').onclick = async ()=>{ if(notifState()!=='granted'){ showToast('Turn on alerts first (Reminders & alarms)'); return; } await fireAlarm({ id:'dc'+Date.now(), title:'Device check 🔔', body:'If you can read this, alerts work on this device.', url:'./index.html' }); };
+      ov.querySelector('#dcStore').onclick = async ()=>{ const ok = navigator.storage && navigator.storage.persist ? await navigator.storage.persist() : false; showToast(ok ? 'Storage is now protected' : 'The browser declined (install the app, then retry)'); };
+      ov.querySelector('#dcXlsx').onclick = ()=>exportTestWorkbook();
+      ov.querySelector('#dcIcs').onclick = ()=>{ const d = new Date(); d.setMinutes(d.getMinutes()+15); exportIcs([{ id:'devcheck:'+Date.now(), date:ISOD(d), time:String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'), end:addMin(String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'),30), kind:'plan', title:'Ratiba test event', remind:[10,0], notes:'Delete me after checking' }]); };
+    });
+  }
+  function openFromUrl(url){
+    try{ const q = new URL(url, location.href).searchParams.get('open'); if(!q) return;
+      if(q.startsWith('p:')){ const id = q.slice(2); if(prospects.some(p=>p.id===id)) openDetail(id); }
+      else if(q.startsWith('cal:')) openRatiba('day', q.slice(4)+'T00:00:00');
+      else if(q==='reminders') $('#remindersBtn').click();
+      history.replaceState(null,'',location.pathname);
+    }catch(e){}
+  }
+  if(navigator.serviceWorker) navigator.serviceWorker.addEventListener('message', (e)=>{ if(e.data && e.data.type==='OPEN') openFromUrl(e.data.url); });
+  setInterval(()=>{ tickAlarms().catch(()=>{}); }, 30000);
+  document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible') tickAlarms().catch(()=>{}); });
+  document.getElementById('installBtn').addEventListener('click', installNow);
+
+  Object.assign(SB_ACTIONS, { calendar: ()=>openRatiba(), alerts: ()=>openAlerts(), install: ()=>installNow(), planner: ()=>openRatiba(), devcheck: ()=>openDeviceCheck() });
+
+  // ================= v2.4: multi-sheet .xlsx with native Excel charts =================
+  const CH_NS = 'http://schemas.openxmlformats.org/drawingml/2006/chart', A_NS = 'http://schemas.openxmlformats.org/drawingml/2006/main', R_NS2 = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+  function chartXml(c){
+    const ser = (s, i, kind)=>{
+      const col = s.color || ['1F6FFF','E5484D','00B3A4','F5A623','7C4DFF','2FA578'][i%6];
+      const head = '<c:idx val="'+i+'"/><c:order val="'+i+'"/><c:tx><c:strRef><c:f>'+xmlEsc(s.nameRef)+'</c:f></c:strRef></c:tx>';
+      const data = '<c:cat><c:strRef><c:f>'+xmlEsc(c.catRef)+'</c:f></c:strRef></c:cat><c:val><c:numRef><c:f>'+xmlEsc(s.ref)+'</c:f></c:numRef></c:val>';
+      if(kind==='line') return '<c:ser>'+head+'<c:spPr><a:ln w="28575" cap="rnd"><a:solidFill><a:srgbClr val="'+col+'"/></a:solidFill><a:round/></a:ln></c:spPr><c:marker><c:symbol val="circle"/><c:size val="6"/><c:spPr><a:solidFill><a:srgbClr val="'+col+'"/></a:solidFill></c:spPr></c:marker>'+data+'<c:smooth val="0"/></c:ser>';
+      if(kind==='pie') return '<c:ser>'+head+data+'</c:ser>';
+      return '<c:ser>'+head+'<c:spPr><a:solidFill><a:srgbClr val="'+col+'"/></a:solidFill></c:spPr><c:invertIfNegative val="0"/>'+data+'</c:ser>';
+    };
+    const bars = (c.series||[]).filter(s=>!s.line), lines = (c.series||[]).filter(s=>s.line);
+    const catAx = (id, cross, del)=>'<c:catAx><c:axId val="'+id+'"/><c:scaling><c:orientation val="minMax"/></c:scaling><c:delete val="'+(del?1:0)+'"/><c:axPos val="b"/><c:numFmt formatCode="General" sourceLinked="0"/><c:majorTickMark val="out"/><c:minorTickMark val="none"/><c:tickLblPos val="nextTo"/><c:crossAx val="'+cross+'"/><c:crosses val="autoZero"/><c:auto val="1"/><c:lblAlgn val="ctr"/><c:lblOffset val="100"/><c:noMultiLvlLbl val="0"/></c:catAx>';
+    const valAx = (id, cross, right)=>'<c:valAx><c:axId val="'+id+'"/><c:scaling><c:orientation val="minMax"/></c:scaling><c:delete val="0"/><c:axPos val="'+(right?'r':'l')+'"/>'+(right?'':'<c:majorGridlines><c:spPr><a:ln w="6350"><a:solidFill><a:srgbClr val="D9E1F2"/></a:solidFill></a:ln></c:spPr></c:majorGridlines>')+'<c:numFmt formatCode="#,##0" sourceLinked="0"/><c:majorTickMark val="out"/><c:minorTickMark val="none"/><c:tickLblPos val="nextTo"/><c:crossAx val="'+cross+'"/><c:crosses val="'+(right?'max':'autoZero')+'"/><c:crossBetween val="between"/></c:valAx>';
+    let plot;
+    if(c.kind==='pie') plot = '<c:pieChart><c:varyColors val="1"/>'+c.series.map((s,i)=>ser(s,i,'pie')).join('')+'<c:dLbls><c:showLegendKey val="0"/><c:showVal val="1"/><c:showCatName val="0"/><c:showSerName val="0"/><c:showPercent val="0"/><c:showBubbleSize val="0"/></c:dLbls><c:firstSliceAng val="0"/></c:pieChart>';
+    else if(c.kind==='line') plot = '<c:lineChart><c:grouping val="standard"/><c:varyColors val="0"/>'+c.series.map((s,i)=>ser(s,i,'line')).join('')+'<c:marker val="1"/><c:axId val="111"/><c:axId val="112"/></c:lineChart>'+catAx(111,112)+valAx(112,111);
+    else {
+      plot = '<c:barChart><c:barDir val="col"/><c:grouping val="clustered"/><c:varyColors val="0"/>'+bars.map((s,i)=>ser(s,i,'bar')).join('')+'<c:gapWidth val="80"/><c:axId val="111"/><c:axId val="112"/></c:barChart>';
+      if(lines.length) plot += '<c:lineChart><c:grouping val="standard"/><c:varyColors val="0"/>'+lines.map((s,i)=>ser(s,bars.length+i,'line')).join('')+'<c:marker val="1"/><c:axId val="113"/><c:axId val="114"/></c:lineChart>';
+      plot += catAx(111,112)+valAx(112,111)+(lines.length ? catAx(113,114,true)+valAx(114,113,true) : '');
+    }
+    return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><c:chartSpace xmlns:c="'+CH_NS+'" xmlns:a="'+A_NS+'" xmlns:r="'+R_NS2+'"><c:roundedCorners val="0"/><c:chart><c:title><c:tx><c:rich><a:bodyPr/><a:p><a:pPr><a:defRPr sz="1300" b="1"/></a:pPr><a:r><a:rPr lang="en-US" sz="1300" b="1"/><a:t>'+xmlEsc(c.title)+'</a:t></a:r></a:p></c:rich></c:tx><c:overlay val="0"/></c:title><c:autoTitleDeleted val="0"/><c:plotArea><c:layout/>'+plot+'</c:plotArea><c:legend><c:legendPos val="b"/><c:overlay val="0"/></c:legend><c:plotVisOnly val="1"/><c:dispBlanksAs val="gap"/></c:chart></c:chartSpace>';
+  }
+  function drawingXml(charts){
+    return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><xdr:wsDr xmlns:xdr="http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing" xmlns:a="'+A_NS+'">'+charts.map((c,i)=>{ const an = c.anchor;
+      return '<xdr:twoCellAnchor><xdr:from><xdr:col>'+an[0]+'</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>'+an[1]+'</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:from><xdr:to><xdr:col>'+an[2]+'</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>'+an[3]+'</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:to><xdr:graphicFrame macro=""><xdr:nvGraphicFramePr><xdr:cNvPr id="'+(i+2)+'" name="Chart '+(i+1)+'"/><xdr:cNvGraphicFramePr/></xdr:nvGraphicFramePr><xdr:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/></xdr:xfrm><a:graphic><a:graphicData uri="'+CH_NS+'"><c:chart xmlns:c="'+CH_NS+'" xmlns:r="'+R_NS2+'" r:id="rId'+(i+1)+'"/></a:graphicData></a:graphic></xdr:graphicFrame><xdr:clientData/></xdr:twoCellAnchor>'; }).join('')+'</xdr:wsDr>';
+  }
+  function buildXlsxBook(sheets){
+    const fonts = ['<font><sz val="11"/><name val="Calibri"/></font>'], fills = ['<fill><patternFill patternType="none"/></fill>','<fill><patternFill patternType="gray125"/></fill>'], xfs = ['<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'];
+    const fMap = {}, fillMap = {}, xMap = {};
+    const style = (d)=>{
+      if(!d) return 0; const key = JSON.stringify(d); if(xMap[key]!==undefined) return xMap[key];
+      const fk = JSON.stringify([d.bold,d.italic,d.color,d.size]);
+      if(fMap[fk]===undefined){ fMap[fk] = fonts.length; fonts.push('<font>'+(d.bold?'<b/>':'')+(d.italic?'<i/>':'')+'<sz val="'+(d.size||11)+'"/><color rgb="FF'+(d.color||'000000')+'"/><name val="Calibri"/></font>'); }
+      let fi = 0; if(d.fill){ if(fillMap[d.fill]===undefined){ fillMap[d.fill] = fills.length; fills.push('<fill><patternFill patternType="solid"><fgColor rgb="FF'+d.fill+'"/><bgColor indexed="64"/></patternFill></fill>'); } fi = fillMap[d.fill]; }
+      xfs.push('<xf numFmtId="'+(d.num?3:0)+'" fontId="'+fMap[fk]+'" fillId="'+fi+'" borderId="'+(d.border?1:0)+'" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"'+(d.num?' applyNumberFormat="1"':'')+'><alignment vertical="center"'+(d.wrap?' wrapText="1"':'')+(d.align?' horizontal="'+d.align+'"':'')+'/></xf>');
+      return xMap[key] = xfs.length-1;
+    };
+    const NS = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main', PK = 'http://schemas.openxmlformats.org/package/2006/relationships', OD = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+    const files = [], ctOver = [], wbSheets = [], wbRels = []; let chartNo = 0;
+    sheets.forEach((sh, si)=>{
+      const n = si+1, rowsXml = sh.rows.map((r,ri)=>{
+        const cells = r.cells.map((c,ci)=>{
+          const ref = colRef(ci)+(ri+1), s = style(c.s), sAttr = s ? ' s="'+s+'"' : '';
+          if(c.v===undefined || c.v==='' || c.v===null) return '<c r="'+ref+'"'+sAttr+'/>';
+          if(typeof c.v==='number') return '<c r="'+ref+'"'+sAttr+'><v>'+c.v+'</v></c>';
+          return '<c r="'+ref+'"'+sAttr+' t="inlineStr"><is><t xml:space="preserve">'+xmlEsc(c.v)+'</t></is></c>';
+        }).join('');
+        return '<row r="'+(ri+1)+'"'+(r.ht?' ht="'+r.ht+'" customHeight="1"':'')+'>'+cells+'</row>';
+      }).join('');
+      const charts = sh.charts || [];
+      files.push({ name:'xl/worksheets/sheet'+n+'.xml', data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="'+NS+'" xmlns:r="'+OD+'"><sheetViews><sheetView workbookViewId="0"'+(si===0?' tabSelected="1"':'')+' showGridLines="0"/></sheetViews><sheetFormatPr defaultRowHeight="16"/><cols>'+(sh.widths||[]).map((w,i)=>'<col min="'+(i+1)+'" max="'+(i+1)+'" width="'+w+'" customWidth="1"/>').join('')+'</cols><sheetData>'+rowsXml+'</sheetData>'+((sh.merges||[]).length?'<mergeCells count="'+sh.merges.length+'">'+sh.merges.map(m=>'<mergeCell ref="'+m+'"/>').join('')+'</mergeCells>':'')+'<pageMargins left="0.5" right="0.5" top="0.6" bottom="0.6" header="0.3" footer="0.3"/>'+(charts.length?'<drawing r:id="rId1"/>':'')+'</worksheet>' });
+      ctOver.push('<Override PartName="/xl/worksheets/sheet'+n+'.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>');
+      wbSheets.push('<sheet name="'+xmlEsc(sh.name)+'" sheetId="'+n+'" r:id="rId'+n+'"/>');
+      wbRels.push('<Relationship Id="rId'+n+'" Type="'+OD+'/worksheet" Target="worksheets/sheet'+n+'.xml"/>');
+      if(charts.length){
+        files.push({ name:'xl/worksheets/_rels/sheet'+n+'.xml.rels', data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="'+PK+'"><Relationship Id="rId1" Type="'+OD+'/drawing" Target="../drawings/drawing'+n+'.xml"/></Relationships>' });
+        files.push({ name:'xl/drawings/drawing'+n+'.xml', data:drawingXml(charts) });
+        const rels = charts.map((c,i)=>{ chartNo++; files.push({ name:'xl/charts/chart'+chartNo+'.xml', data:chartXml(c) }); ctOver.push('<Override PartName="/xl/charts/chart'+chartNo+'.xml" ContentType="application/vnd.openxmlformats-officedocument.drawingml.chart+xml"/>'); return '<Relationship Id="rId'+(i+1)+'" Type="'+OD+'/chart" Target="../charts/chart'+chartNo+'.xml"/>'; }).join('');
+        files.push({ name:'xl/drawings/_rels/drawing'+n+'.xml.rels', data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="'+PK+'">'+rels+'</Relationships>' });
+        ctOver.push('<Override PartName="/xl/drawings/drawing'+n+'.xml" ContentType="application/vnd.openxmlformats-officedocument.drawing+xml"/>');
+      }
+    });
+    const sn = sheets.length;
+    const border = '<border><left style="thin"><color rgb="FFD0D7E5"/></left><right style="thin"><color rgb="FFD0D7E5"/></right><top style="thin"><color rgb="FFD0D7E5"/></top><bottom style="thin"><color rgb="FFD0D7E5"/></bottom><diagonal/></border>';
+    const styles = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="'+NS+'"><fonts count="'+fonts.length+'">'+fonts.join('')+'</fonts><fills count="'+fills.length+'">'+fills.join('')+'</fills><borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border>'+border+'</borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="'+xfs.length+'">'+xfs.join('')+'</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
+    files.unshift(
+      { name:'[Content_Types].xml', data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>'+ctOver.join('')+'</Types>' },
+      { name:'_rels/.rels', data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="'+PK+'"><Relationship Id="rId1" Type="'+OD+'/officeDocument" Target="xl/workbook.xml"/></Relationships>' },
+      { name:'xl/workbook.xml', data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="'+NS+'" xmlns:r="'+OD+'"><sheets>'+wbSheets.join('')+'</sheets></workbook>' },
+      { name:'xl/_rels/workbook.xml.rels', data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="'+PK+'">'+wbRels.join('')+'<Relationship Id="rId'+(sn+1)+'" Type="'+OD+'/styles" Target="styles.xml"/></Relationships>' },
+      { name:'xl/styles.xml', data:styles });
+    return zipStore(files);
+  }
+  function buildXlsx(sheetName, rows, widths, merges){ return buildXlsxBook([{ name:sheetName, rows, widths, merges }]); }
+
+  // data + native charts sheet for the prospect export
+  function chartsSheet(items, from, to, groups){
+    const head = { bold:true, color:'FFFFFF', fill:'0B1F4D', border:true }, c = { border:true }, rows = [], charts = [], q = "'Charts'!";
+    const table = (title, hdr, data)=>{ const startRow = rows.length+1; rows.push({ cells:[{ v:title, s:{bold:true,size:12,color:'0B1F4D'} }] }); rows.push({ cells:hdr.map(h=>({ v:h, s:head })) }); data.forEach(r=>rows.push({ cells:r.map((v,i)=>({ v, s:typeof v==='number'?{border:true,num:true}:c })) })); rows.push({ cells:[{}] }); return { hdrRow:startRow+1, first:startRow+2, last:startRow+1+data.length }; };
+    const agg = aggregateChartData(from, to, items);
+    if(agg.length){
+      const t = table('Prospects captured vs closed by period', ['Period','Prospected','Closed'], agg.map(r=>[String(r.label), r.prospected, r.closed]));
+      charts.push({ kind:'bar', title:'Prospects captured vs closed', catRef:q+'$A$'+t.first+':$A$'+t.last, series:[{ nameRef:q+'$B$'+t.hdrRow, ref:q+'$B$'+t.first+':$B$'+t.last, color:'1F6FFF' },{ nameRef:q+'$C$'+t.hdrRow, ref:q+'$C$'+t.first+':$C$'+t.last, color:'2FA578' }], anchor:[4,0,13,16] });
+    }
+    if(groups.length){
+      const t = table('Closed production by month', ['Month','API closed','NOPs closed'], groups.map(g=>[g.label, Math.round(g.closedPremium), g.closedCount]));
+      charts.push({ kind:'bar', title:'API (columns) and NOPs (line) by month', catRef:q+'$A$'+t.first+':$A$'+t.last, series:[{ nameRef:q+'$B$'+t.hdrRow, ref:q+'$B$'+t.first+':$B$'+t.last, color:'1F6FFF' },{ nameRef:q+'$C$'+t.hdrRow, ref:q+'$C$'+t.first+':$C$'+t.last, color:'E5484D', line:true }], anchor:[4,17,13,33] });
+    }
+    const cats = ['Unsorted','New','Promising','Difficult','Closed'], cnt = cats.map(k=>items.filter(p=>p.category===k).length);
+    const t3 = table('Prospects by category', ['Category','Prospects'], cats.map((k,i)=>[k, cnt[i]]));
+    charts.push({ kind:'pie', title:'Prospects by category', catRef:q+'$A$'+t3.first+':$A$'+t3.last, series:[{ nameRef:q+'$B$'+t3.hdrRow, ref:q+'$B$'+t3.first+':$B$'+t3.last }], anchor:[4,34,13,50] });
+    const prods = {}; items.forEach(p=>{ const k = p.product || '—'; (prods[k] = prods[k] || { n:0, api:0 }); prods[k].n++; prods[k].api += annualizedPremium(p); });
+    const pl = Object.entries(prods).sort((a,b)=>b[1].api-a[1].api).slice(0,10);
+    if(pl.length){ const t4 = table('Top products (prospects and API)', ['Product','Prospects','API'], pl.map(([k,v])=>[k, v.n, Math.round(v.api)]));
+      charts.push({ kind:'bar', title:'Products: prospects (columns) and API (line)', catRef:q+'$A$'+t4.first+':$A$'+t4.last, series:[{ nameRef:q+'$B$'+t4.hdrRow, ref:q+'$B$'+t4.first+':$B$'+t4.last, color:'7C4DFF' },{ nameRef:q+'$C$'+t4.hdrRow, ref:q+'$C$'+t4.first+':$C$'+t4.last, color:'F5A623', line:true }], anchor:[4,51,13,67] }); }
+    return { name:'Charts', rows, widths:[26,14,14,4], merges:[], charts };
+  }
+  function exportTestWorkbook(){
+    const head = { bold:true, color:'FFFFFF', fill:'0B1F4D', border:true }, b = { border:true }, rows = [{ cells:[{ v:'Month', s:head },{ v:'API', s:head },{ v:'NOPs', s:head }] }];
+    [['Jan',120000,3],['Feb',180000,5],['Mar',90000,2],['Apr',240000,6]].forEach(r=>rows.push({ cells:[{ v:r[0], s:b },{ v:r[1], s:{border:true,num:true} },{ v:r[2], s:{border:true,num:true} }] }));
+    const q = "'Sample'!";
+    downloadBlob(buildXlsxBook([{ name:'Sample', rows, widths:[12,14,10,4], merges:[], charts:[{ kind:'bar', title:'Test chart: API (columns) and NOPs (line)', catRef:q+'$A$2:$A$5', series:[{ nameRef:q+'$B$1', ref:q+'$B$2:$B$5', color:'1F6FFF' },{ nameRef:q+'$C$1', ref:q+'$C$2:$C$5', color:'E5484D', line:true }], anchor:[4,0,13,16] }] }]), 'prospect-ledger-excel-test.xlsx');
+  }
+
+  // ================= v2.4: activation codes and online purchase =================
+  async function redeemCode(code){
+    if(!SAAS.licenseServer) return { ok:false, msg:'Activation codes need the server edition (online version).' };
+    if(!settings.deviceId) settings.deviceId = uuid();
+    try{
+      const r = await fetch(SAAS.licenseServer, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ action:'redeem', key:code.trim().toUpperCase(), deviceId:settings.deviceId, device:(navigator.userAgent||'').slice(0,90) }) });
+      const j = await r.json();
+      if(!j.ok) return { ok:false, msg:({ unknown:'That code was not recognised. Check it and try again.', revoked:'That code has been withdrawn.', expired:'That code has expired.', device_limit:'That code is already in use on the maximum number of devices.' }[j.reason] || 'Could not activate the code.') };
+      settings.license = { key:code.trim().toUpperCase(), code:true, plan:j.plan, exp:j.exp, holder:j.holder };
+      verifiedLicense = { n:j.holder||'Pro member', p:j.plan, exp:j.exp };
+      settings.licenseStatus = 'ok'; settings.licenseCheckedAt = new Date().toISOString();
+      await persistSettings(); updatePlanUI(); render();
+      return { ok:true, exp:j.exp };
+    }catch(e){ return { ok:false, msg:'Could not reach the server. Check your connection and try again.' }; }
+  }
+  async function billingApi(body){
+    const r = await fetch(SAAS.billingServer, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+    const j = await r.json(); if(!j.ok) throw new Error(j.error || 'Request failed'); return j;
+  }
+  async function openBuy(){
+    if(!SAAS.billingServer){ showToast('Online purchase is not set up yet — contact us to subscribe.'); return; }
+    let plans = [];
+    try{ plans = (await billingApi({ action:'plans' })).plans; }catch(e){ showToast('Could not load plans: '+e.message); return; }
+    if(!plans.length){ showToast('Online purchase is not open yet — contact us to subscribe.'); return; }
+    const phone0 = (settings.agent||{}).phone || '';
+    openSheet('<div class="sheet-head"><h2>💳 Buy Pro</h2><button class="close-x">&times;</button></div><div class="field-note">Pay with M-Pesa or card. Your Pro activates automatically as soon as the payment is confirmed.</div><div id="buyBody">'+
+      plans.map(p=>'<div class="q-item"><div class="q-top"><div><div class="ag-name">'+escapeHtml(p.name)+'</div><div class="ag-sub">'+(p.price_kes?'KES '+fmtMoney(p.price_kes):'')+(p.price_kes&&p.price_usd?' · ':'')+(p.price_usd?'USD '+p.price_usd:'')+'</div></div></div><div class="chip-row q-act">'+(p.mpesa?'<button type="button" class="out-chip" data-pay="mpesa" data-id="'+escapeHtml(p.id)+'">M-Pesa</button>':'')+(p.card?'<button type="button" class="out-chip" data-pay="card" data-id="'+escapeHtml(p.id)+'">Card</button>':'')+'</div></div>').join('')+'</div>'+
+      '<label>M-Pesa number (for M-Pesa payments)</label><input type="tel" id="buyPhone" value="'+escapeHtml(phone0)+'" placeholder="07XXXXXXXX"><div class="field-err" id="buyErr"></div><div id="buyStatus" class="status-box" style="display:none"></div>',
+    (ov, close)=>{
+      const st = ov.querySelector('#buyStatus'), err = ov.querySelector('#buyErr');
+      const poll = async (ref, maxSec)=>{
+        const end = Date.now()+maxSec*1000;
+        while(Date.now() < end && document.body.contains(ov)){
+          await new Promise(r=>setTimeout(r,3000));
+          try{ const s = await billingApi({ action:'status', ref });
+            if(s.status==='paid' && s.code){ st.textContent = 'Payment received — activating…'; const r = await redeemCode(s.code); if(r.ok){ close(); showToast('✅ Pro is active until '+r.exp+' — thank you!'); } else { st.innerHTML = 'Payment received. Your activation code is <b>'+escapeHtml(s.code)+'</b> — enter it under Plan &amp; license ('+escapeHtml(r.msg)+')'; } return; }
+            if(s.status==='failed'){ st.textContent = 'The payment was not completed. You have not been charged.'; return; }
+          }catch(e){}
+        }
+        if(document.body.contains(ov)) st.textContent = 'Still waiting for confirmation. If you paid, your plan activates automatically within a few minutes — reopen this screen or contact us.';
+      };
+      ov.querySelector('#buyBody').addEventListener('click', async (e)=>{
+        const b = e.target.closest('[data-pay]'); if(!b) return; err.textContent = ''; st.style.display = 'block';
+        try{
+          if(b.dataset.pay==='mpesa'){ const chk = kePhoneCheck(ov.querySelector('#buyPhone').value); if(!chk.canonical){ st.style.display = 'none'; err.textContent = 'Enter a valid Safaricom number, e.g. 0712345678'; return; }
+            st.textContent = 'Sending the M-Pesa prompt…'; const r = await billingApi({ action:'start', planId:b.dataset.id, method:'mpesa', phone:chk.canonical }); st.textContent = r.message; poll(r.ref, 120); }
+          else { st.textContent = 'Opening secure card checkout…'; const r = await billingApi({ action:'start', planId:b.dataset.id, method:'card' }); window.open(r.url, '_blank'); st.textContent = 'Complete the payment in the new tab. This screen updates automatically.'; poll(r.ref, 600); }
+        }catch(e2){ st.style.display = 'none'; err.textContent = e2.message; }
+      });
+    });
+  }
   // ---------- PWA: install prompt + service worker + update detection ----------
   // Keep in sync with sw.js and version.json (use tools/bump-version.js).
-  const APP_VERSION = '2.3.0';
+  const APP_VERSION = '2.4.0';
   let deferredInstallPrompt = null;
   let swRegistration = null;
   let hadController = !!(navigator.serviceWorker && navigator.serviceWorker.controller);

@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.4.0
+- **Ratiba** calendar (month, week, day, agenda): follow-ups, appointments, birthdays (from date of birth), policy renewals, quote expiry, logged activations/trainings, days off and your own repeating events appear automatically. Fixed Kenyan public holidays are built in; moon-dependent ones (Idd) are added by the agent.
+- Reminders & alarms: permission prompt, daily briefing, alerts before meetings, birthdays and renewals, pop-up notifications, app badge, background delivery where the browser allows, and an `.ics` export for alarms in the phone's own calendar.
+- Install button shown whenever the app is not installed (with platform-specific instructions); Device check screen with test alert, test Excel and test calendar files.
+- Medical and general insurance covers: new products, policy renewal date, automatic yearly renewal for closed medical/general covers.
+- Activation codes: admin generates Pro or Team codes from 3 days to 100 years (eternity); customers redeem them in the app. Online purchase by M-Pesa (Daraja STK push) or card (Stripe) creates and redeems a code automatically.
+- Excel exports now contain a second sheet with native Excel charts.
+- Products added from your ledger export: Term Life, Investment-Linked, Annuity / Pension.
+
 ## 2.3.0
 - Appearance: Light (default) or Dark, chosen by the agent.
 - Prospect list: Group by month or year with per-group summaries (closed / pending / difficult, NOPs, API), collapse all / expand all and "one open at a time".
